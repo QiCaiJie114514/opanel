@@ -112,6 +112,7 @@ export default function Terminal() {
             autoFocus
             itemList={autocompleteList}
             enabled={getSettings("terminal.autocomplete")}
+            maxLength={256}
             onKeyDown={(e) => handleKeydown(e)}
             onInput={() => handleInput()}
             ref={inputRef}/>
