@@ -21,7 +21,7 @@ export function TerminalCard({
       title="服务器后台"
       moreLink="/panel/terminal"
       className={className}
-      innerClassName="p-2 pt-0 h-full flex flex-col gap-2 overflow-hidden">
+      innerClassName="p-2 pt-0 h-full max-xl:h-96 flex flex-col gap-2 overflow-hidden">
       <TerminalConnector client={client} simple className="flex-1"/>
       <Input
         className="w-full rounded-sm cursor-pointer"

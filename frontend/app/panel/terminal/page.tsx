@@ -133,7 +133,7 @@ export default function Terminal() {
           </Button>
         </div>
       </div>
-      <div className="flex-1/5 max-lg:flex-1/4 max-md:flex-1/3 flex flex-col gap-2 max-lg:hidden">
+      <div className="flex-1/5 max-lg:flex-1/4 max-md:flex-1/3 min-w-0 flex flex-col gap-2 max-lg:hidden">
         <div className="px-3 flex justify-between items-center">
           <h2 className="text-md font-semibold">历史记录</h2>
           <Button
