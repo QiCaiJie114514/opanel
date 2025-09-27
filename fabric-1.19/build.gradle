@@ -43,6 +43,7 @@ dependencies {
     mappings "net.fabricmc:yarn:${yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}+${minecraft_version}"
+
     include(modImplementation("space.nocp:configx:2.0.2"))
 
     shadowImplementation(project(":core")) {
@@ -50,7 +51,7 @@ dependencies {
         exclude group: 'com.github.oshi', module: 'oshi-core'
     }
 
-    modImplementation "com.github.oshi:oshi-core:6.8.2"
+    shadowImplementation "com.github.oshi:oshi-core:6.8.2"
 }
 
 shadowJar {
@@ -61,6 +62,7 @@ shadowJar {
 
     relocate 'com.google.gson', 'net.opanel.deps.gson'
     relocate 'org.objectweb.asm', 'net.opanel.deps.objectweb.asm'
+    relocate 'oshi', 'net.opanel.deps.oshi'
 
     exclude 'META-INF/*.SF'
     exclude 'META-INF/*.DSA'
@@ -92,4 +94,4 @@ java {
     withSourcesJar()
 }
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(21)
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = JavaLanguageVersion.of(17)

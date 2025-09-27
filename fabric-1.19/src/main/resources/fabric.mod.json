@@ -17,7 +17,7 @@
   "environment": "server",
   "entrypoints": {
     "server": [
-      "net.opanel.fabric_1_20_1.Main"
+      "net.opanel.fabric_1_19.Main"
     ]
   },
   "mixins": [
@@ -27,6 +27,6 @@
     "fabricloader": ">=${fabric_loader_version}",
     "minecraft": "~${minecraft_version}",
     "java": ">=17",
-    "fabric-api": "*"
+    "fabric": "*"
   }
 }
