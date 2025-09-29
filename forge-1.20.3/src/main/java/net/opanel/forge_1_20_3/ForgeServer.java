@@ -64,16 +64,6 @@ public class ForgeServer implements OPanelServer {
         server.setMotd(motd);
         // Directly modify motd in server.properties
         OPanelServer.writePropertiesContent(OPanelServer.getPropertiesContent().replaceAll("motd=.+", "motd="+ motd));
-        // Directly modify motd in memory
-        final DedicatedServerProperties properties = dedicatedServer.getProperties();
-        try {
-            // Force modifying motd field through reflect because it is final
-            Field motdField = properties.getClass().getDeclaredField("motd");
-            motdField.setAccessible(true);
-            motdField.set(properties, motd);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
