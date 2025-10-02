@@ -3,8 +3,8 @@ version: ${version}
 main: net.opanel.spigot_1_20.Main
 description: A Minecraft server management panel
 author: NriotHrreion
-website:
-api-version: '${minecraft_version}'
+website: https://opanel.cn
+api-version: '${api_version}'
 
 commands:
   opanel:

@@ -1,10 +1,12 @@
 import type { ConsoleLog, WebSocketClient } from "@/lib/terminal/client";
 import { useEffect, useRef, useState } from "react";
 import { format } from "date-format-parse";
-import Convert from "ansi-to-html";
+import AnsiConverter from "ansi-to-html";
 import { cn } from "@/lib/utils";
 import { defaultLogLevel, getLogLevelId, type ConsoleLogLevel } from "@/lib/terminal/log-levels";
 import { getSettings } from "@/lib/settings";
+
+const MAX_LOG_LINES = getSettings("terminal.max-log-lines");
 
 function Log({
   time,
@@ -56,12 +58,12 @@ function Log({
         thrownMessage == null
         ? (
           getSettings("terminal.convert-ansi-code")
-          ? <span dangerouslySetInnerHTML={{ __html: new Convert().toHtml(line) }}/>
+          ? <span dangerouslySetInnerHTML={{ __html: new AnsiConverter().toHtml(line) }}/>
           : <span>{line}</span>
         )
         : (
           getSettings("terminal.convert-ansi-code")
-          ? <span dangerouslySetInnerHTML={{ __html: new Convert().toHtml(line +"\n"+ thrownMessage) }}/>
+          ? <span dangerouslySetInnerHTML={{ __html: new AnsiConverter().toHtml(line +"\n"+ thrownMessage) }}/>
           : <span>{line +"\n"+ thrownMessage}</span>
         )
       }
@@ -84,7 +86,10 @@ export function TerminalConnector({
   const [logs, setLogs] = useState<ConsoleLog[]>([]);
 
   const pushLog = (log: ConsoleLog) => {
-    setLogs((current) => [...current, log]);
+    setLogs((current) => {
+      if(current.length + 1 > MAX_LOG_LINES) current.shift();
+      return [...current, log];
+    });
   };
 
   const clearLogs = () => {
@@ -106,8 +111,8 @@ export function TerminalConnector({
     client.onMessage((type, data) => {
       switch(type) {
         case "init":
-          for(const item of data) {
-            pushLog(item);
+          for(let i = data.length - MAX_LOG_LINES > 0 ? data.length - MAX_LOG_LINES : 0; i < data.length; i++) {
+            pushLog(data[i]);
           }
           break;
         case "log":

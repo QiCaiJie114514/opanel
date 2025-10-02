@@ -69,30 +69,37 @@ public class TerminalEndpoint {
                         session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized."));
                         return;
                     }
-                    if(!(packet.data instanceof String command)) {
+                    if(packet.data instanceof String) {
+                        String command = (String) packet.data;
+                        if(command.startsWith("/")) {
+                            command = command.replace("/", "");
+                        }
+                        plugin.getServer().sendServerCommand(command);
+                    } else {
                         sendErrorMessage(session, "Unexpected type of data.");
-                        return;
                     }
-                    plugin.getServer().sendServerCommand(command.replaceFirst("/", ""));
                 }
                 case TerminalPacket.AUTOCOMPLETE -> {
                     if(!sessions.contains(session)) {
                         session.close(new CloseReason(CloseReason.CloseCodes.VIOLATED_POLICY, "Unauthorized."));
                         return;
                     }
-                    if(!(packet.data instanceof Number arg)) {
-                        sendErrorMessage(session, "Unexpected type of data.");
-                        return;
-                    }
 
-                    if(arg.equals(1.0)) {
-                        sendMessage(session, new TerminalPacket<>(TerminalPacket.AUTOCOMPLETE, plugin.getServer().getCommands()));
-                        return;
+                    if(packet.data instanceof Number) {
+                        Number arg = (Number) packet.data;
+                        if(arg.equals(1.0)) {
+                            sendMessage(session, new TerminalPacket<>(TerminalPacket.AUTOCOMPLETE, plugin.getServer().getCommands()));
+                            return;
+                        }
+                        List<OPanelPlayer> players = plugin.getServer().getOnlinePlayers();
+                        List<String> nameList = new ArrayList<>();
+                        for(OPanelPlayer player : players) {
+                            nameList.add(player.getName());
+                        }
+                        sendMessage(session, new TerminalPacket<>(TerminalPacket.AUTOCOMPLETE, nameList));
+                    } else {
+                        sendErrorMessage(session, "Unexpected type of data.");
                     }
-                    sendMessage(session, new TerminalPacket<>(
-                            TerminalPacket.AUTOCOMPLETE,
-                            plugin.getServer().getOnlinePlayers().stream().map(OPanelPlayer::getName).toList()
-                    ));
                 }
                 default -> sendErrorMessage(session, "Unexpected type of packet.");
             }

@@ -56,7 +56,7 @@ public class WebServer {
             } catch (DeploymentException e) {
                     plugin.logger.error("Failed to deploy WebSocket endpoint: " + e.getMessage());
                     throw new RuntimeException("WebSocket deployment failed", e);
-                }
+            }
         });
 
         // API
@@ -75,7 +75,7 @@ public class WebServer {
         ctx.addServlet(new ServletHolder(new StaticFileServlet(plugin)), StaticFileServlet.route);
 
         server.start();
-        plugin.logger.info("Web server is ready on port "+ PORT);
+        plugin.logger.info("OPanel web server is ready on port "+ PORT);
         plugin.initializeAccessKey();
 
         server.addEventListener(new LifeCycle.Listener() {

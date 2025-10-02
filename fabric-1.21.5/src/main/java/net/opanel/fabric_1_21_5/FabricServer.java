@@ -64,16 +64,6 @@ public class FabricServer implements OPanelServer {
         server.setMotd(motd);
         // Directly modify motd in server.properties
         OPanelServer.writePropertiesContent(OPanelServer.getPropertiesContent().replaceAll("motd=.+", "motd="+ motd));
-        // Directly modify motd in memory
-        final ServerPropertiesHandler properties = dedicatedServer.getProperties();
-        try {
-            // Force modifying motd field through reflect because it is final
-            Field motdField = properties.getClass().getDeclaredField("motd");
-            motdField.setAccessible(true);
-            motdField.set(properties, motd);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -213,8 +203,10 @@ public class FabricServer implements OPanelServer {
             final String valueStr = gamerulesNbt.getString(key, "");
             if(valueStr.equals("true") || valueStr.equals("false")) {
                 gamerules.put(key, Boolean.valueOf(valueStr));
-            } else {
+            } else if(Utils.isNumeric(valueStr)) {
                 gamerules.put(key, Integer.valueOf(valueStr));
+            } else {
+                gamerules.put(key, valueStr);
             }
         }
         return gamerules;
@@ -235,6 +227,9 @@ public class FabricServer implements OPanelServer {
                             gameRulesObj.get(key).setValue((T) new GameRules.BooleanRule((GameRules.Type<GameRules.BooleanRule>) type, (boolean) value), server);
                         } else if(value instanceof Number) {
                             gameRulesObj.get(key).setValue((T) new GameRules.IntRule((GameRules.Type<GameRules.IntRule>) type, Double.valueOf((double) value).intValue()), server);
+                        } else if(value instanceof String) {
+                            // Use command to set gamerule
+                            sendServerCommand("gamerule "+ ruleName +" "+ value);
                         }
                     }
                 });

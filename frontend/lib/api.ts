@@ -1,6 +1,6 @@
 import type { APIResponse } from "./types";
 import axios, { type AxiosError } from "axios";
-import { getCookie } from "cookies-next/client";
+import { deleteCookie, getCookie } from "cookies-next/client";
 import { toast } from "sonner";
 
 export const apiUrl = (
@@ -12,7 +12,7 @@ export const apiUrl = (
 export const wsUrl = (
   (process.env.NODE_ENV === "development" || !globalThis["window"])
   ? `ws://localhost:3000` // dev
-  : `ws://${window.location.host}` // prod
+  : `${window.location.protocol === "http:" ? "ws" : "wss"}://${window.location.host}` // prod
 );
 
 /** @see https://crafatar.com */
@@ -28,6 +28,12 @@ export const capeUrl = "https://crafatar.com/capes/";
  * By default, it will set the description to `e.message`.
  */
 export function toastError(e: AxiosError, message: string, descriptions: [number, string][]) {
+  if(e.status === 401 && window.location.pathname !== "/login") {
+    deleteCookie("token");
+    window.location.href = "/login";
+    return;
+  }
+
   for(const [status, description] of descriptions) {
     if(e.status === status) {
       toast.error(message, { description });

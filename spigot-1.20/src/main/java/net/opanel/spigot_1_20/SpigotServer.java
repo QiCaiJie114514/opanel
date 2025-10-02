@@ -208,6 +208,8 @@ public class SpigotServer implements OPanelServer {
                     world.setGameRule((GameRule<Boolean>) rule, (Boolean) value);
                 } else if(value instanceof Number) {
                     world.setGameRule((GameRule<Integer>) rule, Double.valueOf((double) value).intValue());
+                } else if(value instanceof String) {
+                    world.setGameRule((GameRule<String>) rule, (String) value);
                 }
             });
         });

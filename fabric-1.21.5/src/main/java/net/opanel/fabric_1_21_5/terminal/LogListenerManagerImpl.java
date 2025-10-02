@@ -45,6 +45,8 @@ public class LogListenerManagerImpl extends AbstractAppender implements LogListe
         }
 
         logs.add(log);
+        if(logs.size() > MAX_LOG_LINES) logs.remove(0);
+
         listeners.forEach(listener -> {
              listener.accept(log);
         });

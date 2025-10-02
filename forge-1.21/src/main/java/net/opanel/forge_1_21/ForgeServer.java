@@ -213,8 +213,10 @@ public class ForgeServer implements OPanelServer {
             final String valueStr = gamerulesNbt.getString(key);
             if(valueStr.equals("true") || valueStr.equals("false")) {
                 gamerules.put(key, Boolean.valueOf(valueStr));
-            } else {
+            } else if(Utils.isNumeric(valueStr)) {
                 gamerules.put(key, Integer.valueOf(valueStr));
+            } else {
+                gamerules.put(key, valueStr);
             }
         }
         return gamerules;
@@ -235,6 +237,9 @@ public class ForgeServer implements OPanelServer {
                             gameRulesObj.getRule(key).setFrom((T) new GameRules.BooleanValue((GameRules.Type<GameRules.BooleanValue>) type, (boolean) value), server);
                         } else if(value instanceof Number) {
                             gameRulesObj.getRule(key).setFrom((T) new GameRules.IntegerValue((GameRules.Type<GameRules.IntegerValue>) type, Double.valueOf((double) value).intValue()), server);
+                        } else if(value instanceof String) {
+                            // Use command to set gamerule
+                            sendServerCommand("gamerule "+ ruleName +" "+ value);
                         }
                     }
                 });

@@ -102,3 +102,8 @@ export function base64ToString(base64: string): string {
   const bytes = Uint8Array.from(binStr, (char) => char.charCodeAt(0));
   return new TextDecoder().decode(bytes);
 }
+
+export function isNumeric(str: string): boolean {
+  if(str === "") return false;
+  return !Number.isNaN(Number(str));
+}

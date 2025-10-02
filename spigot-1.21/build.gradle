@@ -54,7 +54,7 @@ shadowJar {
 tasks.named('processResources', ProcessResources) {
     var replaceProperties = [
             version: project.version,
-            minecraft_version: minecraft_version
+            api_version: api_version
     ]
     inputs.properties replaceProperties
 

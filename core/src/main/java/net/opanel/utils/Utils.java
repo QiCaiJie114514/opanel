@@ -6,9 +6,8 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
-import java.util.Arrays;
+import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Random;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -175,13 +174,24 @@ public class Utils {
     }
 
     public static String generateRandomCharSequence(int length) {
-        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$";
         StringBuilder result = new StringBuilder();
-        Random rand = new Random();
+        SecureRandom rand = new SecureRandom();
         while(result.length() < length) {
-            int charIndex = Math.round(chars.length() * rand.nextFloat());
+            int charIndex = rand.nextInt(chars.length());
             result.append(chars.charAt(charIndex));
         }
         return result.toString();
+    }
+
+    public static boolean isNumeric(String str) {
+        if(str == null || str.isEmpty()) return false;
+
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

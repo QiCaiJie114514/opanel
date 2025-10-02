@@ -6,8 +6,10 @@ const storage = window.localStorage;
 
 export type SettingsStorageType = {
   "dashboard.monitor-interval": number
+  "terminal.autocomplete": boolean
   "terminal.word-wrap": boolean
   "terminal.font-size": number
+  "terminal.max-log-lines": number
   "terminal.log-level": ConsoleLogLevel
   "terminal.log-time": boolean
   "terminal.thread-name": boolean
@@ -20,8 +22,10 @@ export type SettingsStorageType = {
 
 const defaultSettings: SettingsStorageType = {
   "dashboard.monitor-interval": 2000, // ms
+  "terminal.autocomplete": true,
   "terminal.word-wrap": false,
   "terminal.font-size": 12, // px
+  "terminal.max-log-lines": 1000,
   "terminal.log-level": "INFO",
   "terminal.log-time": true,
   "terminal.thread-name": true,

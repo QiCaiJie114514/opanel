@@ -1,7 +1,7 @@
 "use client";
 
 import type { Player, PlayersResponse } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Contact, UserPen, Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/data-table";
@@ -18,6 +18,8 @@ export default function Players() {
   const [maxPlayerCount, setMaxPlayerCount] = useState<number>(0);
   const [isWhitelistEnabled, setIsWhitelistEnabled] = useState(false);
   const [currentTab, setCurrentTab] = useState<string>("player-list");
+  const nonBannedPlayers = useMemo(() => players.filter(({ isBanned }) => !isBanned), [players]);
+  const bannedPlayers = useMemo(() => players.filter(({ isBanned }) => isBanned), [players]);
 
   const fetchPlayerList = async () => {
     try {
@@ -48,7 +50,7 @@ export default function Players() {
       className="flex flex-col gap-3">
       <span className="text-sm text-muted-foreground">点击玩家名以进行更多操作。</span>
       <Tabs defaultValue="player-list" onValueChange={setCurrentTab}>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center max-sm:flex-col max-sm:items-start max-sm:gap-2">
           <TabsList className="[&>*]:cursor-pointer">
             <TabsTrigger value="player-list">
               {`玩家列表 (${players.filter(({ isOnline }) => isOnline).length} / ${maxPlayerCount})`}
@@ -86,14 +88,17 @@ export default function Players() {
         <TabsContent value="player-list">
           <DataTable
             columns={playerColumns}
-            data={players.filter(({ isBanned }) => !isBanned)}
+            data={[
+              ...nonBannedPlayers.filter(({ isOnline }) => isOnline),
+              ...nonBannedPlayers.filter(({ isOnline }) => !isOnline)
+            ]}
             pagination
             fallbackMessage="暂无玩家"/>
         </TabsContent>
         <TabsContent value="banned-list">
           <DataTable
             columns={bannedColumns}
-            data={players.filter(({ isBanned }) => isBanned)}
+            data={bannedPlayers}
             pagination
             fallbackMessage="暂无玩家"/>
         </TabsContent>
