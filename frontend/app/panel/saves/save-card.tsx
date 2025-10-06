@@ -63,7 +63,7 @@ export function SaveCard({
   return (
     <Card className={cn(
       "rounded-md min-h-fit px-3 py-3 flex flex-col justify-between hover:bg-muted",
-      isCurrent && "bg-green-50 hover:bg-green-100 border-green-600 dark:bg-green-950 dark:border-green-900",
+      isCurrent && "bg-green-50 hover:bg-background border-green-600 dark:bg-green-950 dark:border-green-900",
       className
     )}>
       <Tooltip>
