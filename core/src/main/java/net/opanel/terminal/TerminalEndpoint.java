@@ -9,6 +9,7 @@ import net.opanel.OPanel;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.logger.Loggable;
 import net.opanel.utils.Utils;
+import net.opanel.web.JwtManager;
 
 import java.io.IOException;
 import java.util.*;
@@ -53,9 +54,9 @@ public class TerminalEndpoint {
 
             switch(packet.type) {
                 case TerminalPacket.AUTH -> {
-                    String token = (String) packet.data; // salted hashed 3
+                    String token = (String) packet.data;
                     final String hashedRealKey = plugin.getConfig().accessKey; // hashed 2
-                    if(token != null && token.equals(Utils.md5(plugin.getConfig().salt + hashedRealKey))) {
+                    if(token != null && JwtManager.verifyToken(token, hashedRealKey, plugin.getConfig().salt)) {
                         // Register session
                         sessions.add(session);
                         // Send recent logs
