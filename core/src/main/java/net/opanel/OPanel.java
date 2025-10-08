@@ -19,8 +19,8 @@ import java.util.Properties;
 
 public class OPanel {
     public static final String VERSION;
-    public static final Path OPANEL_DIR_PATH = Paths.get("").resolve(".opanel");
-    public static final Path TMP_DIR_PATH = OPANEL_DIR_PATH.resolve("tmp");
+    public static final Path OPANEL_DIR_PATH = Paths.get("").resolve("opanel");
+    public static final Path TMP_DIR_PATH = OPANEL_DIR_PATH.resolve(".tmp");
     public static final Path INITIAL_ACCESS_KEY_PATH = OPANEL_DIR_PATH.resolve("INITIAL_ACCESS_KEY.txt");
 
     // Read opanel.properties
@@ -67,18 +67,18 @@ public class OPanel {
     private void init() throws IOException {
         File opanelDir = OPANEL_DIR_PATH.toFile();
         if(!opanelDir.exists() && !opanelDir.mkdir()) {
-            throw new IOException("Cannot initialize .opanel directory.");
+            throw new IOException("Cannot initialize opanel directory.");
         }
         File tmpDir = TMP_DIR_PATH.toFile();
         if(!tmpDir.exists() && !tmpDir.mkdir()) {
-            throw new IOException("Cannot initialize .opanel/tmp directory.");
+            throw new IOException("Cannot initialize opanel/.tmp directory.");
         }
         if(tmpDir.list().length > 0) {
             Utils.clearDirectoryRecursively(tmpDir.toPath());
         }
         File initialAccessKeyFile = INITIAL_ACCESS_KEY_PATH.toFile();
         if(initialAccessKeyFile.exists() && !initialAccessKeyFile.delete()) {
-            throw new IOException("Cannot delete .opanel/INITIAL_ACCESS_KEY.txt file, please delete it manually for your server security.");
+            throw new IOException("Cannot delete opanel/INITIAL_ACCESS_KEY.txt file, please delete it manually for your server security.");
         }
     }
 
@@ -112,7 +112,7 @@ public class OPanel {
 
             logger.warn("===========================OPanel===========================");
             logger.warn("Initial launching detected,");
-            logger.warn("Check .opanel/INITIAL_ACCESS_KEY.txt for the initial access key.");
+            logger.warn("Check opanel/INITIAL_ACCESS_KEY.txt for the initial access key.");
             logger.warn("Remember to delete the file for your server security.");
             logger.warn("============================================================");
         }

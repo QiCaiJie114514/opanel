@@ -6,15 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="90587dcf-15dc-47d2-9c29-bb98b36eacd0" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/core/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/OPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/OPanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/config/OPanelConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/config/OPanelConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/folia-1.20/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/folia-1.20/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/folia-1.21/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/folia-1.21/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.16.1/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.16.1/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.19.4/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.19.4/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.20/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.20/src/main/resources/config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.21/src/main/resources/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.21/src/main/resources/config.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,42 +42,6 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="opanel" type="f1a62948:ProjectNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="opanel" type="f1a62948:ProjectNode" />
-                <item name="fabric-1.21.5" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="opanel" type="f1a62948:ProjectNode" />
-                <item name="fabric-1.21.5" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="opanel" type="f1a62948:ProjectNode" />
-                <item name="fabric-1.21.5" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="opanel" type="f1a62948:ProjectNode" />
-                <item name="neoforge-1.21.5" type="2d1252cf:ModuleNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="opanel" type="f1a62948:ProjectNode" />
-                <item name="neoforge-1.21.5" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="opanel" type="f1a62948:ProjectNode" />
-                <item name="neoforge-1.21.5" type="2d1252cf:ModuleNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
               </path>
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
@@ -143,7 +99,7 @@
     "git-widget-placeholder": "dev"
   }
 }]]></component>
-  <component name="RunManager" selected="Gradle.opanel:fabric-1.21.5 [build]">
+  <component name="RunManager" selected="Gradle.opanel:spigot-1.21 [build]">
     <configuration name="Neoforge-1.21.5: Client" type="Application" factoryName="Application">
       <envs>
         <env name="MOD_CLASSES" value="neoforge-1.21.5%%D:\opanel\neoforge-1.21.5\build\sourcesSets\main;neoforge-1.21.5%%D:\opanel\neoforge-1.21.5\build\sourcesSets\main" />
@@ -348,9 +304,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.opanel:spigot-1.21 [build]" />
         <item itemvalue="Gradle.opanel:fabric-1.21.5 [build]" />
         <item itemvalue="Gradle.opanel:neoforge-1.21.5 [build]" />
-        <item itemvalue="Gradle.opanel:spigot-1.21 [build]" />
         <item itemvalue="Gradle.opanel:forge-1.21.5 [build]" />
         <item itemvalue="Gradle.opanel [clean]" />
       </list>
