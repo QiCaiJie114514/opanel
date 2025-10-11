@@ -47,6 +47,12 @@ OPanel 的功能包括：
 
 查看[贡献指南](https://opanel.cn/docs/contributing.html)以了解更多信息。
 
+## 友情链接
+
+[<img src="./images/friends/miaocloud.png" width="300"/>](https://cloud.miaostars.com)
+[<img src="./images/friends/rainyun.png" width="300"/>](https://rainyun.com)
+[<img src="./images/friends/acmecloud.png" width="300"/>](https://acmecloud.cn)
+
 ## License
 
 [MPL-2.0](./LICENSE)
