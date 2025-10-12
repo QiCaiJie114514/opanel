@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { deleteCookie } from "cookies-next/client";
-import { Blocks, Earth, Gauge, Info, LogOut, PencilRuler, ScrollText, Settings, SquareTerminal, Users } from "lucide-react";
+import { Blocks, BookText, Earth, Gauge, Info, LogOut, PencilRuler, ScrollText, Settings, SquareArrowOutUpRight, SquareTerminal, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -74,7 +74,13 @@ const helpGroupItems = [
     name: "关于",
     url: "/about",
     icon: Info
-  }
+  },
+  {
+    name: "文档",
+    url: "https://opanel.cn/docs/quick-start.html",
+    icon: BookText,
+    newTab: true
+  },
 ];
 
 export function AppSidebar() {
@@ -104,7 +110,7 @@ export function AppSidebar() {
                     <Link href={item.url} className="pl-3">
                       {pathname.startsWith(item.url) && <SidebarIndicator className="left-2"/>}
                       <item.icon />
-                      <span>{item.name}</span>
+                      <span className="whitespace-nowrap">{item.name}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -124,7 +130,7 @@ export function AppSidebar() {
                     <Link href={item.url} className="pl-3">
                       {pathname.startsWith(item.url) && <SidebarIndicator className="left-2"/>}
                       <item.icon />
-                      <span>{item.name}</span>
+                      <span className="whitespace-nowrap">{item.name}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -141,10 +147,14 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     isActive={pathname.startsWith(item.url)}
                     asChild>
-                    <Link href={item.url} className="pl-3">
+                    <Link
+                      href={item.url}
+                      target={item.newTab ? "_blank" : "_self"}
+                      className="pl-3">
                       {pathname.startsWith(item.url) && <SidebarIndicator className="left-2"/>}
                       <item.icon />
-                      <span>{item.name}</span>
+                      <span className="whitespace-nowrap">{item.name}</span>
+                      {item.newTab && <SquareArrowOutUpRight className="!size-3 ml-1" stroke="var(--color-muted-foreground)"/>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
