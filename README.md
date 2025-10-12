@@ -51,7 +51,7 @@ See [Contributing Guidelines](https://opanel.cn/docs/contributing.html) for more
 
 [<img src="./images/friends/miaocloud.png" width="300"/>](https://cloud.miaostars.com)
 [<img src="./images/friends/rainyun.png" width="300"/>](https://rainyun.com)
-[<img src="./images/friends/acmecloud.png" width="300"/>](https://acmecloud.cn)
+[<img src="./images/friends/chuqiyun.png" width="300"/>](https://chuqiyun.com)
 
 ## License
 
