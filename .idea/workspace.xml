@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="90587dcf-15dc-47d2-9c29-bb98b36eacd0" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/frontend/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,22 +91,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.opanel [:forge-1.19.4:createMcpToSrg :forge-1.20.1:createMcpToSrg :forge-1.20.2:createMcpToSrg :forge-1.20.3:createMcpToSrg :forge-1.20.6:createMcpToSrg :forge-1.21:createMcpToSrg :forge-1.21.3:createMcpToSrg :forge-1.21.5:createMcpToSrg :forge-1.21.8:createMcpToSrg].executor": "Run",
-    "Gradle.opanel [clean].executor": "Run",
-    "Gradle.opanel:fabric-1.20 [build].executor": "Run",
-    "Gradle.opanel:fabric-1.21.5 [build].executor": "Run",
-    "Gradle.opanel:forge-1.21.5 [build].executor": "Run",
-    "Gradle.opanel:neoforge-1.21.5 [build].executor": "Run",
-    "Gradle.opanel:spigot-1.19.4 [build].executor": "Run",
-    "Gradle.opanel:spigot-1.21 [build].executor": "Run",
-    "Gradle.下载源代码.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "dev"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.opanel [:forge-1.19.4:createMcpToSrg :forge-1.20.1:createMcpToSrg :forge-1.20.2:createMcpToSrg :forge-1.20.3:createMcpToSrg :forge-1.20.6:createMcpToSrg :forge-1.21:createMcpToSrg :forge-1.21.3:createMcpToSrg :forge-1.21.5:createMcpToSrg :forge-1.21.8:createMcpToSrg].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.opanel [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.opanel:fabric-1.20 [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.opanel:fabric-1.21.5 [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.opanel:forge-1.21.5 [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.opanel:neoforge-1.21.5 [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.opanel:spigot-1.19.4 [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.opanel:spigot-1.21 [build].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.下载源代码.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Gradle.opanel:fabric-1.20 [build]">
     <configuration name="Neoforge-1.21.5: Client" type="Application" factoryName="Application">
       <envs>
