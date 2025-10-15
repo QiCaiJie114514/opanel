@@ -128,15 +128,15 @@ public class FabricServer implements OPanelServer {
         try(Stream<Path> stream = Files.list(playerDataPath)) {
             stream.filter(item -> !Files.isDirectory(item) && item.toString().endsWith(".dat"))
                     .forEach(item -> {
-                        final String uuid = item.getFileName().toString().replace(".dat", "");
-                        ServerPlayerEntity serverPlayer = server.getPlayerManager().getPlayer(UUID.fromString(uuid));
-                        if(serverPlayer != null && !serverPlayer.isDisconnected()) return;
-
                         try {
+                            final String uuid = item.getFileName().toString().replace(".dat", "");
+                            ServerPlayerEntity serverPlayer = server.getPlayerManager().getPlayer(UUID.fromString(uuid));
+                            if(serverPlayer != null && !serverPlayer.isDisconnected()) return;
+
                             FabricOfflinePlayer player = new FabricOfflinePlayer(server, UUID.fromString(uuid));
                             list.add(player);
-                        } catch (NullPointerException e) {
-                            //
+                        } catch (Exception e) {
+                            Main.LOGGER.warn("Cannot read the player data from "+ item.getFileName() +": "+ e.getMessage());
                         }
                     });
         } catch (IOException e) {

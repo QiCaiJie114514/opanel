@@ -128,15 +128,15 @@ public class ForgeServer implements OPanelServer {
         try(Stream<Path> stream = Files.list(playerDataPath)) {
             stream.filter(item -> !Files.isDirectory(item) && item.toString().endsWith(".dat"))
                     .forEach(item -> {
-                        final String uuid = item.getFileName().toString().replace(".dat", "");
-                        ServerPlayer serverPlayer = server.getPlayerList().getPlayer(UUID.fromString(uuid));
-                        if(serverPlayer != null && !serverPlayer.hasDisconnected()) return;
-
                         try {
+                            final String uuid = item.getFileName().toString().replace(".dat", "");
+                            ServerPlayer serverPlayer = server.getPlayerList().getPlayer(UUID.fromString(uuid));
+                            if(serverPlayer != null && !serverPlayer.hasDisconnected()) return;
+
                             ForgeOfflinePlayer player = new ForgeOfflinePlayer(server, UUID.fromString(uuid));
                             list.add(player);
-                        } catch (NullPointerException e) {
-                            //
+                        } catch (Exception e) {
+                            Main.LOGGER.warn("Cannot read the player data from "+ item.getFileName() +": "+ e.getMessage());
                         }
                     });
         } catch (IOException e) {

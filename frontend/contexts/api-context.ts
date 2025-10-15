@@ -11,3 +11,9 @@ export const InfoContext = getAPIContext<InfoResponse>();
 
 export const MonitorContext = React.createContext<{ memory: number, cpu: number, tps: number }[]>(undefined!);
 MonitorContext.displayName = "APIContext";
+
+export const WhitelistContext = React.createContext<{
+  isWhitelistEnabled: boolean
+  setWhitelistEnabledState: React.Dispatch<React.SetStateAction<boolean>>
+}>(undefined!);
+WhitelistContext.displayName = "WhitelistContext";

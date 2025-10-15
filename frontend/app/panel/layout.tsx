@@ -28,7 +28,7 @@ export default function PanelLayout({
   if(!mounted) return <></>;
 
   return (
-    <SidebarProvider className="overflow-x-hidden">
+    <SidebarProvider className="overflow-hidden">
       <AppSidebar />
       <SidebarInset className="min-w-0">
         {children}

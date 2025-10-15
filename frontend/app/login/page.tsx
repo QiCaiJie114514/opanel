@@ -20,15 +20,15 @@ import {
 } from "@/components/ui/card";
 import {
   Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { sendPostRequestWithoutToken } from "@/lib/api";
 import { Brand } from "@/components/logo";
+import { PasswordInput } from "@/components/password-input";
+import { Alert } from "@/components/alert";
 
 const formSchema = z.object({
   accessKey: z.string().nonempty("此项不可为空"),
@@ -93,14 +93,26 @@ export default function Login() {
                 name="accessKey"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>访问密钥</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="请输入访问密钥..."
-                        autoFocus
-                        {...field}/>
-                    </FormControl>
+                    <div className="flex justify-between">
+                      <FormLabel>访问密钥</FormLabel>
+                      <Alert
+                        title="重置密钥"
+                        description={
+                          <>
+                            <span>如果你是服务器管理员，且密钥已丢失，可通过<b>删除配置文件</b>并<b>重启服务器</b>来进行密钥重置。</span><br /><br />
+                            <span>具体步骤请参见文档：<Link href="https://opanel.cn/docs/quick-start.html#%E4%BD%BF%E7%94%A8" target="_blank">https://opanel.cn/docs/quick-start.html#使用</Link></span><br />
+                            <span>配置文件路径请参见：<Link href="https://opanel.cn/docs/configuration.html" target="_blank">https://opanel.cn/docs/configuration.html</Link></span>
+                          </>
+                        }
+                        asChild
+                        cancellable={false}>
+                        <span className="text-right text-sm text-muted-foreground cursor-pointer">忘记密钥？</span>
+                      </Alert>
+                    </div>
+                    <PasswordInput
+                      placeholder="请输入访问密钥..."
+                      autoFocus
+                      {...field}/>
                     <FormMessage />
                   </FormItem>
                 )}/>
@@ -116,7 +128,7 @@ export default function Login() {
         </CardFooter>
       </Card>
       <div className="flex justify-between items-center mt-2 px-2 text-sm">
-        <span className="text-muted-foreground">Copyright &copy; NriotHrreion 2025</span>
+        <span className="text-muted-foreground">Copyright &copy; OPanel Project 2025</span>
         <Button variant="link" size="sm" asChild>
           <Link href="/about">
             <Info />

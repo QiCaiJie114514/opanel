@@ -12,11 +12,12 @@ import { Button } from "@/components/ui/button";
 import { WhitelistSheet } from "./whitelist-sheet";
 import { setWhitelistEnabled } from "./player-utils";
 import { emitter } from "@/lib/emitter";
+import { WhitelistContext } from "@/contexts/api-context";
 
 export default function Players() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [maxPlayerCount, setMaxPlayerCount] = useState<number>(0);
-  const [isWhitelistEnabled, setIsWhitelistEnabled] = useState(false);
+  const [isWhitelistEnabled, setWhitelistEnabledState] = useState(false);
   const [currentTab, setCurrentTab] = useState<string>("player-list");
   const nonBannedPlayers = useMemo(() => players.filter(({ isBanned }) => !isBanned), [players]);
   const bannedPlayers = useMemo(() => players.filter(({ isBanned }) => isBanned), [players]);
@@ -26,7 +27,7 @@ export default function Players() {
       const res = await sendGetRequest<PlayersResponse>("/api/players");
       setPlayers(res.players);
       setMaxPlayerCount(res.maxPlayerCount);
-      setIsWhitelistEnabled(res.whitelist);
+      setWhitelistEnabledState(res.whitelist);
     } catch (e: any) {
       toastError(e, "无法获取玩家列表", [
         [400, "请求参数错误"],
@@ -50,7 +51,7 @@ export default function Players() {
       className="flex flex-col gap-3">
       <span className="text-sm text-muted-foreground">点击玩家名以进行更多操作。</span>
       <Tabs defaultValue="player-list" onValueChange={setCurrentTab}>
-        <div className="flex justify-between items-center max-sm:flex-col max-sm:items-start max-sm:gap-2">
+        <div className="flex justify-between items-center max-sm:flex-col-reverse max-sm:items-start max-sm:gap-2">
           <TabsList className="[&>*]:cursor-pointer">
             <TabsTrigger value="player-list">
               {`玩家列表 (${players.filter(({ isOnline }) => isOnline).length} / ${maxPlayerCount})`}
@@ -59,31 +60,38 @@ export default function Players() {
               {`封禁列表 (${players.filter(({ isBanned }) => isBanned).length})`}
             </TabsTrigger>
           </TabsList>
-          {
-            isWhitelistEnabled
-            ? (
-              <WhitelistSheet asChild>
+          <WhitelistContext.Provider value={{ isWhitelistEnabled, setWhitelistEnabledState }}>
+            {
+              isWhitelistEnabled
+              ? (
+                <WhitelistSheet asChild>
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer">
+                    <UserPen />
+                    编辑白名单
+                  </Button>
+                </WhitelistSheet>
+              )
+              : (
                 <Button
                   variant="outline"
-                  className="cursor-pointer">
-                  <UserPen />
-                  编辑白名单
+                  className="cursor-pointer"
+                  onClick={async () => {
+                    await setWhitelistEnabled(true);
+                    await fetchPlayerList();
+                    /**
+                     * We need to set the state manually here
+                     * because the whitelist state fetched from the server has a delay.
+                     */
+                    setWhitelistEnabledState(true);
+                  }}>
+                  <Contact />
+                  启用白名单
                 </Button>
-              </WhitelistSheet>
-            )
-            : (
-              <Button
-                variant="outline"
-                className="cursor-pointer"
-                onClick={async () => {
-                  await setWhitelistEnabled(true);
-                  fetchPlayerList();
-                }}>
-                <Contact />
-                启用白名单
-              </Button>
-            )
-          }
+              )
+            }
+          </WhitelistContext.Provider>
         </div>
         <TabsContent value="player-list">
           <DataTable

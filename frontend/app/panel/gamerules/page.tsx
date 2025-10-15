@@ -10,11 +10,7 @@ import { toast } from "sonner";
 import { PencilRuler } from "lucide-react";
 import {
   Form,
-  FormControl,
-  FormDescription,
   FormField,
-  FormItem,
-  FormLabel,
   FormMessage
 } from "@/components/ui/form";
 import {
@@ -27,6 +23,13 @@ import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemTitle
+} from "@/components/ui/item";
 import gamerulePresets from "@/lib/gamerules/presets";
 import { SubPage } from "../sub-page";
 
@@ -75,75 +78,79 @@ export default function Gamerules() {
   }, []);
   
   return (
-    <SubPage title="游戏规则" icon={<PencilRuler />} className="flex flex-col gap-3">
+    <SubPage
+      title="游戏规则"
+      icon={<PencilRuler />}
+      className="flex-1 min-h-0 flex flex-col gap-3"
+      noScrollPage>
       <span className="text-sm text-muted-foreground">编辑游戏规则后需保存以生效。</span>
       <Form {...form}>
-        <form className="space-y-5" onSubmit={form.handleSubmit(handleSubmit)}>
-          {Array.from(gamerulesMap).map(([key, value]) => {
-            const preset = gamerulePresets.find(({ id, type }) => (id === key && typeof value === type));
+        <form className="min-h-0 flex flex-col gap-4" onSubmit={form.handleSubmit(handleSubmit)}>
+          <div className="flex-1 overflow-y-auto space-y-5 pr-2">
+            {Array.from(gamerulesMap).map(([key, value]) => {
+              const preset = gamerulePresets.find(({ id, type }) => (id === key && typeof value === type));
 
-            // if(!preset) {
-            //   toast.error("游戏规则预设错误", { description: "游戏规则预设与实际服务器游戏规则无法匹配："+ key });
-            //   return <></>;
-            // }
+              // if(!preset) {
+              //   toast.error("游戏规则预设错误", { description: "游戏规则预设与实际服务器游戏规则无法匹配："+ key });
+              //   return <></>;
+              // }
 
-            return (
-              <FormField
-                /** @see https://github.com/react-hook-form/react-hook-form/issues/10977#issuecomment-1737917718 */
-                defaultValue=""
-                control={form.control}
-                name={key}
-                render={({ field }) => (
-                  <FormItem className="p-3 border rounded-md flex flex-row max-sm:flex-col justify-between items-center max-sm:items-start max-sm:gap-4">
-                    <div className="space-y-2">
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <FormLabel
-                            className="gap-2"
-                            /** prevent default here, because if not, clicking on labels will trigger submission */
-                            onClick={(e) => e.preventDefault()}>
-                            {(preset && preset.icon) && <preset.icon size={17}/>}
-                            {key}
-                          </FormLabel>
-                        </TooltipTrigger>
-                        <TooltipContent>{preset ? preset.name : key}</TooltipContent>
-                      </Tooltip>
-                      {(preset && preset.description) && <FormDescription>{preset.description}</FormDescription>}
-                      <FormMessage />
-                    </div>
-                    <FormControl className="max-sm:self-end">
-                      {(() => {
-                        if(typeof value === "boolean") {
-                          return (
-                            <Switch
-                              {...field}
-                              defaultChecked={value as boolean}
-                              onCheckedChange={field.onChange}
-                              className="cursor-pointer"/>
-                          );
-                        } else if(typeof value === "number") {
-                          return (
-                            <Input
-                              {...field}
-                              type="number"
-                              className="w-28"
-                              autoComplete="off"/>
-                          );
-                        } else {
-                          return (
-                            <Input
-                              {...field}
-                              className="w-28"
-                              autoComplete="off"/>
-                          );
-                        }
-                      })()}
-                    </FormControl>
-                  </FormItem>
-                )}
-                key={key}/>
-            );
-          })}
+              return (
+                <FormField
+                  /** @see https://github.com/react-hook-form/react-hook-form/issues/10977#issuecomment-1737917718 */
+                  defaultValue=""
+                  control={form.control}
+                  name={key}
+                  render={({ field }) => (
+                    <Item variant="outline" className="p-3">
+                      <ItemContent className="max-w-full">
+                        <ItemTitle
+                          className="gap-2 max-w-full"
+                          /** prevent default here, because if not, clicking on labels will trigger submission */
+                          onClick={(e) => e.preventDefault()}>
+                          {(preset && preset.icon) && <preset.icon size={17}/>}
+                          <Tooltip>
+                            <TooltipTrigger className="text-ellipsis overflow-hidden">{key}</TooltipTrigger>
+                            <TooltipContent>{preset ? preset.name : key}</TooltipContent>
+                          </Tooltip>
+                        </ItemTitle>
+                        {(preset && preset.description) && <ItemDescription>{preset.description}</ItemDescription>}
+                        <FormMessage />
+                      </ItemContent>
+                      <ItemActions >
+                        {(() => {
+                          if(typeof value === "boolean") {
+                            return (
+                              <Switch
+                                {...field}
+                                defaultChecked={value as boolean}
+                                onCheckedChange={field.onChange}
+                                className="cursor-pointer"/>
+                            );
+                          } else if(typeof value === "number") {
+                            return (
+                              <Input
+                                {...field}
+                                type="number"
+                                className="w-28"
+                                autoComplete="off"/>
+                            );
+                          } else {
+                            return (
+                              <Input
+                                {...field}
+                                className="w-28"
+                                autoComplete="off"/>
+                            );
+                          }
+                        })()}
+                      </ItemActions>
+                    </Item>
+                  )}
+                  key={key}/>
+              );
+            })}
+          </div>
           <div className="flex max-lg:flex-col justify-between items-center max-lg:items-start max-lg:gap-4">
             <div className="flex gap-2 [&>*]:cursor-pointer">
               <Button type="submit">保存</Button>

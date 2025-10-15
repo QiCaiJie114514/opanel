@@ -167,7 +167,7 @@ public class SpigotServer implements OPanelServer {
 
     @Override
     public void setWhitelistEnabled(boolean enabled) {
-        server.setWhitelist(enabled);
+        plugin.runTask(() -> server.setWhitelist(enabled));
     }
 
     @Override
