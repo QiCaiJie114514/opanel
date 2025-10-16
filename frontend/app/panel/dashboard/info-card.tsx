@@ -127,7 +127,7 @@ export function InfoCard({
             </div>
           </div>
           <div className="h-fit text-sm">
-            {ctx && <MinecraftText maxLines={2}>{"§7"+ base64ToString(ctx.motd)}</MinecraftText>}
+            {ctx && <MinecraftText maxLines={2} maxCharPerLine={45}>{"§7"+ base64ToString(ctx.motd)}</MinecraftText>}
           </div>
         </div>
         <div className="flex flex-col justify-between">
