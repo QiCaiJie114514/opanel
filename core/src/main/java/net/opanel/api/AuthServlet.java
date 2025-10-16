@@ -34,6 +34,9 @@ public class AuthServlet extends BaseServlet {
             obj.put("token", JwtManager.generateToken(hashedRealKey, plugin.getConfig().salt));
             sendResponse(res, obj);
         } else {
+            final String remoteHost = req.getRemoteHost();
+            final int remotePort = req.getRemotePort();
+            plugin.logger.warn("A failed login request from "+ remoteHost +":"+ remotePort);
             sendResponse(res, HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
