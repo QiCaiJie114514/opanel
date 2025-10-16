@@ -1,6 +1,6 @@
 import type { EditorRefType, WhitelistResponse } from "@/lib/types";
 import dynamic from "next/dynamic";
-import { useContext, useRef, useState, type PropsWithChildren } from "react";
+import { useRef, useState, type PropsWithChildren } from "react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import {
@@ -17,17 +17,17 @@ import { Button } from "@/components/ui/button";
 import { sendGetRequest, sendPostRequest, toastError } from "@/lib/api";
 import { setWhitelistEnabled } from "./player-utils";
 import { monacoSettingsOptions } from "@/lib/settings";
-import { WhitelistContext } from "@/contexts/api-context";
 
 const MonacoEditor = dynamic(() => import("@/components/monaco-editor"), { ssr: false });
 
 export function WhitelistSheet({
+  onDisableWhitelist,
   children,
   asChild
 }: PropsWithChildren & {
+  onDisableWhitelist?: () => void
   asChild?: boolean
 }) {
-  const { isWhitelistEnabled, setWhitelistEnabledState } = useContext(WhitelistContext);
   const [value, setValue] = useState<string>("");
   const { theme } = useTheme();
   const editorRef = useRef<EditorRefType>(null);
@@ -61,8 +61,6 @@ export function WhitelistSheet({
     }
   };
 
-  if(!isWhitelistEnabled) return <></>;
-
   return (
     <Sheet onOpenChange={(open) => open && fetchServerWhitelist()}>
       <SheetTrigger asChild={asChild}>{children}</SheetTrigger>
@@ -91,7 +89,7 @@ export function WhitelistSheet({
             className="cursor-pointer"
             onClick={async () => {
               await setWhitelistEnabled(false);
-              setWhitelistEnabledState(false);
+              onDisableWhitelist && onDisableWhitelist();
             }}>
             禁用白名单
           </Button>

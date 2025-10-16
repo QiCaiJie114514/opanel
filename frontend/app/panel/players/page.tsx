@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { WhitelistSheet } from "./whitelist-sheet";
 import { setWhitelistEnabled } from "./player-utils";
 import { emitter } from "@/lib/emitter";
-import { WhitelistContext } from "@/contexts/api-context";
 
 export default function Players() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -60,38 +59,38 @@ export default function Players() {
               {`封禁列表 (${players.filter(({ isBanned }) => isBanned).length})`}
             </TabsTrigger>
           </TabsList>
-          <WhitelistContext.Provider value={{ isWhitelistEnabled, setWhitelistEnabledState }}>
-            {
-              isWhitelistEnabled
-              ? (
-                <WhitelistSheet asChild>
-                  <Button
-                    variant="outline"
-                    className="cursor-pointer">
-                    <UserPen />
-                    编辑白名单
-                  </Button>
-                </WhitelistSheet>
-              )
-              : (
+          {
+            isWhitelistEnabled
+            ? (
+              <WhitelistSheet
+                onDisableWhitelist={() => setWhitelistEnabledState(false)}
+                asChild>
                 <Button
                   variant="outline"
-                  className="cursor-pointer"
-                  onClick={async () => {
-                    await setWhitelistEnabled(true);
-                    await fetchPlayerList();
-                    /**
-                     * We need to set the state manually here
-                     * because the whitelist state fetched from the server has a delay.
-                     */
-                    setWhitelistEnabledState(true);
-                  }}>
-                  <Contact />
-                  启用白名单
+                  className="cursor-pointer">
+                  <UserPen />
+                  编辑白名单
                 </Button>
-              )
-            }
-          </WhitelistContext.Provider>
+              </WhitelistSheet>
+            )
+            : (
+              <Button
+                variant="outline"
+                className="cursor-pointer"
+                onClick={async () => {
+                  await setWhitelistEnabled(true);
+                  await fetchPlayerList();
+                  /**
+                   * We need to set the state manually here
+                   * because the whitelist state fetched from the server has a delay.
+                   */
+                  setWhitelistEnabledState(true);
+                }}>
+                <Contact />
+                启用白名单
+              </Button>
+            )
+          }
         </div>
         <TabsContent value="player-list">
           <DataTable
