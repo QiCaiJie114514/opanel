@@ -33,9 +33,12 @@ public class Utils {
         }
     }
 
-    public static String bytesToBase64URL(byte[] bytes) {
-        final String base64 = Base64.getEncoder().encodeToString(bytes);
-        return "data:image/png;base64,"+ base64; // png by default
+    public static String stringToBase64(String str) {
+        return Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static String base64ToString(String base64) {
+        return new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8);
     }
 
     public static byte[] readFile(Path filePath) throws IOException {

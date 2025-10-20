@@ -74,7 +74,7 @@ export interface MonitorResponse {
 
 /** `/api/control/properties` */
 export interface ServerPropertiesResponse {
-  properties: string
+  properties: string // base64
 }
 
 /** `/api/gamerules` */

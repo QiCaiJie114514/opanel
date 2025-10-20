@@ -16,6 +16,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { sendGetRequest, sendPostRequest, toastError } from "@/lib/api";
 import { monacoSettingsOptions } from "@/lib/settings";
+import { transformText } from "@/lib/formatting-codes/text";
+import { base64ToString, stringToBase64 } from "@/lib/utils";
 
 const MonacoEditor = dynamic(() => import("@/components/monaco-editor"), { ssr: false });
 
@@ -31,7 +33,7 @@ export function ServerSheet({
   const fetchConfigFile = async () => {
     try {
       const res = await sendGetRequest<ServerPropertiesResponse>(`/api/control/properties`);
-      setValue(res.properties);
+      setValue(base64ToString(res.properties));
     } catch (e: any) {
       toastError(e, "无法获取server.properties", [
         [401, "未登录"],
@@ -42,7 +44,7 @@ export function ServerSheet({
 
   const saveConfigFile = async () => {
     try {
-      await sendPostRequest(`/api/control/properties`, value);
+      await sendPostRequest(`/api/control/properties`, transformText(stringToBase64(value)));
       toast.success("保存成功", { description: "重启服务器以使改动生效" });
     } catch (e: any) {
       toastError(e, "无法保存server.properties", [
