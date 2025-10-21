@@ -50,7 +50,7 @@ export default function Login() {
     
     try {
       const id = generateRandomString(5);
-      const { cram } = await sendGetRequestWithoutToken<{ cram: number }>(`/api/auth?id=${id}`);
+      const { cram } = await sendGetRequestWithoutToken<{ cram: string }>(`/api/auth?id=${id}`);
       const challengeResult = md5(hashedKey + cram); // hashed 3
 
       const res = await sendPostRequestWithoutToken<{ token: string }>("/api/auth", { id, result: challengeResult });

@@ -8,11 +8,12 @@ import net.opanel.web.BaseServlet;
 import net.opanel.web.JwtManager;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.HashMap;
 
 public class AuthServlet extends BaseServlet {
     public static final String route = "/api/auth";
-    private final HashMap<String, Integer> cramIntMap = new HashMap<>();
+    private final HashMap<String, String> cramMap = new HashMap<>();
 
     public AuthServlet(OPanel plugin) {
         super(plugin);
@@ -26,11 +27,14 @@ public class AuthServlet extends BaseServlet {
             return;
         }
 
-        final int cramRandomInt = Utils.generateRandomInt(10000, 99999);
-        cramIntMap.put(id, cramRandomInt);
+        String cramRandomHex = Utils.generateRandomHex(16);
+        while(cramMap.containsValue(cramRandomHex)) {
+            cramRandomHex = Utils.generateRandomHex(16);
+        }
+        cramMap.put(id, cramRandomHex);
 
         HashMap<String, Object> obj = new HashMap<>();
-        obj.put("cram", cramRandomInt);
+        obj.put("cram", cramRandomHex);
         sendResponse(res, obj);
     }
 
@@ -44,8 +48,8 @@ public class AuthServlet extends BaseServlet {
 
         final String challengeResult = reqBody.result; // hashed 3
         final String storedRealKey = plugin.getConfig().accessKey; // hashed 2
-        final String realResult = Utils.md5(storedRealKey + cramIntMap.get(reqBody.id)); // hashed 3
-        cramIntMap.remove(reqBody.id);
+        final String realResult = Utils.md5(storedRealKey + cramMap.get(reqBody.id)); // hashed 3
+        cramMap.remove(reqBody.id);
 
         if(challengeResult.equals(realResult)) {
             HashMap<String, Object> obj = new HashMap<>();

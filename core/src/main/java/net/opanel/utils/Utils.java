@@ -185,6 +185,22 @@ public class Utils {
         return rand.nextInt(max - min + 1) + min;
     }
 
+    public static String generateRandomHex(int byteLength) {
+        if(byteLength <= 0) {
+            throw new IllegalArgumentException("The byte length should be larger than zero.");
+        }
+
+        SecureRandom rand = new SecureRandom();
+        byte[] randBytes = new byte[byteLength];
+        rand.nextBytes(randBytes);
+
+        StringBuilder sb = new StringBuilder();
+        for(byte b : randBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
     public static String generateRandomCharSequence(int length) {
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$";
         StringBuilder result = new StringBuilder();
