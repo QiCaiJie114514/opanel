@@ -85,7 +85,7 @@ export default function Gamerules() {
       icon={<PencilRuler />}
       outerClassName="max-h-screen overflow-y-hidden"
       className="flex-1 min-h-0 flex flex-col gap-3">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-2 max-sm:flex-col max-sm:items-start">
         <span className="text-sm text-muted-foreground">编辑游戏规则后需保存以生效。</span>
         <InputGroup className="w-fit">
           <InputGroupAddon>
