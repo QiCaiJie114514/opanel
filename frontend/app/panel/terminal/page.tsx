@@ -89,7 +89,7 @@ export default function Terminal() {
     <SubPage
       title="后台"
       icon={<SquareTerminal />}
-      noScrollPage
+      outerClassName="max-h-screen overflow-y-hidden"
       className="flex-1 min-h-0 flex gap-3">
       <div className="flex-4/5 max-lg:flex-3/4 max-md:flex-2/3 min-w-0 flex flex-col gap-3">
         <TerminalConnector client={client} level={logLevel} className="flex-1"/>

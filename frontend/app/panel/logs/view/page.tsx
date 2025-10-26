@@ -79,9 +79,9 @@ export default function LogView() {
       </div>
       <MonacoEditor
         height="550px"
-        defaultLanguage="txt"
+        defaultLanguage="server-log"
         defaultValue={content}
-        theme={theme === "dark" ? "vs-dark" : "vs"}
+        theme={theme === "dark" ? "server-log-theme-dark" : "server-log-theme"}
         options={{
           readOnly: true,
           readOnlyMessage: {

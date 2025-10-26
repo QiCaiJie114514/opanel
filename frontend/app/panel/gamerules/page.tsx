@@ -81,8 +81,8 @@ export default function Gamerules() {
     <SubPage
       title="游戏规则"
       icon={<PencilRuler />}
-      className="flex-1 min-h-0 flex flex-col gap-3"
-      noScrollPage>
+      outerClassName="max-h-screen overflow-y-hidden"
+      className="flex-1 min-h-0 flex flex-col gap-3">
       <span className="text-sm text-muted-foreground">编辑游戏规则后需保存以生效。</span>
       <Form {...form}>
         <form className="min-h-0 flex flex-col gap-4" onSubmit={form.handleSubmit(handleSubmit)}>

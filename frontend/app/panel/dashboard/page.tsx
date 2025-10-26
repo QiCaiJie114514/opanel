@@ -61,8 +61,9 @@ export default function Dashboard() {
     <SubPage
       title="仪表盘"
       icon={<Gauge />}
-      noScrollPage
-      className="flex-1 min-h-0 max-xl:h-fit grid grid-rows-5 grid-cols-3 max-xl:flex flex-col gap-3 pb-20 [&>*]:p-4">
+      /*             | window maximized                         | height not enough    | for mobile layout */
+      outerClassName="min-xl:max-h-screen min-xl:overflow-y-auto max-xl-h:max-h-[850px] max-xl:!max-h-none"
+      className="flex-1 min-h-0 grid grid-rows-5 grid-cols-3 max-xl:flex flex-col gap-3 pb-20 [&>*]:p-4">
       <InfoContext.Provider value={info}>
         <MonitorContext.Provider value={monitorData}>
           <InfoCard className="row-start-1 col-span-2"/>

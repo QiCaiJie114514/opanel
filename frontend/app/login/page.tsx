@@ -25,10 +25,11 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import { sendPostRequestWithoutToken } from "@/lib/api";
+import { sendGetRequestWithoutToken, sendPostRequestWithoutToken } from "@/lib/api";
 import { Brand } from "@/components/logo";
 import { PasswordInput } from "@/components/password-input";
 import { Alert } from "@/components/alert";
+import { generateRandomString } from "@/lib/utils";
 
 const formSchema = z.object({
   accessKey: z.string().nonempty("此项不可为空"),
@@ -45,10 +46,14 @@ export default function Login() {
 
   const handleLogin = async () => {
     const accessKey = form.getValues("accessKey"); // hashed 0
-    const hashedKey = md5(accessKey); // hashed 1
+    const hashedKey = md5(md5(accessKey)); // hashed 2
     
     try {
-      const res = await sendPostRequestWithoutToken<{ token: string }>("/api/auth", { accessKey: hashedKey });
+      const id = generateRandomString(5);
+      const { cram } = await sendGetRequestWithoutToken<{ cram: string }>(`/api/auth?id=${id}`);
+      const challengeResult = md5(hashedKey + cram); // hashed 3
+
+      const res = await sendPostRequestWithoutToken<{ token: string }>("/api/auth", { id, result: challengeResult });
       setCookie("token", res.token);
       router.push("/panel");
     } catch (e: any) {

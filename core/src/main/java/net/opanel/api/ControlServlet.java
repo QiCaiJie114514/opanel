@@ -5,9 +5,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import net.opanel.OPanel;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
+import net.opanel.utils.Utils;
 import net.opanel.web.BaseServlet;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 
 public class ControlServlet extends BaseServlet {
@@ -35,7 +38,7 @@ public class ControlServlet extends BaseServlet {
         switch(reqPath.substring(1)) {
             case "properties" -> {
                 try {
-                    obj.put("properties", OPanelServer.getPropertiesContent());
+                    obj.put("properties", Utils.stringToBase64(OPanelServer.getPropertiesContent()));
                     sendResponse(res, obj);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -67,8 +70,13 @@ public class ControlServlet extends BaseServlet {
             case "reload" -> server.reload();
             case "properties" -> {
                 try {
-                    String newContent = getRequestBody(req, String.class);
-                    OPanelServer.writePropertiesContent(newContent);
+                    String properties = getRequestBody(req, String.class);
+                    if(properties == null || properties.isEmpty()) {
+                        sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
+                        return;
+                    }
+
+                    OPanelServer.writePropertiesContent(Utils.base64ToString(properties));
                 } catch (IOException e) {
                     e.printStackTrace();
                     sendResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

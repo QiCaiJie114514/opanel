@@ -33,9 +33,12 @@ public class Utils {
         }
     }
 
-    public static String bytesToBase64URL(byte[] bytes) {
-        final String base64 = Base64.getEncoder().encodeToString(bytes);
-        return "data:image/png;base64,"+ base64; // png by default
+    public static String stringToBase64(String str) {
+        return Base64.getEncoder().encodeToString(str.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public static String base64ToString(String base64) {
+        return new String(Base64.getDecoder().decode(base64), StandardCharsets.UTF_8);
     }
 
     public static byte[] readFile(Path filePath) throws IOException {
@@ -173,12 +176,36 @@ public class Utils {
         return sb.toString();
     }
 
+    public static int generateRandomInt(int min, int max) {
+        if(min > max) {
+            throw new IllegalArgumentException("Min number cannot be larger than the max number.");
+        }
+
+        SecureRandom rand = new SecureRandom();
+        return rand.nextInt(max - min + 1) + min;
+    }
+
+    public static String generateRandomHex(int byteLength) {
+        if(byteLength <= 0) {
+            throw new IllegalArgumentException("The byte length should be larger than zero.");
+        }
+
+        SecureRandom rand = new SecureRandom();
+        byte[] randBytes = new byte[byteLength];
+        rand.nextBytes(randBytes);
+
+        StringBuilder sb = new StringBuilder();
+        for(byte b : randBytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
     public static String generateRandomCharSequence(int length) {
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$";
         StringBuilder result = new StringBuilder();
-        SecureRandom rand = new SecureRandom();
         while(result.length() < length) {
-            int charIndex = rand.nextInt(chars.length());
+            int charIndex = generateRandomInt(0, chars.length() - 1);
             result.append(chars.charAt(charIndex));
         }
         return result.toString();

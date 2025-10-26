@@ -1,6 +1,6 @@
-import type { EditorRefType, ServerPropertiesResponse } from "@/lib/types";
+import type { ServerPropertiesResponse } from "@/lib/types";
 import dynamic from "next/dynamic";
-import { useRef, useState, type PropsWithChildren } from "react";
+import { useState, type PropsWithChildren } from "react";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import {
@@ -16,6 +16,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { sendGetRequest, sendPostRequest, toastError } from "@/lib/api";
 import { monacoSettingsOptions } from "@/lib/settings";
+import { transformText } from "@/lib/formatting-codes/text";
+import { base64ToString, stringToBase64 } from "@/lib/utils";
 
 const MonacoEditor = dynamic(() => import("@/components/monaco-editor"), { ssr: false });
 
@@ -27,12 +29,11 @@ export function ServerSheet({
 }) {
   const [value, setValue] = useState<string>("");
   const { theme } = useTheme();
-  const editorRef = useRef<EditorRefType>(null);
 
   const fetchConfigFile = async () => {
     try {
       const res = await sendGetRequest<ServerPropertiesResponse>(`/api/control/properties`);
-      setValue(res.properties);
+      setValue(base64ToString(res.properties));
     } catch (e: any) {
       toastError(e, "无法获取server.properties", [
         [401, "未登录"],
@@ -42,13 +43,8 @@ export function ServerSheet({
   };
 
   const saveConfigFile = async () => {
-    if(!editorRef.current) return;
-    const newValue = editorRef.current.getValue();
-
-    if(newValue === value) return;
-
     try {
-      await sendPostRequest(`/api/control/properties`, editorRef.current.getValue());
+      await sendPostRequest(`/api/control/properties`, transformText(stringToBase64(value)));
       toast.success("保存成功", { description: "重启服务器以使改动生效" });
     } catch (e: any) {
       toastError(e, "无法保存server.properties", [
@@ -70,15 +66,15 @@ export function ServerSheet({
         </SheetHeader>
         <div className="flex flex-col h-full">
           {value && <MonacoEditor
-            defaultLanguage="ini"
-            defaultValue={value}
+            defaultLanguage="properties"
+            value={value}
             theme={theme === "dark" ? "vs-dark" : "vs"}
             options={{
               minimap: { enabled: false },
               automaticLayout: true,
               ...monacoSettingsOptions
             }}
-            onMount={(editor) => editorRef.current = editor}/>}
+            onChange={(newValue) => setValue(newValue ?? "")}/>}
         </div>
         <SheetFooter>
           <span className="text-sm text-muted-foreground">需重启服务器以使改动生效。</span>

@@ -6,6 +6,7 @@ import net.opanel.OPanel;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelServer;
 import net.opanel.utils.TPS;
+import net.opanel.utils.Utils;
 import net.opanel.web.BaseServlet;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class InfoServlet extends BaseServlet {
 
         HashMap<String, Object> obj = new HashMap<>();
         obj.put("favicon", server.getFavicon() != null ? IconServlet.route : null);
-        obj.put("motd", Base64.getEncoder().encodeToString(server.getMotd().getBytes(StandardCharsets.UTF_8)));
+        obj.put("motd", Utils.stringToBase64(server.getMotd()));
         obj.put("version", server.getVersion());
         obj.put("port", server.getPort());
         obj.put("maxPlayerCount", server.getMaxPlayerCount());
@@ -80,8 +81,7 @@ public class InfoServlet extends BaseServlet {
                     return;
                 }
 
-                String decodedMotd = new String(Base64.getDecoder().decode(motd), StandardCharsets.UTF_8);
-                server.setMotd(decodedMotd);
+                server.setMotd(Utils.base64ToString(motd));
                 sendResponse(res, HttpServletResponse.SC_OK);
             } catch (IOException e) {
                 plugin.logger.error("Failed to update MOTD: " + e.getMessage());
