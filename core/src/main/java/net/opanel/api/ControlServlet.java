@@ -5,12 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import net.opanel.OPanel;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
+import net.opanel.common.OPanelServerExtended;
 import net.opanel.utils.Utils;
 import net.opanel.web.BaseServlet;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 
 public class ControlServlet extends BaseServlet {
@@ -46,6 +45,25 @@ public class ControlServlet extends BaseServlet {
                 }
                 return;
             }
+            case "code-of-conduct" -> {
+                OPanelServer server = plugin.getServer();
+                if(!(server instanceof OPanelServerExtended)) {
+                    sendResponse(res, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+                    return;
+                }
+
+                try {
+                    HashMap<String, String> codeOfConducts = ((OPanelServerExtended) server).getCodeOfConducts();
+                    codeOfConducts.replaceAll((lang, content) -> Utils.stringToBase64(content));
+
+                    obj.put("codeOfConducts", codeOfConducts);
+                    sendResponse(res, obj);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    sendResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
+                return;
+            }
         }
         sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
     }
@@ -70,7 +88,7 @@ public class ControlServlet extends BaseServlet {
             case "reload" -> server.reload();
             case "properties" -> {
                 try {
-                    String properties = getRequestBody(req, String.class);
+                    final String properties = getRequestBody(req, String.class);
                     if(properties == null || properties.isEmpty()) {
                         sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
                         return;
@@ -84,7 +102,7 @@ public class ControlServlet extends BaseServlet {
                 }
             }
             case "world" -> {
-                String saveName = req.getParameter("save");
+                final String saveName = req.getParameter("save");
                 if(saveName == null) {
                     sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
                     return;
@@ -102,8 +120,68 @@ public class ControlServlet extends BaseServlet {
                     return;
                 }
             }
+            case "code-of-conduct" -> {
+                if(!(server instanceof OPanelServerExtended)) {
+                    sendResponse(res, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+                    return;
+                }
+
+                try {
+                    final String lang = req.getParameter("lang");
+                    final String content = getRequestBody(req, String.class);
+                    if(lang == null) {
+                        sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
+                        return;
+                    }
+
+                    ((OPanelServerExtended) server).updateOrCreateCodeOfConduct(lang, (content != null && !content.isEmpty()) ? Utils.base64ToString(content) : "");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    sendResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                }
+                return;
+            }
             default -> {
                 sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+        }
+        sendResponse(res, HttpServletResponse.SC_OK);
+    }
+
+    protected void doDelete(HttpServletRequest req, HttpServletResponse res) {
+        if(!authCookie(req)) {
+            sendResponse(res, HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        final String reqPath = req.getPathInfo();
+        final OPanelServer server = plugin.getServer();
+
+        if(reqPath == null || reqPath.equals("/")) {
+            sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        switch(reqPath.substring(1)) {
+            case "code-of-conduct" -> {
+                if(!(server instanceof OPanelServerExtended)) {
+                    sendResponse(res, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+                    return;
+                }
+
+                try {
+                    final String lang = req.getParameter("lang");
+                    if(lang == null) {
+                        sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
+                        return;
+                    }
+
+                    ((OPanelServerExtended) server).removeCodeOfConduct(lang);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    sendResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+                }
                 return;
             }
         }

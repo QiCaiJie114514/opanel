@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useContext } from "react";
 import { deleteCookie } from "cookies-next/client";
-import { Blocks, BookText, Earth, Gauge, Info, LogOut, PencilRuler, ScrollText, Settings, SquareArrowOutUpRight, SquareTerminal, Users } from "lucide-react";
+import { compare } from "semver";
+import { Blocks, BookText, Earth, Gauge, HeartHandshake, Info, LogOut, PencilRuler, ScrollText, Settings, SquareArrowOutUpRight, SquareTerminal, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -22,6 +24,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
 import { minecraftAE } from "@/lib/fonts";
 import { Logo } from "./logo";
+import { VersionContext } from "@/contexts/api-context";
 
 const serverGroupItems = [
   {
@@ -61,6 +64,12 @@ const managementGroupItems = [
     name: "日志",
     url: "/panel/logs",
     icon: ScrollText
+  },
+  {
+    name: "行为准则",
+    url: "/panel/code-of-conduct",
+    icon: HeartHandshake,
+    minVersion: "1.21.9"
   }
 ];
 
@@ -85,11 +94,14 @@ const helpGroupItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const versionCtx = useContext(VersionContext);
 
   const handleLogout = () => {
     deleteCookie("token");
     window.location.href = "/login";
   };
+
+  if(!versionCtx) return <></>;
 
   return (
     <Sidebar collapsible="icon">
@@ -122,7 +134,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>管理</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {managementGroupItems.map((item, i) => (
+              {managementGroupItems.map((item, i) => (!item.minVersion || (item.minVersion && compare(versionCtx?.version, item.minVersion) >= 0)) && (
                 <SidebarMenuItem key={i}>
                   <SidebarMenuButton
                     isActive={pathname.startsWith(item.url)}

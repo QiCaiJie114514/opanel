@@ -8,9 +8,7 @@ export interface Property {
   icon?: LucideIcon
 }
 
-export interface ServerProperties {
-  [key: string]: boolean | number | string
-}
+export type ServerProperties = Record<string, boolean | number | string>;
 
 export function generateFormSchema(properties: ServerProperties): z.ZodObject<z.ZodRawShape> {
   const schemeList: z.ZodRawShape = {};

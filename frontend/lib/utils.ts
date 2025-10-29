@@ -1,5 +1,6 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import locale from "locale-codes";
 import { GameMode } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
@@ -78,7 +79,7 @@ export function getCurrentArgumentNumber(str: string, cursor: number): number {
   return arr.length;
 }
 
-export function objectToMap<V>(obj: { [key: string]: V }): Map<string, V> {
+export function objectToMap<V>(obj: Record<string, V>): Map<string, V> {
   const map = new Map<string, V>();
   for(const key in obj) {
     map.set(key, obj[key]);
@@ -115,4 +116,9 @@ export function base64ToString(base64: string): string {
 export function isNumeric(str: string): boolean {
   if(str === "") return false;
   return !Number.isNaN(Number(str));
+}
+
+export function validateLocaleCode(localeCode: string): boolean {
+  if(localeCode === "") return false;
+  return locale.getByTag(localeCode.toLowerCase().replaceAll("_", "-")) !== undefined;
 }

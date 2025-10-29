@@ -9,9 +9,7 @@ export interface Gamerule {
   icon?: LucideIcon
 }
 
-export interface ServerGamerules {
-  [key: string]: boolean | number
-}
+export type ServerGamerules = Record<string, boolean | number>;
 
 export function generateFormSchema(gamerules: ServerGamerules): z.ZodObject<z.ZodRawShape> {
   const schemeList: z.ZodRawShape = {};

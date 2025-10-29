@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { base64ToString, cn } from "@/lib/utils";
 import { apiUrl, sendPostRequest } from "@/lib/api";
-import { InfoContext } from "@/contexts/api-context";
+import { InfoContext, VersionContext } from "@/contexts/api-context";
 import { MinecraftText } from "@/components/mc-text";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -105,6 +105,7 @@ export function InfoCard({
 }: Readonly<{
   className?: string
 }>) {
+  const versionCtx = useContext(VersionContext);
   const ctx = useContext(InfoContext);
 
   return (
@@ -119,7 +120,7 @@ export function InfoCard({
           <div className="flex max-lg:flex-col gap-4 max-lg:gap-1 [&>*]:space-x-2">
             <div>
               <span className="font-semibold text-nowrap">版本:</span>
-              <span>{`${ctx?.serverType} ${ctx?.version}`}</span>
+              <span>{`${versionCtx?.serverType} ${versionCtx?.version}`}</span>
             </div>
             <div>
               <span className="font-semibold text-nowrap">端口:</span>

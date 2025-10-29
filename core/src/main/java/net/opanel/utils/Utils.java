@@ -8,6 +8,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -229,5 +230,16 @@ public class Utils {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    public static boolean validateLocaleCode(String localeCode) {
+        if(localeCode == null || localeCode.isEmpty()) {
+            return false;
+        }
+
+        final String standardCode = localeCode.toLowerCase().replaceAll("_", "-");
+        Locale locale = Locale.forLanguageTag(standardCode);
+        String language = locale.getLanguage();
+        return !language.isEmpty() && !language.equals("und");
     }
 }
