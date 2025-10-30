@@ -6,7 +6,7 @@ export type APIResponse<T> = {
   error: string
 } & T;
 
-export type ServerType = "Bukkit" | "Fabric" | "Forge" | "Neoforge" | "Folia";
+export type ServerType = "Bukkit" | "Spigot" | "Paper" | "Fabric" | "Forge" | "Neoforge" | "Folia";
 
 export enum GameMode {
   ADVENTURE = "adventure",

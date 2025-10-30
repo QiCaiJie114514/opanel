@@ -226,11 +226,7 @@ public class SpigotServer implements OPanelServerExtended {
 
     @Override
     public void reload() {
-        if(getServerType() == ServerType.PAPER) {
-            sendServerCommand("reload confirm");
-        } else {
-            sendServerCommand("reload");
-        }
+        plugin.runTask(server::reload);
     }
 
     @Override

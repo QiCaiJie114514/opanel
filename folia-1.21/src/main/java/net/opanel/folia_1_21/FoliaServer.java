@@ -9,6 +9,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
 
+import javax.naming.OperationNotSupportedException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -220,8 +221,7 @@ public class FoliaServer implements OPanelServer {
 
     @Override
     public void reload() {
-        // Folia supports Paper's reload confirm command
-        sendServerCommand("reload confirm");
+        throw new UnsupportedOperationException("Folia doesn't support reload operation");
     }
 
     @Override

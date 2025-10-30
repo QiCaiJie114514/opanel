@@ -23,6 +23,7 @@ function ControlButtonGroup({
 }: {
   className?: string
 }) {
+  const versionCtx = useContext(VersionContext);
   const ctx = useContext(InfoContext);
   const [isReloadingServer, setIsReloadingServer] = useState(false);
   const [isStoppingServer, setIsStoppingServer] = useState(false);
@@ -59,13 +60,21 @@ function ControlButtonGroup({
         variant="ghost"
         size="icon"
         title="重载服务器"
-        disabled={isReloadingServer}
+        disabled={versionCtx?.serverType === "Folia" || isReloadingServer}
         onClick={() => {
           setIsReloadingServer(true);
           toast.promise(sendPostRequest("/api/control/reload"), {
             loading: "正在重载服务器...",
             success: () => {
               setIsReloadingServer(false);
+              if(
+                versionCtx?.serverType === "Bukkit"
+                || versionCtx?.serverType === "Spigot"
+                || versionCtx?.serverType === "Paper"
+                || versionCtx?.serverType === "Folia"
+              ) {
+                window.location.reload();
+              }
               return {
                 message: "重载完毕"
               };

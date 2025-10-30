@@ -24,6 +24,9 @@ export default function PanelLayout({
   const fetchVersionInfo = async () => {
     try {
       const res = await sendGetRequest<VersionResponse>("/api/version");
+      if(res.version.split(".").length === 2) {
+        res.version += ".0";
+      }
       setVersionInfo(res);
     } catch (error) {
       console.error("Error fetching version info:", error);

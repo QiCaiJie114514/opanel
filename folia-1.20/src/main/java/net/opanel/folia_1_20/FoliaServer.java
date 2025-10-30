@@ -220,8 +220,7 @@ public class FoliaServer implements OPanelServer {
 
     @Override
     public void reload() {
-        // Folia supports Paper's reload confirm command
-        sendServerCommand("reload confirm");
+        throw new UnsupportedOperationException("Folia doesn't support reload operation");
     }
 
     @Override
