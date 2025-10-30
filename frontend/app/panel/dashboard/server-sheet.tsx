@@ -62,7 +62,7 @@ export function ServerSheet({
         } else if(isNumeric(value)) {
           propertiesObj[key] = Number(value);
         } else {
-          propertiesObj[key] = value;
+          propertiesObj[key] = value.replaceAll("\n", "\\n");
         }
       }
 
@@ -80,7 +80,11 @@ export function ServerSheet({
     let rawProperties = "";
     for(const key in data) {
       const value = data[key];
-      rawProperties += `${key}=${value}\n`;
+      if(typeof value === "string") {
+        rawProperties += `${key}=${value.replaceAll("\n", "\\n")}\n`;
+      } else {
+        rawProperties += `${key}=${value}\n`;
+      }
     }
 
     try {

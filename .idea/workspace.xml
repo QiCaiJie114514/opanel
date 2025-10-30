@@ -4,29 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="90587dcf-15dc-47d2-9c29-bb98b36eacd0" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/VersionServlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/common/OPanelServerExtended.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/ControlServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/ControlServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/InfoServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/InfoServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/utils/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/utils/Utils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/web/WebServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/web/WebServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/panel/dashboard/info-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/dashboard/info-card.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/panel/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/panel/settings/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/settings/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/components/app-sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/components/app-sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/contexts/api-context.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/contexts/api-context.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/gamerules/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/gamerules/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/server-config/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/server-config/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/settings.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/settings.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/utils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
-    </list>
+    <list default="true" id="90587dcf-15dc-47d2-9c29-bb98b36eacd0" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
