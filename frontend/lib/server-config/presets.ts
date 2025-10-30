@@ -1,5 +1,5 @@
 import type { Property } from ".";
-import { AppWindow, ArrowLeftRight, CirclePause, Contact, Earth, EthernetPort, FileArchive, FilePen, KeyRound, Link, Link2, ListX, Megaphone, Package, PackageCheck, PackageOpen, PackageSearch, Plane, Radius, Server, ShieldCheck, Sprout, Square, TentTree, Timer, Users, Waypoints } from "lucide-react";
+import { AppWindow, ArrowLeftRight, CirclePause, Contact, Earth, EthernetPort, FileArchive, FileKey, FilePen, HeartHandshake, KeyRound, Link, Link2, ListX, Lock, Megaphone, Package, PackageCheck, PackageOpen, PackageSearch, Plane, Radius, Server, ShieldCheck, Sprout, Square, SquareAsterisk, TentTree, Timer, Users, Waypoints } from "lucide-react";
 
 /** @see https://zh.minecraft.wiki/w/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F */
 const serverPropertiesPresets: Property[] = [
@@ -42,6 +42,12 @@ const serverPropertiesPresets: Property[] = [
     id: "difficulty",
     description: "定义服务器的游戏难度",
     type: "string"
+  },
+  {
+    id: "enable-code-of-conduct",
+    description: "是否启用行为准则功能",
+    type: "boolean",
+    icon: HeartHandshake
   },
   {
     id: "enable-command-block",
@@ -168,13 +174,37 @@ const serverPropertiesPresets: Property[] = [
     id: "management-server-host",
     description: "用于设置Minecraft服务器管理协议监听的主机",
     type: "string",
-    icon: AppWindow
+    icon: Server
   },
   {
     id: "management-server-port",
     description: "用于设置Minecraft服务器管理协议监听的端口号",
     type: "number",
-    icon: AppWindow
+    icon: EthernetPort
+  },
+  {
+    id: "management-server-secret",
+    description: "允许客户端提供包含服务器特定密钥的认证标头，该密钥是长度为40的字母及数字",
+    type: "number",
+    icon: SquareAsterisk
+  },
+  {
+    id: "management-server-tls-enabled",
+    description: "用于设置Minecraft服务器管理协议是否启用TLS",
+    type: "boolean",
+    icon: Lock
+  },
+  {
+    id: "management-server-tls-keystore",
+    description: "用于设置Minecraft服务器管理协议的TLS密钥库文件路径",
+    type: "boolean",
+    icon: FileKey
+  },
+  {
+    id: "management-server-tls-keystore-password",
+    description: "用于设置Minecraft服务器管理协议TLS密钥库文件的密码",
+    type: "boolean",
+    icon: KeyRound
   },
   {
     id: "max-build-height",
