@@ -170,7 +170,7 @@ export function ServerSheet({
             <SheetFooter>
               <span className="text-sm text-muted-foreground">需重启服务器以使改动生效。</span>
               <span className="text-sm text-muted-foreground">
-                服务器配置属性描述信息均来自<Link href="https://zh.minecraft.wiki/w/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F" target="_blank">Minecraft Wiki</Link>。
+                服务器配置属性描述信息均来自<Link href="https://zh.minecraft.wiki/w/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F" target="_blank">Minecraft Wiki</Link>与<Link href="https://docs.papermc.io/paper/reference/server-properties">Paper文档</Link>。
               </span>
               <SheetClose asChild>
                 <Button type="submit" className="cursor-pointer">保存设置</Button>
