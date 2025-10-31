@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import net.opanel.OPanel;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
-import net.opanel.common.OPanelServerExtended;
+import net.opanel.common.features.CodeOfConductFeature;
 import net.opanel.utils.Utils;
 import net.opanel.web.BaseServlet;
 
@@ -27,6 +27,8 @@ public class ControlServlet extends BaseServlet {
         }
 
         final String reqPath = req.getPathInfo();
+        final OPanelServer server = plugin.getServer();
+
         HashMap<String, Object> obj = new HashMap<>();
 
         if(reqPath == null || reqPath.equals("/")) {
@@ -46,14 +48,13 @@ public class ControlServlet extends BaseServlet {
                 return;
             }
             case "code-of-conduct" -> {
-                OPanelServer server = plugin.getServer();
-                if(!(server instanceof OPanelServerExtended)) {
+                if(!(server instanceof CodeOfConductFeature)) {
                     sendResponse(res, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
                     return;
                 }
 
                 try {
-                    HashMap<String, String> codeOfConducts = ((OPanelServerExtended) server).getCodeOfConducts();
+                    HashMap<String, String> codeOfConducts = ((CodeOfConductFeature) server).getCodeOfConducts();
                     codeOfConducts.replaceAll((lang, content) -> Utils.stringToBase64(content));
 
                     obj.put("codeOfConducts", codeOfConducts);
@@ -121,7 +122,7 @@ public class ControlServlet extends BaseServlet {
                 }
             }
             case "code-of-conduct" -> {
-                if(!(server instanceof OPanelServerExtended)) {
+                if(!(server instanceof CodeOfConductFeature)) {
                     sendResponse(res, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
                     return;
                 }
@@ -134,7 +135,7 @@ public class ControlServlet extends BaseServlet {
                         return;
                     }
 
-                    ((OPanelServerExtended) server).updateOrCreateCodeOfConduct(lang, (content != null && !content.isEmpty()) ? Utils.base64ToString(content) : "");
+                    ((CodeOfConductFeature) server).updateOrCreateCodeOfConduct(lang, (content != null && !content.isEmpty()) ? Utils.base64ToString(content) : "");
                 } catch (IOException e) {
                     e.printStackTrace();
                     sendResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -165,7 +166,7 @@ public class ControlServlet extends BaseServlet {
 
         switch(reqPath.substring(1)) {
             case "code-of-conduct" -> {
-                if(!(server instanceof OPanelServerExtended)) {
+                if(!(server instanceof CodeOfConductFeature)) {
                     sendResponse(res, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
                     return;
                 }
@@ -177,7 +178,7 @@ public class ControlServlet extends BaseServlet {
                         return;
                     }
 
-                    ((OPanelServerExtended) server).removeCodeOfConduct(lang);
+                    ((CodeOfConductFeature) server).removeCodeOfConduct(lang);
                 } catch (IOException e) {
                     e.printStackTrace();
                     sendResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());

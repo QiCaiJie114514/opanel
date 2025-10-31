@@ -2,6 +2,7 @@ package net.opanel.spigot_1_21_9;
 
 import net.opanel.ServerType;
 import net.opanel.common.*;
+import net.opanel.common.features.CodeOfConductFeature;
 import net.opanel.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -13,12 +14,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class SpigotServer implements OPanelServerExtended {
+public class SpigotServer implements OPanelServer, CodeOfConductFeature {
     private static final Path serverIconPath = Paths.get("").resolve("server-icon.png");
-    private static final Path codeOfConductPath = Paths.get("").resolve("codeofconduct");
 
     private final Main plugin;
     private final Server server;
@@ -237,46 +236,5 @@ public class SpigotServer implements OPanelServerExtended {
     @Override
     public long getIngameTime() {
         return server.getWorlds().getFirst().getTime();
-    }
-
-    @Override
-    public HashMap<String, String> getCodeOfConducts() throws IOException {
-        HashMap<String, String> list = new HashMap<>();
-        if(!Files.exists(codeOfConductPath)) {
-            Files.createDirectory(codeOfConductPath);
-        }
-
-        try(Stream<Path> stream = Files.list(codeOfConductPath)) {
-            stream.filter(item -> (
-                    !Files.isDirectory(item)
-                    && item.toString().endsWith(".txt")
-                    && Utils.validateLocaleCode(item.getFileName().toString().replace(".txt", ""))
-            ))
-                    .forEach(item -> {
-                        try {
-                            final String lang = item.getFileName().toString().replace(".txt", "");
-                            final String content = Utils.readTextFile(item);
-                            list.put(lang, content);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-        }
-        return list;
-    }
-
-    @Override
-    public void updateOrCreateCodeOfConduct(String lang, String content) throws IOException {
-        Path filePath = codeOfConductPath.resolve(lang +".txt");
-        if(!Files.exists(filePath)) {
-            Files.createFile(filePath);
-        }
-        Utils.writeTextFile(filePath, content);
-    }
-
-    @Override
-    public void removeCodeOfConduct(String lang) throws IOException {
-        Path filePath = codeOfConductPath.resolve(lang +".txt");
-        Files.deleteIfExists(filePath);
     }
 }
