@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { base64ToString, cn } from "@/lib/utils";
 import { apiUrl, sendPostRequest } from "@/lib/api";
-import { InfoContext, VersionContext } from "@/contexts/api-context";
+import { InfoContext, MonitorContext, VersionContext } from "@/contexts/api-context";
 import { MinecraftText } from "@/components/mc-text";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -117,7 +117,9 @@ export function InfoCard({
 }>) {
   const versionCtx = useContext(VersionContext);
   const ctx = useContext(InfoContext);
+  const monitorCtx = useContext(MonitorContext);
   const faviconRef = useRef<HTMLImageElement>(null);
+  const warningState = monitorCtx[monitorCtx.length - 1].cpu >= 80 || monitorCtx[monitorCtx.length - 1].tps <= 16;
 
   return (
     <Card className={cn(className, "flex flex-col rounded-md max-lg:gap-3")}>
@@ -154,9 +156,9 @@ export function InfoCard({
           </div>
         </div>
         <div className="flex flex-col justify-between">
-          <Badge className="self-end max-lg:hidden" variant="outline">
-            <div className={cn("w-2 h-2 rounded-full", ctx ? "bg-green-600" : "bg-red-700")}/>
-            {ctx ? "正在运行" : "未运行"}
+          <Badge className="self-end max-lg:hidden cursor-default" variant="outline">
+            <div className={cn("w-2 h-2 rounded-full", ctx ? (warningState ? "bg-yellow-600" : "bg-green-600") : "bg-red-700")}/>
+            {ctx ? (warningState ? "状态异常" : "正在运行") : "未运行"}
           </Badge>
           <ControlButtonGroup className="self-end max-lg:hidden"/>
         </div>
