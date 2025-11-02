@@ -256,25 +256,30 @@ public class ForgeServer implements OPanelServer {
 
     @Override
     public void setGamerules(HashMap<String, Object> gamerules) {
+        HashMap<String, Object> currentGamerules = getGamerules();
         final GameRules gameRulesObj = server.getGameRules();
         gameRulesObj.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
             @Override
             @SuppressWarnings("unchecked")
             public <T extends GameRules.Value<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
                 GameRules.GameRuleTypeVisitor.super.visit(key, type);
-                gamerules.forEach((ruleName, value) -> {
-                    if(value == null) return;
-                    if(key.getId().equals(ruleName)) {
-                        if(value instanceof Boolean) {
-                            gameRulesObj.getRule(key).setFrom((T) new GameRules.BooleanValue((GameRules.Type<GameRules.BooleanValue>) type, (boolean) value), server);
-                        } else if(value instanceof Number) {
-                            gameRulesObj.getRule(key).setFrom((T) new GameRules.IntegerValue((GameRules.Type<GameRules.IntegerValue>) type, Double.valueOf((double) value).intValue()), server);
-                        } else if(value instanceof String) {
-                            // Use command to set gamerule
-                            sendServerCommand("gamerule "+ ruleName +" "+ value);
-                        }
-                    }
-                });
+
+                final String ruleName = key.getId();
+                final Object value = gamerules.get(ruleName);
+                if(value == null) return;
+                final Object currentValue = currentGamerules.get(ruleName);
+                if(value.equals(currentValue)) return;
+
+                if(value instanceof Boolean) {
+                    gameRulesObj.getRule(key).setFrom((T) new GameRules.BooleanValue((GameRules.Type<GameRules.BooleanValue>) type, (boolean) value), server);
+                } else if(value instanceof Number) {
+                    int n = (int) ((double) value);
+                    if(n == (int) currentValue) return;
+                    gameRulesObj.getRule(key).setFrom((T) new GameRules.IntegerValue((GameRules.Type<GameRules.IntegerValue>) type, n), server);
+                } else if(value instanceof String) {
+                    // Use command to set gamerule
+                    sendServerCommand("gamerule "+ ruleName +" "+ value);
+                }
             }
         });
     }

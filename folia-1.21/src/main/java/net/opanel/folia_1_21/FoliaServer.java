@@ -203,16 +203,22 @@ public class FoliaServer implements OPanelServer {
     @Override
     @SuppressWarnings("unchecked")
     public void setGamerules(HashMap<String, Object> gamerules) {
+        HashMap<String, Object> currentGamerules = getGamerules();
         plugin.runTask(() -> {
             final World world = server.getWorlds().getFirst();
             gamerules.forEach((key, value) -> {
                 if(value == null) return;
+                final Object currentValue = currentGamerules.get(key);
+                if(value.equals(currentValue)) return;
                 GameRule<?> rule = GameRule.getByName(key);
                 if(rule == null) return;
+
                 if(value instanceof Boolean) {
                     world.setGameRule((GameRule<Boolean>) rule, (Boolean) value);
                 } else if(value instanceof Number) {
-                    world.setGameRule((GameRule<Integer>) rule, Double.valueOf((double) value).intValue());
+                    int n = (int) ((double) value);
+                    if(n == (int) currentValue) return;
+                    world.setGameRule((GameRule<Integer>) rule, n);
                 } else if(value instanceof String) {
                     world.setGameRule((GameRule<String>) rule, (String) value);
                 }
