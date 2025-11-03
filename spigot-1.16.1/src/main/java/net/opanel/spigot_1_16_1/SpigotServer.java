@@ -217,7 +217,7 @@ public class SpigotServer implements OPanelServer {
     public void setGamerules(HashMap<String, Object> gamerules) {
         HashMap<String, Object> currentGamerules = getGamerules();
         plugin.runTask(() -> {
-            final World world = server.getWorlds().getFirst();
+            final World world = server.getWorlds().get(0);
             gamerules.forEach((key, value) -> {
                 if(value == null) return;
                 final Object currentValue = currentGamerules.get(key);
