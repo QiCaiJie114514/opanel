@@ -94,16 +94,6 @@ public class ForgeServer implements OPanelServer, CodeOfConductFeature {
         // Directly modify motd in server.properties
         String formatted = motd.replaceAll("\n", Matcher.quoteReplacement("\\n"));
         OPanelServer.writePropertiesContent(OPanelServer.getPropertiesContent().replaceAll("motd=.+", Matcher.quoteReplacement("motd="+ formatted)));
-        // Directly modify motd in memory
-        final DedicatedServerProperties properties = dedicatedServer.getProperties();
-        try {
-            // Force modifying motd field through reflect because it is final
-            Field motdField = properties.getClass().getDeclaredField("motd");
-            motdField.setAccessible(true);
-            motdField.set(properties, motd);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
