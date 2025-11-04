@@ -6,29 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="90587dcf-15dc-47d2-9c29-bb98b36eacd0" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/PlayersServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/PlayersServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/common/OPanelServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/common/OPanelServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fabric-1.21.9/src/main/java/net/opanel/fabric_1_21_9/FabricServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/fabric-1.21.9/src/main/java/net/opanel/fabric_1_21_9/FabricServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/folia-1.20/src/main/java/net/opanel/folia_1_20/FoliaServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/folia-1.20/src/main/java/net/opanel/folia_1_20/FoliaServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/folia-1.21/src/main/java/net/opanel/folia_1_21/FoliaServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/folia-1.21/src/main/java/net/opanel/folia_1_21/FoliaServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.19.4/src/main/java/net/opanel/forge_1_19_4/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.19.4/src/main/java/net/opanel/forge_1_19_4/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.20.1/src/main/java/net/opanel/forge_1_20_1/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.20.1/src/main/java/net/opanel/forge_1_20_1/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.20.2/src/main/java/net/opanel/forge_1_20_2/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.20.2/src/main/java/net/opanel/forge_1_20_2/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.20.3/src/main/java/net/opanel/forge_1_20_3/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.20.3/src/main/java/net/opanel/forge_1_20_3/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.20.6/src/main/java/net/opanel/forge_1_20_6/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.20.6/src/main/java/net/opanel/forge_1_20_6/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.3/src/main/java/net/opanel/forge_1_21_3/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.3/src/main/java/net/opanel/forge_1_21_3/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.5/src/main/java/net/opanel/forge_1_21_5/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.5/src/main/java/net/opanel/forge_1_21_5/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.8/src/main/java/net/opanel/forge_1_21_8/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.8/src/main/java/net/opanel/forge_1_21_8/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.9/src/main/java/net/opanel/forge_1_21_9/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.9/src/main/java/net/opanel/forge_1_21_9/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21/src/main/java/net/opanel/forge_1_21/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21/src/main/java/net/opanel/forge_1_21/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/panel/players/columns.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/players/columns.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/panel/players/player-utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/players/player-utils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/utils.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.16.1/src/main/java/net/opanel/spigot_1_16_1/SpigotServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.16.1/src/main/java/net/opanel/spigot_1_16_1/SpigotServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.19.4/src/main/java/net/opanel/spigot_1_19_4/SpigotServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.19.4/src/main/java/net/opanel/spigot_1_19_4/SpigotServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.20/src/main/java/net/opanel/spigot_1_20/SpigotServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.20/src/main/java/net/opanel/spigot_1_20/SpigotServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.21.9/src/main/java/net/opanel/spigot_1_21_9/SpigotServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.21.9/src/main/java/net/opanel/spigot_1_21_9/SpigotServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/spigot-1.21/src/main/java/net/opanel/spigot_1_21/SpigotServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/spigot-1.21/src/main/java/net/opanel/spigot_1_21/SpigotServer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

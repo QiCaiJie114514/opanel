@@ -43,6 +43,7 @@ export function ServerSheet({
   asChild?: boolean
 }) {
   const [properties, setProperties] = useState<ServerProperties>({});
+  const [hasChanged, setChanged] = useState<boolean>(false);
   const propertiesMap = useMemo(() => objectToMap(properties), [properties]);
   const formSchema = useMemo(() => generateFormSchema(properties), [properties]);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -90,6 +91,7 @@ export function ServerSheet({
     try {
       await sendPostRequest(`/api/control/properties`, transformText(stringToBase64(rawProperties)));
       toast.success("保存成功", { description: "重启服务器以使改动生效" });
+      setChanged(false);
     } catch (e: any) {
       toastError(e, "无法保存server.properties", [
         [401, "未登录"],
@@ -103,7 +105,7 @@ export function ServerSheet({
       <SheetTrigger asChild={asChild}>{children}</SheetTrigger>
       <SheetContent className="min-md:min-w-[450px] max-sm:w-full">
         <Form {...form}>
-          <form className="min-h-0 flex flex-col gap-4" onSubmit={form.handleSubmit(handleSubmit)}>
+          <form className="min-h-0 flex flex-col gap-4" onSubmit={form.handleSubmit(handleSubmit)} onChange={() => setChanged(true)}>
             <SheetHeader>
               <SheetTitle>编辑 server.properties</SheetTitle>
               <SheetDescription>
@@ -173,7 +175,12 @@ export function ServerSheet({
                 服务器配置属性描述信息均来自<Link href="https://zh.minecraft.wiki/w/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F" target="_blank">Minecraft Wiki</Link>与<Link href="https://docs.papermc.io/paper/reference/server-properties">Paper文档</Link>。
               </span>
               <SheetClose asChild>
-                <Button type="submit" className="cursor-pointer">保存设置</Button>
+                <Button
+                  type="submit"
+                  className="cursor-pointer"
+                  disabled={!hasChanged}>
+                  保存设置
+                </Button>
               </SheetClose>
             </SheetFooter>
           </form>

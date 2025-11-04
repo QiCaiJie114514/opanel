@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Info, KeyRound } from "lucide-react";
@@ -30,6 +30,7 @@ import { Brand } from "@/components/logo";
 import { PasswordInput } from "@/components/password-input";
 import { Alert } from "@/components/alert";
 import { generateRandomString } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
 
 const formSchema = z.object({
   accessKey: z.string().nonempty("此项不可为空"),
@@ -43,8 +44,10 @@ export default function Login() {
       accessKey: ""
     }
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleLogin = async () => {
+    setLoading(true);
     const accessKey = form.getValues("accessKey"); // hashed 0
     const hashedKey = md5(md5(accessKey)); // hashed 2
     
@@ -57,6 +60,7 @@ export default function Login() {
       setCookie("token", res.token);
       router.push("/panel");
     } catch (e: any) {
+      setLoading(false);
       if(e.status === 401) {
         form.setError("accessKey", { message: "访问密钥错误" });
       }
@@ -127,7 +131,9 @@ export default function Login() {
         <CardFooter>
           <Button
             className="w-full cursor-pointer"
+            disabled={loading}
             onClick={() => handleLogin()}>
+            {loading && <Spinner />}
             登录
           </Button>
         </CardFooter>
