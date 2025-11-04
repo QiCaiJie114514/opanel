@@ -15,6 +15,11 @@ public class AuthServlet extends BaseServlet {
     public static final String route = "/api/auth";
     private final HashMap<String, String> cramMap = new HashMap<>();
 
+    private static final int maxTries = 5;
+    private static final long bannedPeriod = 10 * 60 * 1000; // 10 min
+    private final HashMap<String, Integer> failedRecords = new HashMap<>();
+    private final HashMap<String, Long> temporaryBannedRecords = new HashMap<>(); // ms
+
     public AuthServlet(OPanel plugin) {
         super(plugin);
     }
@@ -25,6 +30,21 @@ public class AuthServlet extends BaseServlet {
         if(id == null) {
             sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
             return;
+        }
+
+        final String remoteHost = req.getRemoteHost();
+        if(System.currentTimeMillis() < temporaryBannedRecords.getOrDefault(remoteHost, 0L)) {
+            sendResponse(res, HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+        if(failedRecords.getOrDefault(remoteHost, 0) >= maxTries) {
+            temporaryBannedRecords.put(remoteHost, System.currentTimeMillis() + bannedPeriod);
+            failedRecords.put(remoteHost, 0);
+            sendResponse(res, HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+        if(temporaryBannedRecords.containsKey(remoteHost) && System.currentTimeMillis() >= temporaryBannedRecords.get(remoteHost)) {
+            temporaryBannedRecords.remove(remoteHost);
         }
 
         String cramRandomHex = Utils.generateRandomHex(16);
@@ -46,6 +66,8 @@ public class AuthServlet extends BaseServlet {
             return;
         }
 
+        final String remoteHost = req.getRemoteHost();
+        final int remotePort = req.getRemotePort();
         final String challengeResult = reqBody.result; // hashed 3
         final String storedRealKey = plugin.getConfig().accessKey; // hashed 2
         final String realResult = Utils.md5(storedRealKey + cramMap.get(reqBody.id)); // hashed 3
@@ -54,11 +76,17 @@ public class AuthServlet extends BaseServlet {
         if(challengeResult.equals(realResult)) {
             HashMap<String, Object> obj = new HashMap<>();
             obj.put("token", JwtManager.generateToken(storedRealKey, plugin.getConfig().salt));
+            failedRecords.remove(remoteHost);
             sendResponse(res, obj);
         } else {
-            final String remoteHost = req.getRemoteHost();
-            final int remotePort = req.getRemotePort();
-            plugin.logger.warn("A failed login request from "+ remoteHost +":"+ remotePort);
+            final int current = failedRecords.getOrDefault(remoteHost, 0);
+            failedRecords.put(remoteHost, current + 1);
+            if(current + 1 >= maxTries) {
+                temporaryBannedRecords.put(remoteHost, System.currentTimeMillis() + bannedPeriod);
+                failedRecords.put(remoteHost, 0);
+            }
+
+            plugin.logger.warn("A failed login request from "+ remoteHost +":"+ remotePort +" (Failed for "+ (current + 1) +" times)");
             sendResponse(res, HttpServletResponse.SC_UNAUTHORIZED);
         }
     }

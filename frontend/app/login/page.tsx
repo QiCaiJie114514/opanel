@@ -45,6 +45,7 @@ export default function Login() {
     }
   });
   const [loading, setLoading] = useState<boolean>(false);
+  const [banned, setBanned] = useState<boolean>(false);
 
   const handleLogin = async () => {
     setLoading(true);
@@ -61,8 +62,14 @@ export default function Login() {
       router.push("/panel");
     } catch (e: any) {
       setLoading(false);
-      if(e.status === 401) {
-        form.setError("accessKey", { message: "访问密钥错误" });
+      switch(e.status) {
+        case 401:
+          form.setError("accessKey", { message: "访问密钥错误" });
+          break;
+        case 403:
+          setBanned(true);
+          form.setError("accessKey", { message: "验证失败次数过多，请稍后再试" });
+          break;
       }
     }
   };
@@ -131,7 +138,7 @@ export default function Login() {
         <CardFooter>
           <Button
             className="w-full cursor-pointer"
-            disabled={loading}
+            disabled={loading || banned}
             onClick={() => handleLogin()}>
             {loading && <Spinner />}
             登录
