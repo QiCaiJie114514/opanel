@@ -44,6 +44,9 @@ public class ForgeServer implements OPanelServer {
 
     @Override
     public byte[] getFavicon() {
+        byte[] serverIconPNG = OPanelServer.super.getFavicon();
+        if(serverIconPNG != null) return serverIconPNG;
+
         ServerStatus status = server.getStatus();
         if(status == null) return null;
 
@@ -52,6 +55,33 @@ public class ForgeServer implements OPanelServer {
 
         ServerStatus.Favicon favicon = faviconOptional.get();
         return favicon.iconBytes();
+    }
+
+    @Override
+    public void setFavicon(byte[] iconBytes) throws IOException {
+        OPanelServer.super.setFavicon(iconBytes);
+        // reload server favicon
+        ServerStatus status = server.getStatus();
+        ServerStatus.Favicon favicon = new ServerStatus.Favicon(iconBytes);
+        ServerStatus newStatus = new ServerStatus(
+                status.description(),
+                status.players(),
+                status.version(),
+                Optional.of(favicon),
+                status.enforcesSecureChat(),
+                status.forgeData()
+        );
+        try {
+            Field statusIconField = MinecraftServer.class.getDeclaredField("f_271173_"); // f_271173_ -> statusIcon
+            statusIconField.setAccessible(true);
+            statusIconField.set(server, favicon);
+
+            Field statusField = MinecraftServer.class.getDeclaredField("f_129757_"); // f_129757_ -> status
+            statusField.setAccessible(true);
+            statusField.set(server, newStatus);
+        } catch (Exception e) {
+            Main.LOGGER.warn("Cannot reload server favicon.");
+        }
     }
 
     @Override
@@ -166,6 +196,13 @@ public class ForgeServer implements OPanelServer {
     }
 
     @Override
+    public void removePlayerData(String uuid) throws IOException {
+        final Path playerDataFolder = server.getWorldPath(LevelResource.PLAYER_DATA_DIR);
+        Files.deleteIfExists(playerDataFolder.resolve(uuid +".dat"));
+        Files.deleteIfExists(playerDataFolder.resolve(uuid +".dat_old"));
+    }
+
+    @Override
     public boolean isWhitelistEnabled() {
         return server.getPlayerList().isUsingWhitelist();
     }
@@ -216,25 +253,30 @@ public class ForgeServer implements OPanelServer {
 
     @Override
     public void setGamerules(HashMap<String, Object> gamerules) {
+        HashMap<String, Object> currentGamerules = getGamerules();
         final GameRules gameRulesObj = server.getGameRules();
         GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
             @Override
             @SuppressWarnings("unchecked")
             public <T extends GameRules.Value<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
                 GameRules.GameRuleTypeVisitor.super.visit(key, type);
-                gamerules.forEach((ruleName, value) -> {
-                    if(value == null) return;
-                    if(key.getId().equals(ruleName)) {
-                        if(value instanceof Boolean) {
-                            gameRulesObj.getRule(key).setFrom((T) new GameRules.BooleanValue((GameRules.Type<GameRules.BooleanValue>) type, (boolean) value), server);
-                        } else if(value instanceof Number) {
-                            gameRulesObj.getRule(key).setFrom((T) new GameRules.IntegerValue((GameRules.Type<GameRules.IntegerValue>) type, Double.valueOf((double) value).intValue()), server);
-                        } else if(value instanceof String) {
-                            // Use command to set gamerule
-                            sendServerCommand("gamerule "+ ruleName +" "+ value);
-                        }
-                    }
-                });
+
+                final String ruleName = key.getId();
+                final Object value = gamerules.get(ruleName);
+                if(value == null) return;
+                final Object currentValue = currentGamerules.get(ruleName);
+                if(value.equals(currentValue)) return;
+
+                if(value instanceof Boolean) {
+                    gameRulesObj.getRule(key).setFrom((T) new GameRules.BooleanValue((GameRules.Type<GameRules.BooleanValue>) type, (boolean) value), server);
+                } else if(value instanceof Number) {
+                    int n = (int) ((double) value);
+                    if(n == (int) currentValue) return;
+                    gameRulesObj.getRule(key).setFrom((T) new GameRules.IntegerValue((GameRules.Type<GameRules.IntegerValue>) type, n), server);
+                } else if(value instanceof String) {
+                    // Use command to set gamerule
+                    sendServerCommand("gamerule "+ ruleName +" "+ value);
+                }
             }
         });
     }

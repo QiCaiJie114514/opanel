@@ -1,10 +1,12 @@
 import type { Editor, OnMount } from "@monaco-editor/react";
-import type { ServerGamerules } from "./gamerules/gamerule";
+import type { ServerGamerules } from "./gamerules";
 
 export type APIResponse<T> = {
   code: number
   error: string
 } & T;
+
+export type ServerType = "Bukkit" | "Spigot" | "Paper" | "Fabric" | "Forge" | "Neoforge" | "Folia";
 
 export enum GameMode {
   ADVENTURE = "adventure",
@@ -42,11 +44,16 @@ export type Whitelist = {
 export type EditorRefType = Parameters<OnMount>[0];
 export type EditorOptionsType = React.ComponentProps<typeof Editor>["options"];
 
+/** `/api/version` */
+export interface VersionResponse {
+  serverType: ServerType
+  version: string
+}
+
 /** `/api/info` */
 export interface InfoResponse {
   favicon: string | null
   motd: string // base64
-  version: string
   port: number
   maxPlayerCount: number
   whitelist: boolean
@@ -75,6 +82,11 @@ export interface MonitorResponse {
 /** `/api/control/properties` */
 export interface ServerPropertiesResponse {
   properties: string // base64
+}
+
+/** `/api/control/code-of-conduct` */
+export interface CodeOfConductResponse {
+  codeOfConducts: Record<string, string> // base64
 }
 
 /** `/api/gamerules` */

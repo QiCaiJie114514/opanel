@@ -1,16 +1,17 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Player } from "@/lib/types";
 import { useEffect } from "react";
-import { Ban, BrushCleaning, Check, ShieldOff, UserMinus, UserPlus } from "lucide-react";
-import { gameModeToString } from "@/lib/utils";
+import { Ban, BrushCleaning, Check, ShieldOff, Trash, UserMinus, UserPlus } from "lucide-react";
+import { gameModeToString, sleep } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Prompt } from "@/components/prompt";
 import { avatarUrl } from "@/lib/api";
 import { OnlineBadge } from "@/components/online-badge";
-import { addToWhitelist, ban, kick, pardon, removeFromWhitelist } from "./player-utils";
+import { addToWhitelist, ban, kick, pardon, removeFromWhitelist, removePlayerData } from "./player-utils";
 import { PlayerSheet } from "./player-sheet";
 import { emitter } from "@/lib/emitter";
+import { Alert } from "@/components/alert";
 
 export const playerColumns: ColumnDef<Player>[] = [
   {
@@ -163,6 +164,25 @@ export const playerColumns: ColumnDef<Player>[] = [
               <Ban className="stroke-red-400"/>
             </Button>
           </Prompt>
+          <Alert
+            title={`确定要删除 ${name} 的游戏数据吗？`}
+            description={`此操作将${isOnline ? "把玩家踢出服务器并" : ""}清空该玩家的所有游戏数据，且被删除的数据将不可恢复。`}
+            onAction={async () => {
+              if(isOnline) {
+                await kick(uuid, "管理员已清空你的玩家数据", false);
+                await sleep(100);
+              }
+              await removePlayerData(uuid);
+              emitter.emit("refresh-data");
+            }}
+            asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              title="删除玩家数据">
+              <Trash className="stroke-red-400"/>
+            </Button>
+          </Alert>
         </div>
       );
     }

@@ -3,16 +3,13 @@ package net.opanel.api;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import net.opanel.OPanel;
-import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelServer;
 import net.opanel.utils.TPS;
 import net.opanel.utils.Utils;
 import net.opanel.web.BaseServlet;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,9 +30,8 @@ public class InfoServlet extends BaseServlet {
         final OPanelServer server = plugin.getServer();
 
         HashMap<String, Object> obj = new HashMap<>();
-        obj.put("favicon", server.getFavicon() != null ? IconServlet.route : null);
+        obj.put("favicon", server.getFavicon() != null ? (IconServlet.route +"?t="+ System.currentTimeMillis()) : null);
         obj.put("motd", Utils.stringToBase64(server.getMotd()));
-        obj.put("version", server.getVersion());
         obj.put("port", server.getPort());
         obj.put("maxPlayerCount", server.getMaxPlayerCount());
         obj.put("whitelist", server.isWhitelistEnabled());

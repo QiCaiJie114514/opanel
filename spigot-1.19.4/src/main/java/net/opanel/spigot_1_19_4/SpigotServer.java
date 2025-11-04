@@ -5,12 +5,14 @@ import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
 import net.opanel.common.OPanelWhitelist;
+import net.opanel.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,8 +21,6 @@ import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 public class SpigotServer implements OPanelServer {
-    private static final Path serverIconPath = Paths.get("").resolve("server-icon.png");
-
     private final Main plugin;
     private final Server server;
 
@@ -31,17 +31,25 @@ public class SpigotServer implements OPanelServer {
 
     @Override
     public ServerType getServerType() {
+        if(Utils.hasClass("com.destroystokyo.paper.PaperConfig")) {
+            return ServerType.PAPER;
+        }
+        if(Utils.hasClass("org.bukkit.entity.Player$Spigot")) {
+            return ServerType.SPIGOT;
+        }
         return ServerType.BUKKIT;
     }
 
     @Override
-    public byte[] getFavicon() {
-        if(!Files.exists(serverIconPath)) return null;
+    public void setFavicon(byte[] iconBytes) throws IOException {
+        OPanelServer.super.setFavicon(iconBytes);
+        // reload server favicon
         try {
-            return Files.readAllBytes(serverIconPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            Method loadIconMethod = server.getClass().getDeclaredMethod("loadIcon");
+            loadIconMethod.setAccessible(true);
+            loadIconMethod.invoke(server);
+        } catch (Exception e) {
+            plugin.LOGGER.warning("Cannot reload server favicon.");
         }
     }
 
@@ -68,7 +76,8 @@ public class SpigotServer implements OPanelServer {
 
     @Override
     public String getVersion() {
-        return server.getBukkitVersion();
+        // getBukkitVersion() -> "<MinecraftVersion>-R0.x-SNAPSHOT"
+        return server.getBukkitVersion().split("-")[0];
     }
 
     @Override
@@ -165,6 +174,13 @@ public class SpigotServer implements OPanelServer {
     }
 
     @Override
+    public void removePlayerData(String uuid) throws IOException {
+        final Path playerDataFolder = server.getWorlds().get(0).getWorldFolder().toPath().resolve("playerdata");
+        Files.deleteIfExists(playerDataFolder.resolve(uuid +".dat"));
+        Files.deleteIfExists(playerDataFolder.resolve(uuid +".dat_old"));
+    }
+
+    @Override
     public boolean isWhitelistEnabled() {
         return server.hasWhitelist();
     }
@@ -208,16 +224,22 @@ public class SpigotServer implements OPanelServer {
     @Override
     @SuppressWarnings("unchecked")
     public void setGamerules(HashMap<String, Object> gamerules) {
+        HashMap<String, Object> currentGamerules = getGamerules();
         plugin.runTask(() -> {
             final World world = server.getWorlds().get(0);
             gamerules.forEach((key, value) -> {
                 if(value == null) return;
+                final Object currentValue = currentGamerules.get(key);
+                if(value.equals(currentValue)) return;
                 GameRule<?> rule = GameRule.getByName(key);
                 if(rule == null) return;
+
                 if(value instanceof Boolean) {
                     world.setGameRule((GameRule<Boolean>) rule, (Boolean) value);
                 } else if(value instanceof Number) {
-                    world.setGameRule((GameRule<Integer>) rule, Double.valueOf((double) value).intValue());
+                    int n = (int) ((double) value);
+                    if(n == (int) currentValue) return;
+                    world.setGameRule((GameRule<Integer>) rule, n);
                 } else if(value instanceof String) {
                     world.setGameRule((GameRule<String>) rule, (String) value);
                 }
@@ -227,11 +249,7 @@ public class SpigotServer implements OPanelServer {
 
     @Override
     public void reload() {
-        if(Main.isPaper) {
-            sendServerCommand("reload confirm");
-        } else {
-            sendServerCommand("reload");
-        }
+        plugin.runTask(server::reload);
     }
 
     @Override

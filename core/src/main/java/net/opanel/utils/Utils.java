@@ -1,5 +1,7 @@
 package net.opanel.utils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -8,6 +10,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
@@ -219,6 +222,37 @@ public class Utils {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+    public static boolean hasClass(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
+    public static boolean validateLocaleCode(String localeCode) {
+        if(localeCode == null || localeCode.isEmpty()) {
+            return false;
+        }
+
+        final String standardCode = localeCode.toLowerCase().replaceAll("_", "-");
+        Locale locale = Locale.forLanguageTag(standardCode);
+        String language = locale.getLanguage();
+        return !language.isEmpty() && !language.equals("und");
+    }
+
+    public static int[] getImageDimensions(byte[] imageBytes) throws IOException {
+        if(imageBytes == null || imageBytes.length == 0) throw new IllegalArgumentException("Empty image bytes");
+
+        try(ByteArrayInputStream is = new ByteArrayInputStream(imageBytes)) {
+            BufferedImage image = ImageIO.read(is);
+            if(image == null) throw new IllegalArgumentException("Illegal image bytes");
+
+            return new int[] { image.getWidth(), image.getHeight() };
         }
     }
 }

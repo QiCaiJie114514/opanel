@@ -5,24 +5,6 @@ import { Editor, type EditorProps } from "@monaco-editor/react";
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 
-// properties language support
-monaco.languages.register({ id: "properties" });
-monaco.languages.setMonarchTokensProvider("properties", {
-  tokenizer: {
-    root: [
-      /* comment */
-      [/^#.*/, "comment"],
-      /* key */
-      [/^[\w-.]+(?=\=)/, "key"],
-      [/=/, "keyword"],
-      /* value */
-      [/(true|false)/, "constant"],
-      [/\d+$/, "number"],
-      [/.+$/, "string"],
-    ]
-  }
-});
-
 // server-log language support
 monaco.languages.register({ id: "server-log" });
 monaco.languages.setMonarchTokensProvider("server-log", {

@@ -11,9 +11,23 @@ import java.util.*;
 
 public interface OPanelServer {
     Path serverPropertiesPath = Paths.get("").resolve("server.properties");
+    Path serverIconPath = Paths.get("").resolve("server-icon.png");
 
     ServerType getServerType();
-    byte[] getFavicon();
+
+    default byte[] getFavicon() {
+        if(!Files.exists(serverIconPath)) return null;
+        try {
+            return Files.readAllBytes(serverIconPath);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    default void setFavicon(byte[] iconBytes) throws IOException {
+        Files.write(serverIconPath, iconBytes);
+    }
+
     String getMotd();
     void setMotd(String motd) throws IOException;
     String getVersion();
@@ -25,6 +39,7 @@ public interface OPanelServer {
     List<OPanelPlayer> getPlayers();
     int getMaxPlayerCount();
     OPanelPlayer getPlayer(String uuid);
+    void removePlayerData(String uuid) throws IOException;
     boolean isWhitelistEnabled();
     void setWhitelistEnabled(boolean enabled);
     OPanelWhitelist getWhitelist();

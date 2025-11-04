@@ -89,6 +89,11 @@ public class PlayersServlet extends BaseServlet {
         }
 
         final OPanelPlayer player = server.getPlayer(uuid);
+        if(player == null) {
+            sendResponse(res, HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
         switch(reqPath.substring(1)) {
             case "op" -> player.giveOp();
             case "deop" -> player.depriveOp();
@@ -110,6 +115,30 @@ public class PlayersServlet extends BaseServlet {
             }
         }
 
+        sendResponse(res, HttpServletResponse.SC_OK);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        if(!authCookie(req)) {
+            sendResponse(res, HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        final OPanelServer server = plugin.getServer();
+
+        String uuid = req.getParameter("uuid");
+        if(uuid == null) {
+            sendResponse(res, HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        if(server.getPlayer(uuid) == null) {
+            sendResponse(res, HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        server.removePlayerData(uuid);
         sendResponse(res, HttpServletResponse.SC_OK);
     }
 }

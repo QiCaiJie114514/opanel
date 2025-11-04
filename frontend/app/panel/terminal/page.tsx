@@ -24,13 +24,13 @@ import {
 } from "@/components/ui/select";
 import { defaultLogLevel, type ConsoleLogLevel } from "@/lib/terminal/log-levels";
 import { SubPage } from "../sub-page";
-import { getSettings } from "@/lib/settings";
+import { changeSettings, getSettings } from "@/lib/settings";
 
 export default function Terminal() {
   const client = useTerminal();
   const inputRef = useRef<HTMLInputElement>(null);
   const [autocompleteList, setAutocompleteList] = useState<string[]>([]);
-  const [historyList, setHistoryList] = useState<string[]>([]);
+  const [historyList, setHistoryList] = useState<string[]>(getSettings("state.terminal.history"));
   const [logLevel, setLogLevel] = useState(defaultLogLevel);
 
   const handleClear = () => {
@@ -84,6 +84,10 @@ export default function Terminal() {
       }
     });
   }, [client]);
+
+  useEffect(() => {
+    changeSettings("state.terminal.history", historyList);
+  }, [historyList]);
 
   return (
     <SubPage

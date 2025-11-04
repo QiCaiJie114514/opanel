@@ -19,6 +19,7 @@ import net.opanel.common.OPanelWhitelist;
 import net.opanel.utils.Utils;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,6 +43,9 @@ public class FabricServer implements OPanelServer {
 
     @Override
     public byte[] getFavicon() {
+        byte[] serverIconPNG = OPanelServer.super.getFavicon();
+        if(serverIconPNG != null) return serverIconPNG;
+
         ServerMetadata metadata = server.getServerMetadata();
         if(metadata == null) return null;
 
@@ -50,6 +54,32 @@ public class FabricServer implements OPanelServer {
 
         ServerMetadata.Favicon favicon = faviconOptional.get();
         return favicon.iconBytes();
+    }
+
+    @Override
+    public void setFavicon(byte[] iconBytes) throws IOException {
+        OPanelServer.super.setFavicon(iconBytes);
+        // reload server favicon
+        ServerMetadata metadata = server.getServerMetadata();
+        ServerMetadata.Favicon favicon = new ServerMetadata.Favicon(iconBytes);
+        ServerMetadata newStatus = new ServerMetadata(
+                metadata.description(),
+                metadata.players(),
+                metadata.version(),
+                Optional.of(favicon),
+                metadata.secureChatEnforced()
+        );
+        try {
+            Field faviconField = MinecraftServer.class.getDeclaredField("field_42958"); // field_42958 -> favicon
+            faviconField.setAccessible(true);
+            faviconField.set(server, favicon);
+
+            Field metadataField = MinecraftServer.class.getDeclaredField("field_4593"); // field_4593 -> metadata
+            metadataField.setAccessible(true);
+            metadataField.set(server, newStatus);
+        } catch (Exception e) {
+            Main.LOGGER.warn("Cannot reload server favicon.");
+        }
     }
 
     @Override
@@ -164,6 +194,13 @@ public class FabricServer implements OPanelServer {
     }
 
     @Override
+    public void removePlayerData(String uuid) throws IOException {
+        final Path playerDataFolder = server.getSavePath(WorldSavePath.PLAYERDATA);
+        Files.deleteIfExists(playerDataFolder.resolve(uuid +".dat"));
+        Files.deleteIfExists(playerDataFolder.resolve(uuid +".dat_old"));
+    }
+
+    @Override
     public boolean isWhitelistEnabled() {
         return server.getPlayerManager().isWhitelistEnabled();
     }
@@ -214,25 +251,30 @@ public class FabricServer implements OPanelServer {
 
     @Override
     public void setGamerules(HashMap<String, Object> gamerules) {
+        HashMap<String, Object> currentGamerules = getGamerules();
         final GameRules gameRulesObj = server.getGameRules();
         GameRules.accept(new GameRules.Visitor() {
             @Override
             @SuppressWarnings("unchecked")
             public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
                 GameRules.Visitor.super.visit(key, type);
-                gamerules.forEach((ruleName, value) -> {
-                    if(value == null) return;
-                    if(key.getName().equals(ruleName)) {
-                        if(value instanceof Boolean) {
-                            gameRulesObj.get(key).setValue((T) new GameRules.BooleanRule((GameRules.Type<GameRules.BooleanRule>) type, (boolean) value), server);
-                        } else if(value instanceof Number) {
-                            gameRulesObj.get(key).setValue((T) new GameRules.IntRule((GameRules.Type<GameRules.IntRule>) type, Double.valueOf((double) value).intValue()), server);
-                        } else if(value instanceof String) {
-                            // Use command to set gamerule
-                            sendServerCommand("gamerule "+ ruleName +" "+ value);
-                        }
-                    }
-                });
+
+                final String ruleName = key.getName();
+                final Object value = gamerules.get(ruleName);
+                if(value == null) return;
+                final Object currentValue = currentGamerules.get(ruleName);
+                if(value.equals(currentValue)) return;
+
+                if(value instanceof Boolean) {
+                    gameRulesObj.get(key).setValue((T) new GameRules.BooleanRule((GameRules.Type<GameRules.BooleanRule>) type, (boolean) value), server);
+                } else if(value instanceof Number) {
+                    int n = (int) ((double) value);
+                    if(n == (int) currentValue) return;
+                    gameRulesObj.get(key).setValue((T) new GameRules.IntRule((GameRules.Type<GameRules.IntRule>) type, n), server);
+                } else if(value instanceof String) {
+                    // Use command to set gamerule
+                    sendServerCommand("gamerule "+ ruleName +" "+ value);
+                }
             }
         });
     }
