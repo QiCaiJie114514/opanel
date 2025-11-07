@@ -6,9 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="90587dcf-15dc-47d2-9c29-bb98b36eacd0" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/PlayersServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/PlayersServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/app/panel/players/columns.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/players/columns.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/panel/players/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/players/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/panel/players/player-sheet.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/players/player-sheet.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/panel/players/player-utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/panel/players/player-utils.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/lib/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

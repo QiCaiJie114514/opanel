@@ -32,7 +32,7 @@ export interface Player {
   isOp: boolean
   isBanned: boolean
   gamemode?: GameMode
-  banReason?: string
+  banReason?: string // base64
   isWhitelisted?: boolean
 }
 

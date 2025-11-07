@@ -1,7 +1,7 @@
 import type { GameMode } from "@/lib/types";
 import { toast } from "sonner";
 import { sendDeleteRequest, sendPostRequest, toastError } from "@/lib/api";
-import { gameModeToString } from "@/lib/utils";
+import { gameModeToString, stringToBase64 } from "@/lib/utils";
 
 export async function giveOp(uuid: string, doToast = true) {
   try {
@@ -31,7 +31,7 @@ export async function depriveOp(uuid: string, doToast = true) {
 
 export async function kick(uuid: string, reason?: string, doToast = true) {
   try {
-    await sendPostRequest(`/api/players/kick?uuid=${uuid}&r=${reason}`);
+    await sendPostRequest(`/api/players/kick?uuid=${uuid}&r=${reason ? stringToBase64(reason) : ""}`);
     doToast && toast.success("已踢出该玩家");
   } catch (e: any) {
     toastError(e, "无法踢出该玩家", [
@@ -45,7 +45,7 @@ export async function kick(uuid: string, reason?: string, doToast = true) {
 
 export async function ban(uuid: string, reason?: string, doToast = true) {
   try {
-    await sendPostRequest(`/api/players/ban?uuid=${uuid}&r=${reason}`);
+    await sendPostRequest(`/api/players/ban?uuid=${uuid}&r=${reason ? stringToBase64(reason) : ""}`);
     doToast && toast.success("已封禁该玩家");
   } catch (e: any) {
     toastError(e, "无法封禁该玩家", [
