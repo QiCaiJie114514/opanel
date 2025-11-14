@@ -92,6 +92,7 @@ export function ServerSheet({
       await sendPostRequest(`/api/control/properties`, transformText(stringToBase64(rawProperties)));
       toast.success("保存成功", { description: "重启服务器以使改动生效" });
       setChanged(false);
+      setProperties({});
     } catch (e: any) {
       toastError(e, "无法保存server.properties", [
         [401, "未登录"],
