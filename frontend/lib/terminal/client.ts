@@ -65,7 +65,6 @@ export class WebSocketClient {
     this.socket.addEventListener("message", (e) => {
       const { type, data } = JSON.parse(e.data) satisfies TerminalPacket;
       const log = data as ConsoleLog;
-      console.log("[Terminal] "+ log.line);
 
       if(type === "init" && !(data instanceof Array)) {
         throw new Error("Received an incorrect initial packet.");

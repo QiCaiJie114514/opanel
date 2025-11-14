@@ -87,21 +87,25 @@ export function MotdEditor({
                       <Textarea
                         {...field}
                         rows={2}
-                        placeholder="请输入文本..."/>
+                        placeholder="请输入文本..."
+                        onKeyDown={(e) => (e.key === "Enter" && e.ctrlKey) && form.handleSubmit(handleSubmit)()}/>
                     </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}/>
             <DialogFooter className="flex flex-row !justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="cursor-pointer"
-                onClick={() => form.setValue("motd", form.getValues().motd + "§")}>
-                §
-              </Button>
+              <div className="space-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="cursor-pointer"
+                  onClick={() => form.setValue("motd", form.getValues().motd + "§")}>
+                  §
+                </Button>
+                <span className="text-sm text-muted-foreground max-sm:hidden"><kbd>ctrl</kbd>+<kbd>Enter</kbd> 以保存更改</span>
+              </div>
               <div className="space-x-2">
                 <DialogClose asChild>
                   <Button

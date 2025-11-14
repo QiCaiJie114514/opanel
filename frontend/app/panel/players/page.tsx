@@ -13,15 +13,17 @@ import { WhitelistSheet } from "./whitelist-sheet";
 import { setWhitelistEnabled } from "./player-utils";
 import { emitter } from "@/lib/emitter";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { changeSettings, getSettings } from "@/lib/settings";
+import { changeSettings, getSettings, type SettingsStorageType } from "@/lib/settings";
 import { BannedIpsDialog } from "./banned-ips-dialog";
 
 export default function Players() {
+  type TabValueType = SettingsStorageType["state.players.tab"];
+
   const [players, setPlayers] = useState<Player[]>([]);
   const [unnamedPlayers, setUnnamedPlayers] = useState<UnnamedPlayer[]>([]);
   const [maxPlayerCount, setMaxPlayerCount] = useState<number>(0);
   const [isWhitelistEnabled, setWhitelistEnabledState] = useState(false);
-  const [currentTab, setCurrentTab] = useState<string>("player-list");
+  const [currentTab, setCurrentTab] = useState<TabValueType>(getSettings("state.players.tab"));
   const [searchString, setSearchString] = useState<string>("");
   const nonBannedPlayers = useMemo(() => players.filter(({ isBanned }) => !isBanned), [players]);
   const bannedPlayers = useMemo(() => players.filter(({ isBanned }) => isBanned), [players]);
@@ -51,6 +53,16 @@ export default function Players() {
     emitter.on("refresh-data", () => fetchPlayerList());
   }, []);
 
+  useEffect(() => {
+    document.body.addEventListener("keydown", (e) => {
+      if(e.ctrlKey && e.key === "ArrowRight") {
+        setCurrentTab("banned-list");
+      } else if(e.ctrlKey && e.key === "ArrowLeft") {
+        setCurrentTab("player-list");
+      }
+    });
+  }, []);
+
   return (
     <SubPage
       title="玩家"
@@ -59,10 +71,10 @@ export default function Players() {
       className="flex flex-col gap-3">
       <span className="text-sm text-muted-foreground">点击玩家名以进行更多操作。</span>
       <Tabs
-        defaultValue={getSettings("state.players.tab")}
+        value={currentTab}
         onValueChange={(value) => {
-          setCurrentTab(value);
-          changeSettings("state.players.tab", value as any);
+          setCurrentTab(value as TabValueType);
+          changeSettings("state.players.tab", value as TabValueType);
         }}>
         <div className="flex justify-between items-center max-lg:flex-col-reverse max-lg:items-start max-lg:gap-2">
           <TabsList className="[&>*]:cursor-pointer">

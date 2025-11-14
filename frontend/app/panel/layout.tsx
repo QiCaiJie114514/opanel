@@ -44,6 +44,16 @@ export default function PanelLayout({
     fetchVersionInfo();
   }, [push]);
 
+  useEffect(() => {
+    document.body.addEventListener("keydown", (e) => {
+      if(e.ctrlKey && (
+        e.key === "a"
+        || e.key === "p"
+        || e.key === "s"
+      )) e.preventDefault();
+    });
+  }, []);
+
   if(!mounted) return <></>;
 
   return (

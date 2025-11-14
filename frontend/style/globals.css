@@ -128,6 +128,9 @@
     code {
       @apply text-xs bg-muted rounded-sm px-1;
     }
+    kbd {
+      @apply border border-b-2 rounded-sm mx-1 px-1 text-xs text-foreground;
+    }
   }
 }
 
