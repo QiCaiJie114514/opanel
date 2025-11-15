@@ -13,6 +13,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import java.io.IOException;
 import java.util.*;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TerminalEndpoint {
     private final OPanel plugin;
@@ -22,7 +23,7 @@ public class TerminalEndpoint {
 
     // To avoid duplicated log listener from registering,
     // which can lead to plenty duplicated logs in the frontend terminal
-    private static volatile boolean hasLogListenerRegistered = false;
+    private static final AtomicBoolean hasLogListenerRegistered = new AtomicBoolean(false);
 
     public TerminalEndpoint(WsConfig ws, OPanel plugin) {
         this.plugin = plugin;
@@ -32,11 +33,10 @@ public class TerminalEndpoint {
         ws.onMessage(this::onMessage);
         ws.onClose(this::onClose);
 
-        if(!hasLogListenerRegistered) {
+        if(hasLogListenerRegistered.compareAndSet(false, true)) {
             logListenerManager.addListener(log -> {
                 broadcast(new TerminalPacket<>(TerminalPacket.LOG, log));
             });
-            hasLogListenerRegistered = true;
         }
     }
 
@@ -127,9 +127,11 @@ public class TerminalEndpoint {
     }
 
     public static void closeAllSessions() throws IOException {
-        for(Session session : sessions) {
-            session.close(1000, "Server is stopping.");
+        synchronized(sessions) {
+            for(Session session : sessions) {
+                session.close(1000, "Server is stopping.");
+            }
+            sessions.clear();
         }
-        sessions.clear();
     }
 }

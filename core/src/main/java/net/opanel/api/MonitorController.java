@@ -10,7 +10,6 @@ import oshi.hardware.GlobalMemory;
 import java.util.HashMap;
 
 public class MonitorController extends BaseController {
-
     public MonitorController(OPanel plugin) {
         super(plugin);
     }

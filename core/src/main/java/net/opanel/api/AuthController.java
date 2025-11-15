@@ -8,14 +8,15 @@ import net.opanel.web.BaseController;
 import net.opanel.web.JwtManager;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AuthController extends BaseController {
-    private final HashMap<String, String> cramMap = new HashMap<>();
+    private final ConcurrentHashMap<String, String> cramMap = new ConcurrentHashMap<>();
 
     private static final int maxTries = 5;
     private static final long bannedPeriod = 10 * 60 * 1000; // 10 min
-    private final HashMap<String, Integer> failedRecords = new HashMap<>();
-    private final HashMap<String, Long> temporaryBannedRecords = new HashMap<>(); // ms
+    private final ConcurrentHashMap<String, Integer> failedRecords = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Long> temporaryBannedRecords = new ConcurrentHashMap<>(); // ms
 
     public AuthController(OPanel plugin) {
         super(plugin);
@@ -29,6 +30,10 @@ public class AuthController extends BaseController {
         }
 
         final String remoteHost = ctx.host();
+        if(remoteHost == null) {
+            sendResponse(ctx, HttpStatus.FORBIDDEN, "Host is missing in request header.");
+            return;
+        }
         if(System.currentTimeMillis() < temporaryBannedRecords.getOrDefault(remoteHost, 0L)) {
             sendResponse(ctx, HttpStatus.FORBIDDEN, "The Ip is banned temporarily.");
             return;
