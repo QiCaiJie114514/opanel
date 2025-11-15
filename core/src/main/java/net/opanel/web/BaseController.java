@@ -3,6 +3,7 @@ package net.opanel.web;
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import io.javalin.http.servlet.JavalinServletContext;
 import jakarta.servlet.ServletOutputStream;
 import net.opanel.OPanel;
 import net.opanel.common.OPanelServer;
@@ -48,6 +49,7 @@ public abstract class BaseController {
         ctx.status(HttpStatus.OK);
 
         try(InputStream is = new ByteArrayInputStream(bytes)) {
+            ctx.result(""); // Clear the response content before writing
             ctx.writeSeekableStream(is, contentType.toString());
         } catch (IOException e) {
             e.printStackTrace();
