@@ -9,7 +9,7 @@ export default function Home() {
 
   useEffect(() => {
     if(hasCookie("token")) {
-      push("/panel");
+      push("/panel/dashboard");
     } else {
       push("/login");
     }

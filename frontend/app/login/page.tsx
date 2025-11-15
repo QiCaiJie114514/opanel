@@ -31,6 +31,7 @@ import { PasswordInput } from "@/components/password-input";
 import { Alert } from "@/components/alert";
 import { generateRandomString } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
+import { copyrightInfo } from "@/lib/global";
 
 const formSchema = z.object({
   accessKey: z.string().nonempty("此项不可为空"),
@@ -59,7 +60,7 @@ export default function Login() {
 
       const res = await sendPostRequestWithoutToken<{ token: string }>("/api/auth", { id, result: challengeResult });
       setCookie("token", res.token);
-      router.push("/panel");
+      router.push("/panel/dashboard");
     } catch (e: any) {
       setLoading(false);
       switch(e.status) {
@@ -76,7 +77,7 @@ export default function Login() {
 
   useEffect(() => {
     if(hasCookie("token")) {
-      router.push("/panel");
+      router.push("/panel/dashboard");
     }
 
     document.body.addEventListener("keydown", (e) => {
@@ -146,7 +147,7 @@ export default function Login() {
         </CardFooter>
       </Card>
       <div className="flex justify-between items-center mt-2 px-2 text-sm">
-        <span className="text-muted-foreground">Copyright &copy; OPanel Project 2025</span>
+        <span className="text-muted-foreground">{copyrightInfo}</span>
         <Button variant="link" size="sm" asChild>
           <Link href="/about">
             <Info />

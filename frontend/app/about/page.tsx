@@ -25,7 +25,7 @@ import {
   TableCell,
   TableRow
 } from "@/components/ui/table";
-import { version } from "@/lib/global";
+import { copyrightInfo, version } from "@/lib/global";
 import { cn } from "@/lib/utils";
 import { minecraftAE } from "@/lib/fonts";
 import { Brand } from "@/components/logo";
@@ -77,7 +77,8 @@ export default function About() {
             ))}
           </TableBody>
         </Table>
-        <p className="text-center text-lg font-bold">感谢使用 OPanel！</p>
+        <p className="text-center text-lg font-bold">感谢使用 OPanel</p>
+        <p className="text-center text-sm text-muted-foreground">{copyrightInfo}</p>
       </CardContent>
       <CardFooter className="flex justify-between">
         <div>

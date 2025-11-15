@@ -3,6 +3,7 @@ package net.opanel.web;
 import com.google.gson.Gson;
 import io.javalin.Javalin;
 import io.javalin.config.SizeUnit;
+import io.javalin.http.HttpStatus;
 import io.javalin.jetty.JettyServer;
 import io.javalin.json.JavalinGson;
 import io.javalin.util.JavalinLogger;
@@ -11,7 +12,6 @@ import net.opanel.api.*;
 import net.opanel.terminal.TerminalEndpoint;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -58,6 +58,7 @@ public class WebServer {
 
         // Controllers
         BeforeController beforeController = new BeforeController(plugin);
+        ErrorController errorController = new ErrorController(plugin);
         AuthController authController = new AuthController(plugin);
         BannedIpsController bannedIpsController = new BannedIpsController(plugin);
         ControlController controlController = new ControlController(plugin);
@@ -145,6 +146,9 @@ public class WebServer {
                 post("remove", whitelistController.removeWhitelistEntry);
             });
         }));
+
+        // Not found page
+        app.error(HttpStatus.NOT_FOUND, errorController.notFound);
 
         app.start(PORT);
         plugin.logger.info("OPanel web server is ready on port "+ PORT);
