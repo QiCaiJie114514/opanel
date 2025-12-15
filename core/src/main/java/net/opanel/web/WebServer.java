@@ -39,6 +39,7 @@ public class WebServer {
             config.plugins.enableCors(cors -> {
                 cors.add(it -> {
                     it.allowHost("http://localhost:3001"); // for dev
+                    it.allowCredentials = true;
                 });
             });
 

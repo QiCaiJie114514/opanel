@@ -7,19 +7,10 @@
     <list default="true" id="90587dcf-15dc-47d2-9c29-bb98b36eacd0" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/ForgeOfflinePlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/ForgeOfflinePlayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/ForgePlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/ForgePlayer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/ForgeSave.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/ForgeSave.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/ForgeServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/ForgeServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/ForgeWhitelist.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/ForgeWhitelist.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/LoggerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/LoggerImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/command/OPanelCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/command/OPanelCommand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/config/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/config/Config.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/config/ConfigManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/config/ConfigManagerImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_9/terminal/LogListenerManagerImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/java/net/opanel/forge_1_21_11/terminal/LogListenerManagerImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/forge-1.21.11/src/main/resources/pack.mcmeta" beforeDir="false" afterPath="$PROJECT_DIR$/forge-1.21.11/src/main/resources/pack.mcmeta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/SavesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/api/SavesController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/web/BeforeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/web/BeforeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/net/opanel/web/WebServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/net/opanel/web/WebServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/lib/api.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,7 +207,7 @@
     "Gradle.下载源代码.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "1.21.11",
+    "git-widget-placeholder": "dev",
     "project.structure.last.edited": "模块",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2"
