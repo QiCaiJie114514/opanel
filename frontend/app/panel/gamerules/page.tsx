@@ -3,10 +3,11 @@
 import type { z } from "zod";
 import type { GamerulesResponse } from "@/lib/types";
 import Link from "next/link";
-import { useEffect, useMemo, useState, Fragment } from "react";
+import { useEffect, useMemo, useState, Fragment, useContext } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { compare } from "semver";
 import { PencilRuler, Search } from "lucide-react";
 import {
   Form,
@@ -30,11 +31,20 @@ import {
   ItemDescription,
   ItemTitle
 } from "@/components/ui/item";
-import gamerulePresets from "@/lib/gamerules/presets";
+import _gamerulePresets from "@/lib/gamerules/presets";
+import _gamerulePresetsOld from "@/lib/gamerules/presets-old";
 import { SubPage } from "../sub-page";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { VersionContext } from "@/contexts/api-context";
 
 export default function Gamerules() {
+  const versionCtx = useContext(VersionContext);
+  const gamerulePresets = useMemo(() => {
+    if(versionCtx && compare(versionCtx.version, "1.21.11") < 0) {
+      return _gamerulePresetsOld;
+    }
+    return _gamerulePresets;
+  }, [versionCtx]);
   const [serverGamerules, setServerGamerules] = useState<ServerGamerules>({});
   const [searchString, setSearchString] = useState<string>("");
   const [hasChanged, setChanged] = useState<boolean>(false);
