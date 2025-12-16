@@ -24,6 +24,9 @@ public abstract class BaseController {
         this.plugin = plugin;
         server = plugin.getServer();
 
+        if(instances.containsKey(getClass())) {
+            throw new IllegalStateException(getClass().getName() +" has been instantiated and registered before");
+        }
         instances.put(getClass(), this);
     }
 

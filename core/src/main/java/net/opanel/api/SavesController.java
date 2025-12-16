@@ -49,20 +49,20 @@ public class SavesController extends BaseController {
     };
 
     public Handler downloadSave = ctx -> {
+        final String saveName = ctx.pathParam("saveName");
+        OPanelSave save = server.getSave(saveName);
+        if(save == null) {
+            sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the specified save.");
+            return;
+        }
+
+        // force saving world before making zip if the save is currently running on the server
+        if(save.isRunning()) server.saveAll();
+
+        Path savePath = save.getPath();
+        Path zipPath = OPanel.TMP_DIR_PATH.resolve(UUID.randomUUID() +".zip");
+
         try {
-            final String saveName = ctx.pathParam("saveName");
-            OPanelSave save = server.getSave(saveName);
-            if(save == null) {
-                sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the specified save.");
-                return;
-            }
-
-            // force saving world before making zip if the save is currently running on the server
-            if(save.isRunning()) server.saveAll();
-
-            Path savePath = save.getPath();
-            Path zipPath = OPanel.TMP_DIR_PATH.resolve(UUID.randomUUID() +".zip");
-
             /*
              * Bukkit separates nether and the end dimension from the save folder,
              * so we need to put them together when processing the save files
@@ -75,6 +75,7 @@ public class SavesController extends BaseController {
             }
 
             ZipUtility.zip(savePath, zipPath);
+
             final String downloadId = downloadController.registerPath(zipPath, () -> {
                 Files.delete(zipPath);
 
@@ -84,8 +85,18 @@ public class SavesController extends BaseController {
                     if(Files.exists(savePath.resolve("DIM1"))) Utils.deleteDirectoryRecursively(savePath.resolve("DIM1"));
                 }
             });
-            ctx.redirect("/file/"+ downloadId +"/"+ saveName +".zip");
+
+            HashMap<String, Object> obj = new HashMap<>();
+            obj.put("download", downloadId);
+            sendResponse(ctx, obj);
         } catch (Exception e) {
+            // Delete the files if some exceptions are thrown
+            if(Files.exists(zipPath)) Files.delete(zipPath);
+            if(server.getServerType().isBukkitSeries()) {
+                if(Files.exists(savePath.resolve("DIM-1"))) Utils.deleteDirectoryRecursively(savePath.resolve("DIM-1"));
+                if(Files.exists(savePath.resolve("DIM1"))) Utils.deleteDirectoryRecursively(savePath.resolve("DIM1"));
+            }
+
             e.printStackTrace();
             sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }

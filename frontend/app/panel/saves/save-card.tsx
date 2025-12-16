@@ -1,4 +1,4 @@
-import type { Save } from "@/lib/types";
+import type { DownloadSaveResponse, Save } from "@/lib/types";
 import { Download, FolderPen, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { MinecraftText } from "@/components/mc-text";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { apiUrl, sendDeleteRequest, sendPostRequest, toastError } from "@/lib/api";
+import { apiUrl, sendDeleteRequest, sendGetRequest, sendPostRequest, toastError } from "@/lib/api";
 import { Alert } from "@/components/alert";
 import { SaveSheet } from "./save-sheet";
 import { emitter } from "@/lib/emitter";
@@ -31,7 +31,8 @@ export function SaveCard({
   } = save;
 
   const handleDownload = async () => {
-    window.open(`${apiUrl}/api/saves/${name}`, "_blank");
+    const res = await sendGetRequest<DownloadSaveResponse>(`/api/saves/${name}`);
+    window.location.href = `${apiUrl}/file/${res.download}/${name}.zip`;
   };
 
   const handleDelete = async () => {
