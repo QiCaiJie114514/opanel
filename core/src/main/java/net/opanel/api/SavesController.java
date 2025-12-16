@@ -8,8 +8,6 @@ import net.opanel.utils.Utils;
 import net.opanel.utils.ZipUtility;
 import net.opanel.web.BaseController;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -24,6 +22,8 @@ import java.util.stream.Stream;
 import java.util.zip.ZipException;
 
 public class SavesController extends BaseController {
+    private final DownloadController downloadController = getControllerInstance(DownloadController.class);
+
     public SavesController(OPanel plugin) {
         super(plugin);
     }
@@ -75,14 +75,16 @@ public class SavesController extends BaseController {
             }
 
             ZipUtility.zip(savePath, zipPath);
-            sendContent(ctx, Utils.readFile(zipPath), ContentType.APPLICATION_OCTET_STREAM);
-            Files.delete(zipPath);
+            final String downloadId = downloadController.registerPath(zipPath, () -> {
+                Files.delete(zipPath);
 
-            // Finally, don't forget to delete the DIM-1 and DIM1 folders manually copied by us
-            if(server.getServerType().isBukkitSeries()) {
-                if(Files.exists(savePath.resolve("DIM-1"))) Utils.deleteDirectoryRecursively(savePath.resolve("DIM-1"));
-                if(Files.exists(savePath.resolve("DIM1"))) Utils.deleteDirectoryRecursively(savePath.resolve("DIM1"));
-            }
+                // Finally, don't forget to delete the DIM-1 and DIM1 folders manually copied by us
+                if(server.getServerType().isBukkitSeries()) {
+                    if(Files.exists(savePath.resolve("DIM-1"))) Utils.deleteDirectoryRecursively(savePath.resolve("DIM-1"));
+                    if(Files.exists(savePath.resolve("DIM1"))) Utils.deleteDirectoryRecursively(savePath.resolve("DIM1"));
+                }
+            });
+            ctx.redirect("/file/"+ downloadId +"/"+ saveName +".zip");
         } catch (Exception e) {
             e.printStackTrace();
             sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
