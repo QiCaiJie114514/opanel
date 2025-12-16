@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "OPanel - 登录"
+  title: "OPanel"
 };
 
 export default function LoginLayout({

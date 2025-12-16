@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "OPanel - 关于"
+  title: "OPanel"
 };
 
 export default function AboutLayout({
