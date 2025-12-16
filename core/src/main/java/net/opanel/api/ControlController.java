@@ -72,7 +72,7 @@ public class ControlController extends BaseController {
 
         try {
             final String lang = ctx.queryParam("lang");
-            final String content = ctx.bodyAsClass(String.class);
+            final String content = ctx.body();
             if(lang == null) {
                 sendResponse(ctx, HttpStatus.BAD_REQUEST, "Language is missing.");
                 return;
