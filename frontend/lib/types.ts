@@ -50,19 +50,24 @@ export type EditorRefType = Parameters<OnMount>[0];
 export type EditorOptionsType = React.ComponentProps<typeof Editor>["options"];
 
 export enum AvatarProvider {
-  CRAFATAR = "https://crafatar.com/avatars/",
+  MINOTAR = "https://minotar.net/avatar/",
   MINEATAR = "https://api.mineatar.io/face/",
-  MCHEADS = "https://mc-heads.net/avatar/"
+  MCHEADS = "https://api.mcheads.org/head/",
+  /** @see https://github.com/crafatar/crafatar/issues/329#issuecomment-3559253664 */
+  CRAFATAR = "https://avatars.cloudhaven.gg/avatars/"
 }
 
 export enum SkinProvider {
-  CRAFATAR = "https://crafatar.com/skins/",
+  MINOTAR = "https://minotar.net/skin/",
   MINEATAR = "https://api.mineatar.io/skin/",
-  MCHEADS = "https://mc-heads.net/skin/"
+  MCHEADS = "https://api.mcheads.org/skin/",
+  /** @see https://github.com/crafatar/crafatar/issues/329#issuecomment-3559253664 */
+  CRAFATAR = "https://avatars.cloudhaven.gg/skins/"
 }
 
 export enum CapeProvider {
-  CRAFATAR = "https://crafatar.com/capes/"
+  /** @see https://github.com/crafatar/crafatar/issues/329#issuecomment-3559253664 */
+  CRAFATAR = "https://avatars.cloudhaven.gg/capes/"
 }
 
 /** `/api/version` */

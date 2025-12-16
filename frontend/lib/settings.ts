@@ -42,8 +42,8 @@ export type SettingsStorageType = {
 
 const defaultSettings: SettingsStorageType = {
   "dashboard.monitor-interval": 2000, // ms
-  "players.avatar-provider": AvatarProvider.CRAFATAR,
-  "players.skin-provider": SkinProvider.CRAFATAR,
+  "players.avatar-provider": AvatarProvider.MINOTAR,
+  "players.skin-provider": SkinProvider.MINOTAR,
   "players.cape-provider": CapeProvider.CRAFATAR,
   "terminal.autocomplete": true,
   "terminal.word-wrap": false,

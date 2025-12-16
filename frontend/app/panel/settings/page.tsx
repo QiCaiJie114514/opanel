@@ -70,9 +70,9 @@ export default function Settings() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={AvatarProvider.CRAFATAR} title={AvatarProvider.CRAFATAR}>Crafatar</SelectItem>
+                  <SelectItem value={AvatarProvider.MINOTAR} title={AvatarProvider.MINOTAR}>Minotar</SelectItem>
                   <SelectItem value={AvatarProvider.MINEATAR} title={AvatarProvider.MINEATAR}>Mineatar</SelectItem>
-                  <SelectItem value={AvatarProvider.MCHEADS} title={AvatarProvider.MCHEADS}>MCHeads</SelectItem>
+                  <SelectItem value={AvatarProvider.MCHEADS} title={AvatarProvider.MCHEADS}>MC Heads</SelectItem>
                 </SelectContent>
               </Select>
             }/>
@@ -90,9 +90,9 @@ export default function Settings() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={SkinProvider.CRAFATAR} title={SkinProvider.CRAFATAR}>Crafatar</SelectItem>
+                  <SelectItem value={SkinProvider.MINOTAR} title={SkinProvider.MINOTAR}>Minotar</SelectItem>
                   <SelectItem value={SkinProvider.MINEATAR} title={SkinProvider.MINEATAR}>Mineatar</SelectItem>
-                  <SelectItem value={SkinProvider.MCHEADS} title={SkinProvider.MCHEADS}>MCHeads</SelectItem>
+                  <SelectItem value={SkinProvider.MCHEADS} title={SkinProvider.MCHEADS}>MC Heads</SelectItem>
                 </SelectContent>
               </Select>
             }/>

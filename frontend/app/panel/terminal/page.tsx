@@ -97,7 +97,7 @@ export default function Terminal() {
       icon={<SquareTerminal />}
       outerClassName="max-h-screen overflow-y-hidden"
       className="flex-1 min-h-0 flex gap-3">
-      <div className="flex-4/5 max-lg:flex-3/4 max-md:flex-2/3 min-w-0 flex flex-col gap-3 border rounded-sm">
+      <div className="flex-4/5 max-lg:flex-3/4 max-md:flex-2/3 min-w-0 flex flex-col border rounded-sm">
         <TerminalConnector client={client} level={logLevel} className="flex-1 border-none"/>
         <div className="p-3 flex gap-2">
           <Select
