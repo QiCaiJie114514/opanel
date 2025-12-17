@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { WebSocketClient } from "@/lib/terminal/client";
+import { TerminalClient } from "@/lib/ws/terminal";
 
 export function useTerminal() {
-  const [client, setClient] = useState<WebSocketClient | null>(null);
+  const [client, setClient] = useState<TerminalClient | null>(null);
 
   useEffect(() => {
-    const ws = new WebSocketClient();
+    const ws = new TerminalClient();
     setClient(ws);
     
     return () => ws.close();

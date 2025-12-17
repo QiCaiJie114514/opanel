@@ -1,17 +1,12 @@
-package net.opanel.web;
+package net.opanel.controller;
 
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
-import io.javalin.http.servlet.JavalinServletContext;
-import jakarta.servlet.ServletOutputStream;
 import net.opanel.OPanel;
 import net.opanel.common.OPanelServer;
-import net.opanel.utils.Utils;
 
 import java.io.*;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 import java.util.HashMap;
 
 public abstract class BaseController {

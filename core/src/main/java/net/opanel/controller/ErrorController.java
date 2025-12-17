@@ -1,8 +1,9 @@
-package net.opanel.web;
+package net.opanel.controller;
 
 import io.javalin.http.ContentType;
 import io.javalin.http.Handler;
 import net.opanel.OPanel;
+import net.opanel.web.WebServer;
 
 import java.io.InputStream;
 

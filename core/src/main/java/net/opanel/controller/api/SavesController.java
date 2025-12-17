@@ -1,4 +1,4 @@
-package net.opanel.api;
+package net.opanel.controller.api;
 
 import io.javalin.http.*;
 import net.opanel.OPanel;
@@ -6,7 +6,7 @@ import net.opanel.common.OPanelGameMode;
 import net.opanel.common.OPanelSave;
 import net.opanel.utils.Utils;
 import net.opanel.utils.ZipUtility;
-import net.opanel.web.BaseController;
+import net.opanel.controller.BaseController;
 
 import java.io.IOException;
 import java.io.InputStream;

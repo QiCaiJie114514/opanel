@@ -22,11 +22,11 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { defaultLogLevel, type ConsoleLogLevel } from "@/lib/terminal/log-levels";
 import { SubPage } from "../sub-page";
 import { changeSettings, getSettings } from "@/lib/settings";
 import { googleSansCode } from "@/lib/fonts";
 import { $ } from "@/lib/i18n";
+import { type ConsoleLogLevel, defaultLogLevel } from "@/lib/ws/terminal";
 
 export default function Terminal() {
   const client = useTerminal();
@@ -50,7 +50,7 @@ export default function Terminal() {
       return;
     }
 
-    client.send({ type: "command", data: command });
+    client.send("command", command);
     setHistoryList((current) => [...current, command]);
     handleClear();
   }, [client]);
@@ -73,17 +73,12 @@ export default function Terminal() {
     if(!inputRef.current || !client) return;
     const elem = inputRef.current;
 
-    client.send({
-      type: "autocomplete",
-      data: getCurrentArgumentNumber(elem.value, elem.selectionStart ?? 0)
-    });
+    client.send("autocomplete", getCurrentArgumentNumber(elem.value, elem.selectionStart ?? 0));
   }, [client]);
 
   useEffect(() => {
-    client?.onMessage((type, data) => {
-      if(type === "autocomplete") {
-        setAutocompleteList(data);
-      }
+    client?.subscribe("autocomplete", (data: string[]) => {
+      setAutocompleteList(data);
     });
   }, [client]);
 

@@ -1,8 +1,9 @@
-package net.opanel.web;
+package net.opanel.controller;
 
 import io.javalin.http.*;
 import io.javalin.http.servlet.JavalinServletContext;
 import net.opanel.OPanel;
+import net.opanel.web.JwtManager;
 
 public class BeforeController extends BaseController {
     private static final String DEFAULT_RSC_FILE = "index.txt";

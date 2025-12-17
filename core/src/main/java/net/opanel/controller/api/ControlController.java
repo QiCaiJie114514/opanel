@@ -1,4 +1,4 @@
-package net.opanel.api;
+package net.opanel.controller.api;
 
 import io.javalin.http.Handler;
 import io.javalin.http.HttpStatus;
@@ -7,7 +7,7 @@ import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
 import net.opanel.common.features.CodeOfConductFeature;
 import net.opanel.utils.Utils;
-import net.opanel.web.BaseController;
+import net.opanel.controller.BaseController;
 
 import java.io.IOException;
 import java.util.HashMap;

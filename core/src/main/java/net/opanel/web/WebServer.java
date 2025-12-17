@@ -8,8 +8,11 @@ import io.javalin.jetty.JettyServer;
 import io.javalin.json.JavalinGson;
 import io.javalin.util.JavalinLogger;
 import net.opanel.OPanel;
-import net.opanel.api.*;
-import net.opanel.terminal.TerminalEndpoint;
+import net.opanel.controller.BaseController;
+import net.opanel.controller.BeforeController;
+import net.opanel.controller.ErrorController;
+import net.opanel.controller.api.*;
+import net.opanel.endpoint.TerminalEndpoint;
 
 import java.io.IOException;
 
@@ -164,12 +167,8 @@ public class WebServer {
 
         app.events(event -> {
             event.serverStopping(() -> {
-                try {
-                    TerminalEndpoint.closeAllSessions();
-                    BaseController.unregisterAllControllerInstances();
-                } catch (IOException e) {
-                    plugin.logger.error("Failed to close WebSocket sessions: " + e.getMessage());
-                }
+                TerminalEndpoint.closeAllSessions();
+                BaseController.unregisterAllControllerInstances();
             });
         });
     }

@@ -1,11 +1,16 @@
-import type { ConsoleLog, WebSocketClient } from "@/lib/terminal/client";
 import { useEffect, useRef, useState } from "react";
 import { format } from "date-format-parse";
 import AnsiConverter from "ansi-to-html";
 import { cn, purifyUnsafeText } from "@/lib/utils";
-import { defaultLogLevel, getLogLevelId, type ConsoleLogLevel } from "@/lib/terminal/log-levels";
 import { getSettings } from "@/lib/settings";
 import { googleSansCode } from "@/lib/fonts";
+import {
+  type ConsoleLog,
+  type TerminalClient,
+  defaultLogLevel,
+  getLogLevelId,
+  type ConsoleLogLevel
+} from "@/lib/ws/terminal";
 
 const MAX_LOG_LINES = getSettings("terminal.max-log-lines");
 
@@ -79,7 +84,7 @@ export function TerminalConnector({
   level,
   className
 }: {
-  client: WebSocketClient | null
+  client: TerminalClient | null
   simple?: boolean
   level?: ConsoleLogLevel
   className?: string
@@ -110,19 +115,14 @@ export function TerminalConnector({
 
   useEffect(() => {
     if(!client) return;
-    
-    client.onMessage((type, data) => {
-      switch(type) {
-        case "init":
-          for(let i = data.length - MAX_LOG_LINES > 0 ? data.length - MAX_LOG_LINES : 0; i < data.length; i++) {
-            pushLog(data[i]);
-          }
-          break;
-        case "log":
-          pushLog(data);
-          break;
+
+    client.subscribe("init", (data: ConsoleLog[]) => {
+      for(let i = data.length - MAX_LOG_LINES > 0 ? data.length - MAX_LOG_LINES : 0; i < data.length; i++) {
+        pushLog(data[i]);
       }
     });
+
+    client.subscribe("log", (data: ConsoleLog) => pushLog(data));
 
     return () => clearLogs();
   }, [client]);

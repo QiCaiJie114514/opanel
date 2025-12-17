@@ -1,11 +1,11 @@
-package net.opanel.api;
+package net.opanel.controller.api;
 
 import io.javalin.http.ContentType;
 import io.javalin.http.Handler;
 import io.javalin.http.HttpStatus;
 import net.opanel.OPanel;
 import net.opanel.logger.Loggable;
-import net.opanel.web.BaseController;
+import net.opanel.controller.BaseController;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

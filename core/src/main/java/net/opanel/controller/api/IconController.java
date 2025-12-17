@@ -1,4 +1,4 @@
-package net.opanel.api;
+package net.opanel.controller.api;
 
 import io.javalin.http.ContentType;
 import io.javalin.http.Handler;
@@ -7,7 +7,7 @@ import io.javalin.http.UploadedFile;
 import net.opanel.OPanel;
 import net.opanel.common.OPanelServer;
 import net.opanel.utils.Utils;
-import net.opanel.web.BaseController;
+import net.opanel.controller.BaseController;
 
 import java.io.InputStream;
 

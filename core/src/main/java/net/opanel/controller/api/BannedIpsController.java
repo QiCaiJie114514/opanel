@@ -1,10 +1,10 @@
-package net.opanel.api;
+package net.opanel.controller.api;
 
 import io.javalin.http.Handler;
 import io.javalin.http.HttpStatus;
 import net.opanel.OPanel;
 import net.opanel.utils.Utils;
-import net.opanel.web.BaseController;
+import net.opanel.controller.BaseController;
 
 import java.net.UnknownHostException;
 import java.util.HashMap;

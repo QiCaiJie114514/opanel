@@ -1,0 +1,91 @@
+import { getCookie, hasCookie } from "cookies-next/client";
+import { toast } from "sonner";
+import { wsUrl } from "../api";
+import { $ } from "../i18n";
+
+type MessageType<M extends string> = M | "auth" | "connect" | "ping" | "pong" | "error";
+interface Packet<M extends string, D> {
+  type: MessageType<M>
+  data: D
+}
+
+const heartbeatInterval = 29000; // 29s
+
+export abstract class WebSocketClient<M extends string> {
+  private socket: WebSocket | null = null;
+
+  private heartbeatTimer: NodeJS.Timeout | null = null;
+
+  constructor(route: string) {
+    if(!hasCookie("token")) window.location.href = "/login";
+
+    const url = new URL(wsUrl);
+    url.pathname = route;
+    this.socket = new WebSocket(url);
+    this.init();
+  }
+
+  private init() {
+    if(!this.socket) return;
+
+    this.socket.addEventListener("open", () => {
+      // Send authentication token
+      // or the server will not accept any messages
+      this.send("auth", getCookie("token"));
+    });
+
+    this.subscribe("connect", () => {
+      this.onOpen();
+
+      // Start heartbeat
+      this.send("ping", null);
+    });
+
+    // Heartbeat to keep connection alive
+    this.subscribe("pong", () => {
+      this.heartbeatTimer = setTimeout(() => {
+        this.send("ping", null);
+      }, heartbeatInterval);
+    });
+
+    this.subscribe("error", (err) => {
+      this.onError(err);
+    });
+
+    this.socket.addEventListener("error", (err) => {
+      this.onError(err);
+      toast.error($("terminal.ws.error"));
+    });
+
+    this.socket.addEventListener("close", () => {
+      this.onClose();
+    });
+  }
+
+  public subscribe<D>(type: MessageType<M>, cb: (data: D) => void) {
+    if(!this.socket) throw new Error("WebSocket not initialized.");
+    this.socket.addEventListener("message", (e) => {
+      const packet: Packet<M, D> = JSON.parse(e.data);
+      if(packet.type === type) {
+        cb(packet.data);
+      }
+    });
+  }
+
+  protected abstract onOpen(): void;
+  protected abstract onClose(): void;
+  protected abstract onError(err: any): void;
+
+  public send<D>(type: MessageType<M>, data: D) {
+    if(!this.socket) throw new Error("WebSocket not initialized.");
+    this.socket.send(JSON.stringify({ type, data }));
+  }
+
+  public close() {
+    if(this.heartbeatTimer) clearTimeout(this.heartbeatTimer);
+    if(this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+  }
+}
