@@ -33,6 +33,8 @@ public class Main implements DedicatedServerModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onServerStop);
         ServerTickEvents.START_SERVER_TICK.register(this::onServerTick);
 
+        new FabricListener();
+
         CommandRegistrationCallback.EVENT.register(new OPanelCommand(instance));
     }
 

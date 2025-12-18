@@ -1,0 +1,38 @@
+plugins {
+    id 'fabric-loom'
+    id 'java-library'
+}
+
+base {
+    archivesName = "fabric-helper"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${common_minecraft_version}"
+    mappings "net.fabricmc:yarn:${common_yarn_mappings}:v2"
+    modCompileOnly "net.fabricmc:fabric-loader:${common_fabric_loader_version}"
+    modCompileOnly "net.fabricmc.fabric-api:fabric-api:${common_fabric_api_version}+${common_minecraft_version}"
+}
+
+tasks.named('processResources', ProcessResources) {
+    var replaceProperties = [
+            version: project.version,
+            minecraft_version: common_minecraft_version,
+            fabric_loader_version: common_fabric_loader_version
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching("fabric.mod.json") {
+        expand replaceProperties + [project: project]
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
