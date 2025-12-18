@@ -14,7 +14,7 @@ import net.minecraft.world.level.gamerules.GameRuleType;
 import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.LevelResource;
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.*;
 import net.opanel.common.features.CodeOfConductFeature;
 

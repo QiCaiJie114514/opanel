@@ -9,7 +9,7 @@ import {
 } from "react";
 import { ArrowUp, SquareTerminal, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
-import { useTerminal } from "@/hooks/use-terminal";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { TerminalConnector } from "@/components/terminal-connector";
 import { Button } from "@/components/ui/button";
 import { AutocompleteInput } from "@/components/autocomplete-input";
@@ -26,10 +26,10 @@ import { SubPage } from "../sub-page";
 import { changeSettings, getSettings } from "@/lib/settings";
 import { googleSansCode } from "@/lib/fonts";
 import { $ } from "@/lib/i18n";
-import { type ConsoleLogLevel, defaultLogLevel } from "@/lib/ws/terminal";
+import { type ConsoleLogLevel, defaultLogLevel, TerminalClient } from "@/lib/ws/terminal";
 
 export default function Terminal() {
-  const client = useTerminal();
+  const client = useWebSocket(TerminalClient);
   const inputRef = useRef<HTMLInputElement>(null);
   const [autocompleteList, setAutocompleteList] = useState<string[]>([]);
   const [historyList, setHistoryList] = useState<string[]>(getSettings("state.terminal.history"));

@@ -1,4 +1,4 @@
-package net.opanel.utils;
+package net.opanel.time;
 
 public class TPS {
     public static final int TICK_LIST_SIZE = 100;

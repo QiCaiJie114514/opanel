@@ -35,7 +35,7 @@ export type TerminalMessageType = (
 
 export class TerminalClient extends WebSocketClient<TerminalMessageType> {
   constructor() {
-    super("/terminal");
+    super("/socket/terminal");
   }
 
   override onOpen() {

@@ -1,4 +1,4 @@
-package net.opanel;
+package net.opanel.time;
 
 public class Uptimer {
     private final long serverStartTime;

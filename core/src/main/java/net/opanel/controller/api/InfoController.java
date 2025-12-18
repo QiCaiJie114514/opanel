@@ -3,7 +3,7 @@ package net.opanel.controller.api;
 import io.javalin.http.Handler;
 import io.javalin.http.HttpStatus;
 import net.opanel.OPanel;
-import net.opanel.utils.TPS;
+import net.opanel.time.TPS;
 import net.opanel.utils.Utils;
 import net.opanel.controller.BaseController;
 
@@ -32,18 +32,6 @@ public class InfoController extends BaseController {
         ingameTimeObj.put("paused", TPS.isPaused());
         ingameTimeObj.put("mspt", TPS.getRecentMSPT());
         obj.put("ingameTime", ingameTimeObj);
-
-        List<HashMap<String, Object>> players = server.getOnlinePlayers().stream()
-                .map(player -> {
-                    HashMap<String, Object> playerInfo = new HashMap<>();
-                    playerInfo.put("name", player.getName());
-                    playerInfo.put("uuid", player.getUUID());
-                    playerInfo.put("gamemode", player.getGameMode().getName());
-                    playerInfo.put("ping", player.getPing());
-                    return playerInfo;
-                })
-                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-        obj.put("onlinePlayers", players);
 
         sendResponse(ctx, obj);
     };

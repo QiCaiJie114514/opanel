@@ -4,9 +4,10 @@ import { useRouter } from "next/navigation";
 import { SquareTerminal } from "lucide-react";
 import { FunctionalCard } from "@/components/functional-card";
 import { Input } from "@/components/ui/input";
-import { useTerminal } from "@/hooks/use-terminal";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { TerminalConnector } from "@/components/terminal-connector";
 import { $ } from "@/lib/i18n";
+import { TerminalClient } from "@/lib/ws/terminal";
 
 export function TerminalCard({
   className,
@@ -14,7 +15,7 @@ export function TerminalCard({
   className?: string
 }>) {
   const { push } = useRouter();
-  const client = useTerminal();
+  const client = useWebSocket(TerminalClient);
 
   return (
     <FunctionalCard

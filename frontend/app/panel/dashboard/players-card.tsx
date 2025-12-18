@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import type { Player } from "@/lib/types";
+import { useContext, useEffect, useState } from "react";
 import { Users } from "lucide-react";
 import { InfoContext } from "@/contexts/api-context";
 import { FunctionalCard } from "@/components/functional-card";
@@ -18,6 +19,8 @@ import {
 import { cn, gameModeToString } from "@/lib/utils";
 import { googleSansCode } from "@/lib/fonts";
 import { $ } from "@/lib/i18n";
+import { useWebSocket } from "@/hooks/use-websocket";
+import { PlayersClient } from "@/lib/ws/players";
 
 export function PlayersCard({
   className,
@@ -25,11 +28,29 @@ export function PlayersCard({
   className?: string
 }>) {
   const ctx = useContext(InfoContext);
+  const client = useWebSocket(PlayersClient);
+  const [onlinePlayers, setOnlinePlayers] = useState<Player[]>([]);
+
+  useEffect(() => {
+    if(!client) return;
+
+    client.subscribe("init", (players: Player[]) => {
+      setOnlinePlayers(players.filter(({ isOnline }) => isOnline));
+    });
+
+    client.subscribe("join", (player: Player) => {
+      setOnlinePlayers((prev) => [...prev, player]);
+    });
+
+    client.subscribe("leave", ({ uuid }: Player) => {
+      setOnlinePlayers((prev) => prev.filter((p) => p.uuid !== uuid));
+    });
+  }, [client]);
   
   return (
     <FunctionalCard
       icon={Users}
-      title={`${$("dashboard.players.title")} (${ctx ? ctx.onlinePlayers.length : 0} / ${ctx?.maxPlayerCount ?? 0})`}
+      title={`${$("dashboard.players.title")} (${onlinePlayers.length} / ${ctx?.maxPlayerCount ?? 0})`}
       moreLink="/panel/players"
       className={className}
       innerClassName="p-4 pt-0">
@@ -42,7 +63,7 @@ export function PlayersCard({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {ctx && ctx.onlinePlayers.map(({ name, uuid, gamemode, ping }, i) => (
+          {onlinePlayers.map(({ name, uuid, gamemode, ping }, i) => (
             <TableRow key={i}>
               <TableCell className="font-semibold">
                 <Tooltip>
@@ -52,15 +73,15 @@ export function PlayersCard({
               </TableCell>
               <TableCell className="text-center">{gameModeToString(gamemode)}</TableCell>
               <TableCell className={cn("text-right", googleSansCode.className, (
-                ping < 100
+                ping! < 100
                 ? "text-green-600"
                 : (
-                  ping < 200
+                  ping! < 200
                   ? "text-yellow-600"
                   : "text-red-700"
                 )
               ))}>
-                {ping +"ms"}
+                {ping! +"ms"}
               </TableCell>
             </TableRow>
           ))}

@@ -16,6 +16,8 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { changeSettings, getSettings, type SettingsStorageType } from "@/lib/settings";
 import { BannedIpsDialog } from "./banned-ips-dialog";
 import { $ } from "@/lib/i18n";
+import { PlayersClient } from "@/lib/ws/players";
+import { useWebSocket } from "@/hooks/use-websocket";
 
 export default function Players() {
   type TabValueType = SettingsStorageType["state.players.tab"];
@@ -26,24 +28,20 @@ export default function Players() {
   const [isWhitelistEnabled, setWhitelistEnabledState] = useState(false);
   const [currentTab, setCurrentTab] = useState<TabValueType>(getSettings("state.players.tab"));
   const [searchString, setSearchString] = useState<string>("");
-  const nonBannedPlayers = useMemo(() => players.filter(({ isBanned }) => !isBanned), [players]);
-  const bannedPlayers = useMemo(() => players.filter(({ isBanned }) => isBanned), [players]);
+  const sortedPlayers = useMemo(() => players.sort((a, b) => a.name.localeCompare(b.name)), [players]);
+  const nonBannedPlayers = useMemo(() => sortedPlayers.filter(({ isBanned }) => !isBanned), [sortedPlayers]);
+  const bannedPlayers = useMemo(() => sortedPlayers.filter(({ isBanned }) => isBanned), [sortedPlayers]);
+  const client = useWebSocket(PlayersClient);
 
   const fetchPlayerList = async () => {
     try {
       const res = await sendGetRequest<PlayersResponse>("/api/players");
-      const namedPlayers = res.players.filter(({ name }) => name !== undefined);
-      const sortedPlayers = namedPlayers.sort((a, b) => a.name.localeCompare(b.name));
-
-      setPlayers(sortedPlayers);
-      setUnnamedPlayers(res.players.filter(({ name }) => name === undefined) as UnnamedPlayer[]);
       setMaxPlayerCount(res.maxPlayerCount);
       setWhitelistEnabledState(res.whitelist);
     } catch (e: any) {
       toastError(e, $("players.error"), [
         [400, $("common.error.400")],
-        [401, $("common.error.401")],
-        [500, $("common.error.500")]
+        [401, $("common.error.401")]
       ]);
     }
   };
@@ -53,6 +51,37 @@ export default function Players() {
 
     emitter.on("refresh-data", () => fetchPlayerList());
   }, []);
+
+  useEffect(() => {
+    if(!client) return;
+
+    client.subscribe("init", (players: Player[]) => {
+      const namedPlayers = players.filter(({ name }) => name !== undefined);
+
+      setPlayers(namedPlayers);
+      setUnnamedPlayers(players.filter(({ name }) => name === undefined) as UnnamedPlayer[]);
+    });
+
+    client.subscribe("join", (player: Player) => {
+      setPlayers((prev) => {
+        const index = prev.findIndex((p) => p.uuid === player.uuid);
+        if(index > -1) {
+          return prev.map((p, i) => i === index ? player : p);
+        }
+        return [...prev, player];
+      });
+    });
+
+    client.subscribe("leave", (player: Player) => {
+      setPlayers((prev) => prev.map((p) => p.uuid === player.uuid ? player : p));
+    });
+
+    client.subscribe("gamemode-change", (player: Player) => {
+      setPlayers((prev) => prev.map((p) => p.uuid === player.uuid ? player : p));
+    });
+
+    emitter.on("refresh-data", () => client.send("fetch", null));
+  }, [client]);
 
   useEffect(() => {
     document.body.addEventListener("keydown", (e) => {
@@ -90,7 +119,7 @@ export default function Players() {
             <Button
               variant="ghost"
               title={$("players.action.refresh")}
-              onClick={() => fetchPlayerList()}>
+              onClick={() => emitter.emit("refresh-data")}>
               <RotateCw />
             </Button>
             <InputGroup>

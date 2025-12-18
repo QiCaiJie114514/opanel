@@ -1,29 +1,33 @@
 package net.opanel.endpoint;
 
 import com.google.gson.Gson;
+import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import net.opanel.OPanel;
+import net.opanel.common.OPanelServer;
 import net.opanel.web.JwtManager;
 import org.eclipse.jetty.websocket.api.Session;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public abstract class BaseEndpoint {
+public abstract class BaseEndpoint implements Connectable {
+    protected final Javalin app;
     protected final WsConfig ws;
     protected final OPanel plugin;
+    protected final OPanelServer server;
 
-    protected static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<>());
+    private final Set<Session> sessions = new CopyOnWriteArraySet<>();
     private final ConcurrentHashMap<Session, Set<Consumer<WsMessageContext>>> sessionListeners = new ConcurrentHashMap<>();
 
-    public BaseEndpoint(WsConfig ws, OPanel plugin) {
+    public BaseEndpoint(Javalin app, WsConfig ws, OPanel plugin) {
+        this.app = app;
         this.ws = ws;
         this.plugin = plugin;
+        server = plugin.getServer();
 
         init();
     }
@@ -50,6 +54,7 @@ public abstract class BaseEndpoint {
         });
 
         ws.onMessage(ctx -> {
+            if(!sessionListeners.containsKey(ctx.session)) return;
             for(Consumer<WsMessageContext> listener : sessionListeners.get(ctx.session)) {
                 try {
                     listener.accept(ctx);
@@ -62,6 +67,10 @@ public abstract class BaseEndpoint {
         ws.onClose(ctx -> {
             sessions.remove(ctx.session);
             onClose(ctx);
+        });
+
+        app.events(event -> {
+            event.serverStopping(this::closeAllSessions);
         });
     }
 
@@ -88,9 +97,14 @@ public abstract class BaseEndpoint {
         });
     }
 
-    protected abstract void onConnect(WsMessageContext ctx);
-    protected abstract void onClose(WsCloseContext ctx);
-    protected abstract void onError(WsErrorContext ctx);
+    @Override
+    public void onConnect(WsMessageContext ctx) { }
+
+    @Override
+    public void onClose(WsCloseContext ctx) { }
+
+    @Override
+    public void onError(WsErrorContext ctx) { }
 
     protected void sendErrorMessage(WsMessageContext ctx, String err) {
         ctx.send(new Packet<>(Packet.ERROR, err));
@@ -98,25 +112,27 @@ public abstract class BaseEndpoint {
 
     protected <D> void broadcast(Packet<D> packet) {
         String message = new Gson().toJson(packet);
-        synchronized(sessions) {
-            sessions.removeIf(session -> !session.isOpen());
-            for(Session session : sessions) {
-                try {
-                    session.getRemote().sendString(message);
-                } catch(Exception e) {
-                    // Use System.err to avoid recursive logging through LogListenerAppender
-                    System.err.println("[OPanel] Failed to broadcast message to session: " + e.getMessage());
-                }
+
+        for(Session session : sessions) {
+            if(!session.isOpen()) {
+                sessions.remove(session);
+                continue;
+            }
+            try {
+                session.getRemote().sendString(message);
+            } catch(Exception e) {
+                // Use System.err to avoid recursive logging through LogListenerAppender
+                System.err.println("[OPanel] Failed to broadcast message to session: " + e.getMessage());
             }
         }
     }
 
-    public static void closeAllSessions() {
-        synchronized(sessions) {
-            for(Session session : sessions) {
+    public void closeAllSessions() {
+        for(Session session : sessions) {
+            if(session.isOpen()) {
                 session.close(1000, "Server is stopping.");
             }
-            sessions.clear();
         }
+        sessions.clear();
     }
 }

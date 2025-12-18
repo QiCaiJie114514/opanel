@@ -1,6 +1,6 @@
 package net.opanel.spigot_1_21_9;
 
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.*;
 import net.opanel.common.features.CodeOfConductFeature;
 import net.opanel.utils.Utils;

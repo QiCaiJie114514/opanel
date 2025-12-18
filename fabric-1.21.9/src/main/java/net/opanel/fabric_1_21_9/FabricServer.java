@@ -14,7 +14,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.GameRules;
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelServer;
 import net.opanel.common.OPanelSave;

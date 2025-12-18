@@ -1,6 +1,6 @@
 package net.opanel.folia_1_21;
 
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
@@ -9,7 +9,6 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
 
-import javax.naming.OperationNotSupportedException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.InetAddress;

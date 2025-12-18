@@ -20,33 +20,10 @@ public class PlayersController extends BaseController {
     }
 
     public Handler getPlayers = ctx -> {
-        final boolean isWhitelistEnabled = server.isWhitelistEnabled();
-        try {
-            final List<String> whitelistNames = server.getWhitelist().getNames();
-            HashMap<String, Object> obj = new HashMap<>();
-            obj.put("maxPlayerCount", server.getMaxPlayerCount());
-            obj.put("whitelist", isWhitelistEnabled);
-
-            List<HashMap<String, Object>> players = new ArrayList<>();
-            for(OPanelPlayer player : server.getPlayers()) {
-                HashMap<String, Object> playerInfo = new HashMap<>();
-                playerInfo.put("name", player.getName());
-                playerInfo.put("uuid", player.getUUID());
-                playerInfo.put("isOnline", player.isOnline());
-                playerInfo.put("isOp", player.isOp());
-                playerInfo.put("isBanned", player.isBanned());
-                playerInfo.put("gamemode", player.getGameMode().getName());
-                final String banReason = player.getBanReason();
-                playerInfo.put("banReason", banReason != null ? Utils.stringToBase64(banReason) : null);
-                if(isWhitelistEnabled) playerInfo.put("isWhitelisted", whitelistNames.contains(player.getName()));
-                players.add(playerInfo);
-            }
-            obj.put("players", players);
-
-            sendResponse(ctx, obj);
-        } catch (IOException e) {
-            sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+        HashMap<String, Object> obj = new HashMap<>();
+        obj.put("maxPlayerCount", server.getMaxPlayerCount());
+        obj.put("whitelist", server.isWhitelistEnabled());
+        sendResponse(ctx, obj);
     };
 
     public Handler giveOp = ctx -> {

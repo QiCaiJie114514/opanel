@@ -1,6 +1,6 @@
 "use client";
 
-import type { ConsoleLogLevel } from "@/lib/terminal/log-levels";
+import type { ConsoleLogLevel } from "@/lib/ws/terminal";
 import { Settings as SettingsIcon } from "lucide-react";
 import { changeSettings, getSettings, resetSettings, type SettingsStorageType } from "@/lib/settings";
 import { SubPage } from "../sub-page";

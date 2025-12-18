@@ -1,6 +1,5 @@
 package net.opanel.common;
 
-import net.opanel.ServerType;
 import net.opanel.utils.Utils;
 
 import java.io.IOException;

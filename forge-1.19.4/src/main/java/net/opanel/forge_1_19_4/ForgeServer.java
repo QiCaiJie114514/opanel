@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.IpBanListEntry;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.LevelResource;
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;

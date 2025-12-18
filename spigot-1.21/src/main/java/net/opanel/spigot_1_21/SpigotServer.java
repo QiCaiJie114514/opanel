@@ -1,6 +1,6 @@
 package net.opanel.spigot_1_21;
 
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;

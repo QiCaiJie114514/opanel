@@ -6,7 +6,8 @@ import net.opanel.config.OPanelConfiguration;
 import net.opanel.terminal.LogListenerManager;
 import net.opanel.common.OPanelServer;
 import net.opanel.logger.Loggable;
-import net.opanel.utils.TPS;
+import net.opanel.time.Uptimer;
+import net.opanel.time.TPS;
 import net.opanel.utils.Utils;
 import net.opanel.web.WebServer;
 

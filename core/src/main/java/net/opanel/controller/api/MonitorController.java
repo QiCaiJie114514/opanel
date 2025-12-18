@@ -2,7 +2,7 @@ package net.opanel.controller.api;
 
 import io.javalin.http.Handler;
 import net.opanel.OPanel;
-import net.opanel.utils.TPS;
+import net.opanel.time.TPS;
 import net.opanel.controller.BaseController;
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;

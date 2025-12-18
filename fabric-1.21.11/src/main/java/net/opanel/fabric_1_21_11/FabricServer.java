@@ -14,7 +14,7 @@ import net.minecraft.world.rule.GameRule;
 import net.minecraft.world.rule.GameRuleType;
 import net.minecraft.world.rule.GameRuleVisitor;
 import net.minecraft.world.rule.GameRules;
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelServer;
 import net.opanel.common.OPanelSave;

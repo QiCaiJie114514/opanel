@@ -179,6 +179,7 @@
   "players.title": "玩家",
   "players.hint": "点击玩家名以进行更多操作。",
   "players.error": "无法获取玩家列表",
+  "players.ws.error": "无法连接到玩家列表WebSocket",
   "players.search.placeholder": "搜索玩家...",
   "players.banned-ips": "管理封禁IP",
   "players.banned-ips.title": "管理封禁IP",

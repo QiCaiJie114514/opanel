@@ -31,9 +31,10 @@ export interface Player {
   isOnline: boolean
   isOp: boolean
   isBanned: boolean
-  gamemode?: GameMode
+  gamemode: GameMode
   banReason?: string // base64
   isWhitelisted?: boolean
+  ping?: number
 }
 
 /** Bot player may not have a name */
@@ -90,12 +91,6 @@ export interface InfoResponse {
     paused: boolean
     mspt: number
   }
-  onlinePlayers: {
-    name: string
-    uuid: string
-    gamemode: GameMode
-    ping: number
-  }[]
 }
 
 /** `/api/monitor` */
@@ -139,7 +134,6 @@ export interface DownloadSaveResponse {
 export interface PlayersResponse {
   maxPlayerCount: number
   whitelist: boolean
-  players: Player[]
 }
 
 /** `/api/whitelist` */

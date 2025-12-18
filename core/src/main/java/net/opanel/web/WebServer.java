@@ -12,9 +12,8 @@ import net.opanel.controller.BaseController;
 import net.opanel.controller.BeforeController;
 import net.opanel.controller.ErrorController;
 import net.opanel.controller.api.*;
+import net.opanel.endpoint.PlayersEndpoint;
 import net.opanel.endpoint.TerminalEndpoint;
-
-import java.io.IOException;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
@@ -59,7 +58,8 @@ public class WebServer {
         });
 
         // Websocket
-        app.ws("/terminal", ws -> new TerminalEndpoint(ws, plugin));
+        app.ws("/socket/players", ws -> new PlayersEndpoint(app, ws, plugin));
+        app.ws("/socket/terminal", ws -> new TerminalEndpoint(app, ws, plugin));
 
         // Controllers
         BeforeController beforeController = new BeforeController(plugin);
@@ -166,10 +166,7 @@ public class WebServer {
         plugin.initializeAccessKey();
 
         app.events(event -> {
-            event.serverStopping(() -> {
-                TerminalEndpoint.closeAllSessions();
-                BaseController.unregisterAllControllerInstances();
-            });
+            event.serverStopping(BaseController::unregisterAllControllerInstances);
         });
     }
 

@@ -1,6 +1,5 @@
 package net.opanel.forge_1_21_9;
 
-import com.google.gson.Gson;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.commands.CommandSourceStack;
@@ -9,20 +8,17 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.status.ServerStatus;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.server.dedicated.DedicatedServerProperties;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.players.IpBanList;
 import net.minecraft.server.players.IpBanListEntry;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.LevelResource;
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.*;
 import net.opanel.common.features.CodeOfConductFeature;
 import net.opanel.utils.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

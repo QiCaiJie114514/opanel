@@ -1,5 +1,5 @@
 import type { LanguageCode } from "@/lang";
-import type { ConsoleLogLevel } from "./terminal/log-levels";
+import type { ConsoleLogLevel } from "./ws/terminal";
 import {
   AvatarProvider,
   CapeProvider,

@@ -1,4 +1,4 @@
-package net.opanel;
+package net.opanel.common;
 
 public enum ServerType {
     BUKKIT("Bukkit"),

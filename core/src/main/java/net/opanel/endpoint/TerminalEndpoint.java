@@ -1,5 +1,6 @@
 package net.opanel.endpoint;
 
+import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import net.opanel.OPanel;
 import net.opanel.common.OPanelPlayer;
@@ -27,8 +28,8 @@ public class TerminalEndpoint extends BaseEndpoint {
     // which can lead to plenty duplicated logs in the frontend terminal
     private static final AtomicBoolean hasLogListenerRegistered = new AtomicBoolean(false);
 
-    public TerminalEndpoint(WsConfig ws, OPanel plugin) {
-        super(ws, plugin);
+    public TerminalEndpoint(Javalin app, WsConfig ws, OPanel plugin) {
+        super(app, ws, plugin);
 
         logListenerManager = plugin.getLogListenerManager();
         if(hasLogListenerRegistered.compareAndSet(false, true)) {
@@ -38,6 +39,7 @@ public class TerminalEndpoint extends BaseEndpoint {
         }
     }
 
+    @Override
     public void onConnect(WsMessageContext ctx) {
         Session session = ctx.session;
 
@@ -63,11 +65,4 @@ public class TerminalEndpoint extends BaseEndpoint {
             ctx.send(new TerminalPacket<>(TerminalPacket.AUTOCOMPLETE, nameList));
         });
     }
-
-    public void onClose(WsCloseContext ctx) {
-        sessions.remove(ctx.session);
-        // Connection closed silently to avoid log spam
-    }
-
-    public void onError(WsErrorContext ctx) { }
 }

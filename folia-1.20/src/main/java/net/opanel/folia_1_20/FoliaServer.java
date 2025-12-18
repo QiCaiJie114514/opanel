@@ -1,6 +1,6 @@
 package net.opanel.folia_1_20;
 
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
@@ -11,8 +11,6 @@ import org.bukkit.help.HelpTopic;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
