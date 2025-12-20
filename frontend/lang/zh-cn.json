@@ -120,7 +120,7 @@
   "dashboard.favicon.input.description": "请选择一个64*64大小的png格式图片作为服务器图标。",
   "dashboard.favicon.input.error": "图片大小错误，尺寸应为64*64",
   "dashboard.motd.title": "编辑 Motd",
-  "dashboard.motd.description": "在此编辑和预览服务器 Motd。@s{warning}",
+  "dashboard.motd.description.line": "在此编辑和预览服务器 Motd。@s{warning}",
   "dashboard.motd.description.warning": "注：此功能在Fabric不稳定，原因未知。",
   "dashboard.motd.error": "修改Motd失败",
   "dashboard.motd.textarea.placeholder": "请输入文本...",
