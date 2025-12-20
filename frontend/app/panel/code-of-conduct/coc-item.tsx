@@ -3,8 +3,8 @@ import { Alert } from "@/components/alert";
 import { Button } from "@/components/ui/button";
 import { sendDeleteRequest, toastError } from "@/lib/api";
 import { emitter } from "@/lib/emitter";
-import { cn } from "@/lib/utils";
 import { $ } from "@/lib/i18n";
+import { FilesEditorSidebarListItem } from "@/components/ui/files-editor";
 
 export function CodeOfConductItem({
   lang,
@@ -30,11 +30,12 @@ export function CodeOfConductItem({
   };
 
   return (
-    <div
-      className={cn("rounded-sm px-3 py-1 flex justify-between cursor-pointer", isActive && "bg-muted")}
+    <FilesEditorSidebarListItem
+      className="justify-between"
+      isActive={isActive}
       onClick={() => onClick && onClick()}>
       <div className="flex items-center gap-2">
-        <File size={17}/>
+        <File />
         <span className="text-sm">{lang +".txt"}</span>
       </div>
       <Alert
@@ -50,6 +51,6 @@ export function CodeOfConductItem({
           <Trash />
         </Button>
       </Alert>
-    </div>
+    </FilesEditorSidebarListItem>
   );
 }

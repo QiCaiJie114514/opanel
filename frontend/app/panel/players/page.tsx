@@ -18,6 +18,7 @@ import { BannedIpsDialog } from "./banned-ips-dialog";
 import { $ } from "@/lib/i18n";
 import { PlayersClient } from "@/lib/ws/players";
 import { useWebSocket } from "@/hooks/use-websocket";
+import { useKeydown } from "@/hooks/use-keydown";
 
 export default function Players() {
   type TabValueType = SettingsStorageType["state.players.tab"];
@@ -43,14 +44,6 @@ export default function Players() {
         [400, $("common.error.400")],
         [401, $("common.error.401")]
       ]);
-    }
-  };
-
-  const handleKeydown = (e: KeyboardEvent) => {
-    if(e.ctrlKey && e.key === "ArrowRight") {
-      setCurrentTab("banned-list");
-    } else if(e.ctrlKey && e.key === "ArrowLeft") {
-      setCurrentTab("player-list");
     }
   };
 
@@ -91,10 +84,8 @@ export default function Players() {
     emitter.on("refresh-data", () => client.send("fetch", null));
   }, [client]);
 
-  useEffect(() => {
-    document.body.addEventListener("keydown", handleKeydown);
-    return () => document.body.removeEventListener("keydown", handleKeydown);
-  }, []);
+  useKeydown("ArrowRight", { ctrl: true }, () => setCurrentTab("banned-list"));
+  useKeydown("ArrowLeft", { ctrl: true }, () => setCurrentTab("player-list"));
 
   return (
     <SubPage

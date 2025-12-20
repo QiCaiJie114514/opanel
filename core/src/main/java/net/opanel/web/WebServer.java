@@ -108,6 +108,10 @@ public class WebServer {
                 post("stop", controlController.stopServer);
                 post("reload", controlController.reloadServer);
                 post("world", controlController.switchSave);
+                get("bukkit-config", controlController.getBukkitServerConfig);
+                post("bukkit-config", controlController.setBukkitServerConfig);
+                get("paper-world-config", controlController.getPaperWorldConfig);
+                post("paper-world-config", controlController.setPaperWorldConfig);
             });
             path("gamerules", () -> {
                 get("/", gamerulesController.getGamerules);

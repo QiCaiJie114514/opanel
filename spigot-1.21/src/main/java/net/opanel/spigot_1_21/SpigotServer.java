@@ -8,6 +8,7 @@ import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
 import net.opanel.common.OPanelWhitelist;
+import net.opanel.common.features.BukkitConfigFeature;
 import net.opanel.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -24,7 +25,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-public class SpigotServer extends BaseBukkitServer implements OPanelServer {
+public class SpigotServer extends BaseBukkitServer implements OPanelServer, BukkitConfigFeature {
     private final Main plugin;
     private final Server server;
 

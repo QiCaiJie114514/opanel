@@ -110,6 +110,13 @@ export interface CodeOfConductResponse {
   codeOfConducts: Record<string, string> // base64
 }
 
+/** `/api/control/bukkit-config` */
+export interface BukkitServerConfigResponse {
+  bukkit: string // base64
+  spigot?: string // base64
+  paper?: string // base64
+}
+
 /** `/api/gamerules` */
 export interface GamerulesResponse {
   gamerules: ServerGamerules

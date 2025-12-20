@@ -5,11 +5,15 @@ import io.javalin.http.HttpStatus;
 import net.opanel.OPanel;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
+import net.opanel.common.ServerType;
+import net.opanel.common.features.BukkitConfigFeature;
 import net.opanel.common.features.CodeOfConductFeature;
 import net.opanel.utils.Utils;
 import net.opanel.controller.BaseController;
 
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 public class ControlController extends BaseController {
@@ -30,7 +34,7 @@ public class ControlController extends BaseController {
 
     public Handler setServerProperties = ctx -> {
         try {
-            final String properties = ctx.bodyAsClass(String.class);
+            final String properties = ctx.body().replaceAll("\"", "");;
             if(properties.isEmpty()) {
                 sendResponse(ctx, HttpStatus.BAD_REQUEST, "server.properties content is missing.");
                 return;
@@ -72,12 +76,12 @@ public class ControlController extends BaseController {
 
         try {
             final String lang = ctx.queryParam("lang");
-            final String content = ctx.body();
             if(lang == null) {
                 sendResponse(ctx, HttpStatus.BAD_REQUEST, "Language is missing.");
                 return;
             }
 
+            final String content = ctx.body().replaceAll("\"", "");
             ((CodeOfConductFeature) server).updateOrCreateCodeOfConduct(lang, !content.isEmpty() ? Utils.base64ToString(content) : "");
             sendResponse(ctx, HttpStatus.OK);
         } catch (IOException e) {
@@ -133,6 +137,115 @@ public class ControlController extends BaseController {
         try {
             save.setToCurrent();
             sendResponse(ctx, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    };
+
+    public Handler getBukkitServerConfig = ctx -> {
+        if(!(server instanceof BukkitConfigFeature)) {
+            sendResponse(ctx, HttpStatus.SERVICE_UNAVAILABLE, "This server is not a bukkit server.");
+            return;
+        }
+
+        ServerType serverType = server.getServerType();
+        try {
+            HashMap<String, Object> obj = new HashMap<>();
+            obj.put("bukkit", Utils.stringToBase64(((BukkitConfigFeature) server).getBukkitServerConfigContent("bukkit")));
+            if(serverType == ServerType.SPIGOT || serverType == ServerType.PAPER || serverType == ServerType.FOLIA) {
+                obj.put("spigot", Utils.stringToBase64(((BukkitConfigFeature) server).getBukkitServerConfigContent("spigot")));
+            }
+            if(serverType == ServerType.PAPER || serverType == ServerType.FOLIA) {
+                obj.put("paper", Utils.stringToBase64(((BukkitConfigFeature) server).getBukkitServerConfigContent("paper")));
+            }
+            sendResponse(ctx, obj);
+        } catch (IllegalArgumentException e) {
+            sendResponse(ctx, HttpStatus.BAD_REQUEST, "Unknown target.");
+        } catch (NoSuchFileException e) {
+            sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the target bukkit server config.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    };
+
+    public Handler setBukkitServerConfig = ctx -> {
+        if(!(server instanceof BukkitConfigFeature)) {
+            sendResponse(ctx, HttpStatus.SERVICE_UNAVAILABLE, "This server is not a bukkit server.");
+            return;
+        }
+
+        try {
+            final String target = ctx.queryParam("target");
+            if(target == null) {
+                sendResponse(ctx, HttpStatus.BAD_REQUEST, "Target is missing.");
+                return;
+            }
+
+            final String content = ctx.body().replaceAll("\"", "");;
+            if(content.isEmpty()) {
+                sendResponse(ctx, HttpStatus.BAD_REQUEST, "Config content is missing.");
+                return;
+            }
+
+            ((BukkitConfigFeature) server).writeBukkitServerConfigContent(target, Utils.base64ToString(content));
+            sendResponse(ctx, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            sendResponse(ctx, HttpStatus.BAD_REQUEST, "Unknown target.");
+        } catch (NoSuchFileException e) {
+            sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the target bukkit server config.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    };
+
+    public Handler getPaperWorldConfig = ctx -> {
+        if(!(server instanceof BukkitConfigFeature)) {
+            sendResponse(ctx, HttpStatus.SERVICE_UNAVAILABLE, "This server is not a bukkit server.");
+            return;
+        }
+
+        try {
+            final String worldName = ctx.queryParam("world");
+
+            HashMap<String, Object> obj = new HashMap<>();
+            if(worldName == null) {
+                obj.put("config", ((BukkitConfigFeature) server).getPaperWorldDefaultsConfigContent());
+            } else {
+                obj.put("config", ((BukkitConfigFeature) server).getPaperWorldConfigContent(worldName));
+            }
+            sendResponse(ctx, obj);
+        } catch (NoSuchFileException e) {
+            sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the world config.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    };
+
+    public Handler setPaperWorldConfig = ctx -> {
+        if(!(server instanceof BukkitConfigFeature)) {
+            sendResponse(ctx, HttpStatus.SERVICE_UNAVAILABLE, "This server is not a bukkit server.");
+            return;
+        }
+
+        try {
+            final String worldName = ctx.queryParam("world");
+            final String content = ctx.body().replaceAll("\"", "");;
+            if(content.isEmpty()) {
+                sendResponse(ctx, HttpStatus.BAD_REQUEST, "Config content is missing.");
+            }
+
+            if(worldName == null) {
+                ((BukkitConfigFeature) server).writePaperWorldDefaultsConfigContent(Utils.base64ToString(content));
+            } else {
+                ((BukkitConfigFeature) server).writePaperWorldConfigContent(worldName, Utils.base64ToString(content));
+            }
+            sendResponse(ctx, HttpStatus.OK);
+        } catch (NoSuchFileException e) {
+            sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the world config.");
         } catch (IOException e) {
             e.printStackTrace();
             sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

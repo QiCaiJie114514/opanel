@@ -5,6 +5,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.opanel.bukkit_helper.BaseBukkitServer;
 import net.opanel.common.ServerType;
 import net.opanel.common.*;
+import net.opanel.common.features.BukkitConfigFeature;
 import net.opanel.common.features.CodeOfConductFeature;
 import net.opanel.utils.Utils;
 import org.bukkit.*;
@@ -26,7 +27,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-public class SpigotServer extends BaseBukkitServer implements OPanelServer, CodeOfConductFeature {
+public class SpigotServer extends BaseBukkitServer implements OPanelServer, CodeOfConductFeature, BukkitConfigFeature {
     private final Main plugin;
     private final Server server;
 

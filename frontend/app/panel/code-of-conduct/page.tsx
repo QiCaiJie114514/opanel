@@ -20,6 +20,14 @@ import { CodeOfConductItem } from "./coc-item";
 import { CreateCodeOfConductDialog } from "./create-coc-dialog";
 import { Spinner } from "@/components/ui/spinner";
 import { $ } from "@/lib/i18n";
+import {
+  FilesEditor,
+  FilesEditorContent,
+  FilesEditorSidebar,
+  FilesEditorSidebarList,
+  FilesEditorStatusBar,
+  FilesEditorStatusBarItem
+} from "@/components/ui/files-editor";
 
 const MonacoEditor = dynamic(() => import("@/components/monaco-editor"), { ssr: false });
 
@@ -145,13 +153,13 @@ export default function CodeOfConduct() {
       icon={<HeartHandshake />}
       outerClassName="max-h-screen overflow-y-hidden max-lg:max-h-none max-lg:overflow-y-auto"
       className="flex-1 min-h-0">
-      <div className="h-full border rounded-md flex max-lg:flex-col">
+      <FilesEditor>
         {
           codeOfConducts.size !== 0 && currentEditing
           ? (
             <>
-              <div className="flex-1/4 h-fit max-h-full max-lg:max-h-none flex flex-col gap-3 p-2">
-                <div className="flex-1 flex flex-col overflow-y-auto">
+              <FilesEditorSidebar>
+                <FilesEditorSidebarList>
                   {Array.from(codeOfConducts).map(([lang]) => (
                     <CodeOfConductItem
                       lang={lang}
@@ -162,7 +170,7 @@ export default function CodeOfConduct() {
                       }}
                       key={lang}/>
                   ))}
-                </div>
+                </FilesEditorSidebarList>
                 <CreateCodeOfConductDialog
                   excludedLocales={Array.from(codeOfConducts.keys())}
                   asChild
@@ -173,8 +181,8 @@ export default function CodeOfConduct() {
                     <Plus />
                   </Button>
                 </CreateCodeOfConductDialog>
-              </div>
-              <div className="flex-3/4 border-l max-lg:border-l-0 max-lg:border-t max-lg:min-h-96 flex flex-col justify-end max-lg:flex-col-reverse">
+              </FilesEditorSidebar>
+              <FilesEditorContent>
                 <MonacoEditor
                   defaultLanguage="txt"
                   value={editorValue}
@@ -186,12 +194,12 @@ export default function CodeOfConduct() {
                     ...monacoSettingsOptions
                   }}
                   onChange={(value) => setEditorValue(value ?? "")}/>
-                <div className="h-6 px-2 border-t max-lg:border-t-0 max-lg:border-b flex justify-between items-center [&>*]:text-xs [&>*]:text-muted-foreground cursor-default">
-                  <div className="flex items-center gap-3">
+                <FilesEditorStatusBar>
+                  <FilesEditorStatusBarItem className="flex items-center gap-3">
                     <span>{locale.getByTag(currentEditing.toLowerCase().replaceAll("_", "-")).name}</span>
                     <span>{$("coc.editor.status-bar.words", editorValue.length)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
+                  </FilesEditorStatusBarItem>
+                  <FilesEditorStatusBarItem side="right" className="flex items-center gap-1">
                     {
                       isSaving
                       ? (
@@ -202,9 +210,9 @@ export default function CodeOfConduct() {
                       )
                       : <span>{$("coc.editor.status-bar.saved")}</span>
                     }
-                  </div>
-                </div>
-              </div>
+                  </FilesEditorStatusBarItem>
+                </FilesEditorStatusBar>
+              </FilesEditorContent>
             </>
           )
           : (
@@ -229,7 +237,7 @@ export default function CodeOfConduct() {
             </Empty>
           )
         }
-      </div>
+      </FilesEditor>
     </SubPage>
   );
 }

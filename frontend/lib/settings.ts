@@ -1,5 +1,6 @@
 import type { LanguageCode } from "@/lang";
 import type { ConsoleLogLevel } from "./ws/terminal";
+import type { ConfigFile } from "@/app/panel/bukkit-config/page";
 import {
   AvatarProvider,
   CapeProvider,
@@ -38,6 +39,7 @@ export type SettingsStorageType = {
   "state.players.tab": "player-list" | "banned-list"
   "state.terminal.history": string[]
   "state.code-of-conduct.current-editing"?: string
+  "state.bukkit-config.current-editing": ConfigFile
 };
 
 const defaultSettings: SettingsStorageType = {
@@ -60,7 +62,8 @@ const defaultSettings: SettingsStorageType = {
   "system.language": "zh-cn",
   "state.players.tab": "player-list",
   "state.terminal.history": [],
-  "state.code-of-conduct.current-editing": undefined
+  "state.code-of-conduct.current-editing": undefined,
+  "state.bukkit-config.current-editing": "bukkit"
 };
 
 export const monacoSettingsOptions: EditorOptionsType = {
