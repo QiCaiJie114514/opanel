@@ -44,6 +44,7 @@ public class Main extends JavaPlugin implements Listener {
         initServerTickListener();
 
         Bukkit.getPluginManager().registerEvents(this, this);
+        Bukkit.getPluginManager().registerEvents(new SpigotListener(this), this);
 
         getCommand("opanel").setExecutor(new OPanelCommand(instance));
     }

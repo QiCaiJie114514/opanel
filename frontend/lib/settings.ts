@@ -1,5 +1,11 @@
-import type { ConsoleLogLevel } from "./terminal/log-levels";
-import type { EditorOptionsType } from "./types";
+import type { LanguageCode } from "@/lang";
+import type { ConsoleLogLevel } from "./ws/terminal";
+import {
+  AvatarProvider,
+  CapeProvider,
+  SkinProvider,
+  type EditorOptionsType
+} from "./types";
 
 const storageKey = "opanel.settings";
 
@@ -12,6 +18,9 @@ function getLocalStorage() {
 
 export type SettingsStorageType = {
   "dashboard.monitor-interval": number
+  "players.avatar-provider": AvatarProvider | string
+  "players.skin-provider": SkinProvider | string
+  "players.cape-provider": CapeProvider | string
   "terminal.autocomplete": boolean
   "terminal.word-wrap": boolean
   "terminal.font-size": number
@@ -24,7 +33,8 @@ export type SettingsStorageType = {
   "code-of-conduct.auto-saving-interval": number
   "monaco.word-wrap": boolean
   "monaco.font-size": number
-  "security.access-key"?: never
+  "system.language": LanguageCode
+  "system.access-key"?: never
   "state.players.tab": "player-list" | "banned-list"
   "state.terminal.history": string[]
   "state.code-of-conduct.current-editing"?: string
@@ -32,6 +42,9 @@ export type SettingsStorageType = {
 
 const defaultSettings: SettingsStorageType = {
   "dashboard.monitor-interval": 2000, // ms
+  "players.avatar-provider": AvatarProvider.MINOTAR,
+  "players.skin-provider": SkinProvider.MINOTAR,
+  "players.cape-provider": CapeProvider.CRAFATAR,
   "terminal.autocomplete": true,
   "terminal.word-wrap": false,
   "terminal.font-size": 12, // px
@@ -44,6 +57,7 @@ const defaultSettings: SettingsStorageType = {
   "code-of-conduct.auto-saving-interval": 2000, // ms
   "monaco.word-wrap": false,
   "monaco.font-size": 14, // px
+  "system.language": "zh-cn",
   "state.players.tab": "player-list",
   "state.terminal.history": [],
   "state.code-of-conduct.current-editing": undefined

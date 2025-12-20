@@ -8,14 +8,17 @@ import io.javalin.jetty.JettyServer;
 import io.javalin.json.JavalinGson;
 import io.javalin.util.JavalinLogger;
 import net.opanel.OPanel;
-import net.opanel.api.*;
-import net.opanel.terminal.TerminalEndpoint;
-
-import java.io.IOException;
+import net.opanel.controller.BaseController;
+import net.opanel.controller.BeforeController;
+import net.opanel.controller.ErrorController;
+import net.opanel.controller.api.*;
+import net.opanel.endpoint.PlayersEndpoint;
+import net.opanel.endpoint.TerminalEndpoint;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 
 public class WebServer {
+    public static final String ROOT_PATH = "web";
     public final int PORT;
 
     private final OPanel plugin;
@@ -39,6 +42,7 @@ public class WebServer {
             config.plugins.enableCors(cors -> {
                 cors.add(it -> {
                     it.allowHost("http://localhost:3001"); // for dev
+                    it.allowCredentials = true;
                 });
             });
 
@@ -49,16 +53,18 @@ public class WebServer {
             // Frontend
             config.staticFiles.add(staticFiles -> {
                 staticFiles.hostedPath = "/";
-                staticFiles.directory = "/web";
+                staticFiles.directory = "/"+ ROOT_PATH;
             });
         });
 
         // Websocket
-        app.ws("/terminal", ws -> new TerminalEndpoint(ws, plugin));
+        app.ws("/socket/players", ws -> new PlayersEndpoint(app, ws, plugin));
+        app.ws("/socket/terminal", ws -> new TerminalEndpoint(app, ws, plugin));
 
         // Controllers
         BeforeController beforeController = new BeforeController(plugin);
         ErrorController errorController = new ErrorController(plugin);
+        DownloadController downloadController = new DownloadController(plugin);
         AuthController authController = new AuthController(plugin);
         BannedIpsController bannedIpsController = new BannedIpsController(plugin);
         ControlController controlController = new ControlController(plugin);
@@ -77,6 +83,10 @@ public class WebServer {
         app.before("/*", beforeController.beforeAll);
         app.before("/*", beforeController.handleRsc);
         app.before("/*", beforeController.handleFonts);
+        app.routes(() -> path("file", () -> {
+            before("/*", beforeController.authCookie);
+            get("/{id}/{fileName}", downloadController.downloadFile);
+        }));
         app.routes(() -> path("api", () -> {
             before("/*", beforeController.authCookie);
 
@@ -114,6 +124,7 @@ public class WebServer {
             path("logs", () -> {
                 get("/", logsController.getLogFileList);
                 get("{fileName}", logsController.getLogContent);
+                get("{fileName}/download", logsController.downloadLog);
                 delete("/", logsController.clearLogs);
                 delete("{fileName}", logsController.deleteLog);
             });
@@ -155,25 +166,22 @@ public class WebServer {
         plugin.initializeAccessKey();
 
         app.events(event -> {
-            event.serverStopping(() -> {
-                try {
-                    TerminalEndpoint.closeAllSessions();
-                } catch (IOException e) {
-                    plugin.logger.error("Failed to close WebSocket sessions: " + e.getMessage());
-                }
-            });
+            event.serverStopping(BaseController::unregisterAllControllerInstances);
         });
     }
 
     public void stop() throws Exception {
         if(isRunning()) {
             app.stop();
+            app = null;
             plugin.logger.info("Web server is stopped.");
         }
     }
 
     public boolean isRunning() {
+        if(app == null) return false;
+
         JettyServer jettyServer = app.jettyServer();
-        return app != null && jettyServer != null && jettyServer.started;
+        return jettyServer != null && jettyServer.started;
     }
 }

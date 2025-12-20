@@ -1,0 +1,30 @@
+plugins {
+    id 'java-library'
+}
+
+base {
+    archivesName = "bukkit-helper"
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "spigotmc"
+        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    }
+    maven {
+        name = "mojang"
+        url = uri("https://libraries.minecraft.net")
+    }
+}
+
+dependencies {
+    compileOnly "org.spigotmc:spigot-api:${common_minecraft_version}-R0.1-SNAPSHOT"
+    compileOnly "com.mojang:brigadier:1.0.18"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(14)
+    }
+}

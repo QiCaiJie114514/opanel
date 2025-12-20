@@ -1,6 +1,9 @@
 package net.opanel.folia_1_20;
 
-import net.opanel.ServerType;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
+import net.opanel.bukkit_helper.BaseBukkitServer;
+import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
@@ -11,8 +14,6 @@ import org.bukkit.help.HelpTopic;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +21,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-public class FoliaServer implements OPanelServer {
+public class FoliaServer extends BaseBukkitServer implements OPanelServer {
     private final Main plugin;
     private final Server server;
 
@@ -214,8 +215,35 @@ public class FoliaServer implements OPanelServer {
     }
 
     @Override
+    public List<String> getCommandTabList(int argIndex, String command) {
+        if(argIndex == 1) return getCommands();
+
+        List<String> tabList = new ArrayList<>();
+        String[] args = command.split(" ");
+
+        try {
+            CommandDispatcher<?> dispatcher = getCommandDispatcher();
+            CommandNode<?> currentNode = dispatcher.getRoot();
+            for(int i = 0; i <= args.length; i++) {
+                if(currentNode == null) break;
+                if(i + 1 == argIndex) {
+                    for(CommandNode<?> subNode : currentNode.getChildren()) {
+                        tabList.add(subNode.getName());
+                    }
+                    break;
+                }
+                if(i == args.length) break;
+                currentNode = currentNode.getChild(args[i]);
+            }
+        } catch (Exception e) {
+            //
+        }
+        return tabList;
+    }
+
+    @Override
     public HashMap<String, Object> getGamerules() {
-        final World world = server.getWorlds().getFirst();
+        final World world = server.getWorlds().get(0);
         HashMap<String, Object> gamerules = new HashMap<>();
         for(String key : world.getGameRules()) {
             GameRule<?> rule = GameRule.getByName(key);
@@ -230,7 +258,7 @@ public class FoliaServer implements OPanelServer {
     public void setGamerules(HashMap<String, Object> gamerules) {
         HashMap<String, Object> currentGamerules = getGamerules();
         plugin.runTask(() -> {
-            final World world = server.getWorlds().getFirst();
+            final World world = server.getWorlds().get(0);
             gamerules.forEach((key, value) -> {
                 if(value == null) return;
                 final Object currentValue = currentGamerules.get(key);
@@ -262,6 +290,6 @@ public class FoliaServer implements OPanelServer {
 
     @Override
     public long getIngameTime() {
-        return server.getWorlds().getFirst().getTime();
+        return server.getWorlds().get(0).getTime();
     }
 }

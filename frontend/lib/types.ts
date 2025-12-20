@@ -31,9 +31,10 @@ export interface Player {
   isOnline: boolean
   isOp: boolean
   isBanned: boolean
-  gamemode?: GameMode
+  gamemode: GameMode
   banReason?: string // base64
   isWhitelisted?: boolean
+  ping?: number
 }
 
 /** Bot player may not have a name */
@@ -48,6 +49,27 @@ export type Whitelist = {
 
 export type EditorRefType = Parameters<OnMount>[0];
 export type EditorOptionsType = React.ComponentProps<typeof Editor>["options"];
+
+export enum AvatarProvider {
+  MINOTAR = "https://minotar.net/avatar/",
+  MINEATAR = "https://api.mineatar.io/face/",
+  MCHEADS = "https://api.mcheads.org/head/",
+  /** @see https://github.com/crafatar/crafatar/issues/329#issuecomment-3559253664 */
+  CRAFATAR = "https://avatars.cloudhaven.gg/avatars/"
+}
+
+export enum SkinProvider {
+  MINOTAR = "https://minotar.net/skin/",
+  MINEATAR = "https://api.mineatar.io/skin/",
+  MCHEADS = "https://api.mcheads.org/skin/",
+  /** @see https://github.com/crafatar/crafatar/issues/329#issuecomment-3559253664 */
+  CRAFATAR = "https://avatars.cloudhaven.gg/skins/"
+}
+
+export enum CapeProvider {
+  /** @see https://github.com/crafatar/crafatar/issues/329#issuecomment-3559253664 */
+  CRAFATAR = "https://avatars.cloudhaven.gg/capes/"
+}
 
 /** `/api/version` */
 export interface VersionResponse {
@@ -69,12 +91,6 @@ export interface InfoResponse {
     paused: boolean
     mspt: number
   }
-  onlinePlayers: {
-    name: string
-    uuid: string
-    gamemode: GameMode
-    ping: number
-  }[]
 }
 
 /** `/api/monitor` */
@@ -109,11 +125,15 @@ export interface SavesResponse {
   saves: Save[]
 }
 
+/** `/api/saves/{saveName}` */
+export interface DownloadSaveResponse {
+  download: string
+}
+
 /** `/api/players` */
 export interface PlayersResponse {
   maxPlayerCount: number
   whitelist: boolean
-  players: Player[]
 }
 
 /** `/api/whitelist` */

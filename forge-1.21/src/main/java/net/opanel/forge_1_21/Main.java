@@ -33,6 +33,7 @@ public class Main {
     public Main() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new ForgeListener());
 
         initLogListenerAppender();
     }

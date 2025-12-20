@@ -6,7 +6,8 @@ import net.opanel.config.OPanelConfiguration;
 import net.opanel.terminal.LogListenerManager;
 import net.opanel.common.OPanelServer;
 import net.opanel.logger.Loggable;
-import net.opanel.utils.TPS;
+import net.opanel.time.Uptimer;
+import net.opanel.time.TPS;
 import net.opanel.utils.Utils;
 import net.opanel.web.WebServer;
 
@@ -114,7 +115,7 @@ public class OPanel {
         OPanelConfiguration config = getConfig();
         if(config.accessKey.isEmpty()) {
             // Generate access key and then store it into the config
-            final String accessKey = Utils.generateRandomCharSequence(12);
+            final String accessKey = Utils.generateRandomCharSequence(12, true);
             config.accessKey = Utils.md5(Utils.md5(accessKey));
             setConfig(config);
 
@@ -134,7 +135,7 @@ public class OPanel {
         }
         if(config.salt.isEmpty()) {
             // Generate salt and then store it into the config
-            config.salt = Utils.generateRandomCharSequence(6);
+            config.salt = Utils.generateRandomCharSequence(6, true);
             setConfig(config);
         }
     }

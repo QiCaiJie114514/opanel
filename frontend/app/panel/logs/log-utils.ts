@@ -1,30 +1,21 @@
-import download from "downloadjs";
 import { toast } from "sonner";
-import { sendDeleteRequest, sendGetRequest, toastError } from "@/lib/api";
+import { apiUrl, sendDeleteRequest, toastError } from "@/lib/api";
+import { $ } from "@/lib/i18n";
 
 export async function downloadLog(name: string) {
-  const fileName = name.endsWith(".log.gz") ? name.replace(".log.gz", ".log") : name;
-  try {
-    const res = await sendGetRequest<string>(`/api/logs/${name}`);
-    download(res, fileName, "text/plain");
-  } catch (e: any) {
-    toastError(e, `无法下载日志 ${fileName}`, [
-      [401, "未登录"],
-      [404, "找不到该日志"]
-    ]);
-  }
+  window.open(`${apiUrl}/api/logs/${name}/download`, "_blank");
 }
 
 export async function deleteLog(name: string) {
   try {
     await sendDeleteRequest(`/api/logs/${name}`);
-    toast.success("删除成功");
+    toast.success($("logs.action.delete.success"));
   } catch (e: any) {
-    toastError(e, "无法删除日志", [
-      [400, "请求参数错误"],
-      [401, "未登录"],
-      [403, "当前日志不可删除"],
-      [404, "找不到该日志"]
+    toastError(e, $("logs.action.delete.error"), [
+      [400, $("common.error.400")],
+      [401, $("common.error.401")],
+      [403, $("logs.action.delete.error.403")],
+      [404, $("logs.action.delete.error.404")]
     ]);
   }
 }

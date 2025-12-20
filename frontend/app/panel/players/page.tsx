@@ -2,7 +2,7 @@
 
 import type { Player, PlayersResponse, UnnamedPlayer } from "@/lib/types";
 import { useEffect, useMemo, useState } from "react";
-import { Ban, Contact, Search, UserPen, Users } from "lucide-react";
+import { Ban, Contact, RotateCw, Search, UserPen, Users } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/data-table";
 import { sendGetRequest, toastError } from "@/lib/api";
@@ -15,6 +15,9 @@ import { emitter } from "@/lib/emitter";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { changeSettings, getSettings, type SettingsStorageType } from "@/lib/settings";
 import { BannedIpsDialog } from "./banned-ips-dialog";
+import { $ } from "@/lib/i18n";
+import { PlayersClient } from "@/lib/ws/players";
+import { useWebSocket } from "@/hooks/use-websocket";
 
 export default function Players() {
   type TabValueType = SettingsStorageType["state.players.tab"];
@@ -25,25 +28,29 @@ export default function Players() {
   const [isWhitelistEnabled, setWhitelistEnabledState] = useState(false);
   const [currentTab, setCurrentTab] = useState<TabValueType>(getSettings("state.players.tab"));
   const [searchString, setSearchString] = useState<string>("");
-  const nonBannedPlayers = useMemo(() => players.filter(({ isBanned }) => !isBanned), [players]);
-  const bannedPlayers = useMemo(() => players.filter(({ isBanned }) => isBanned), [players]);
+  const sortedPlayers = useMemo(() => players.sort((a, b) => a.name.localeCompare(b.name)), [players]);
+  const nonBannedPlayers = useMemo(() => sortedPlayers.filter(({ isBanned }) => !isBanned), [sortedPlayers]);
+  const bannedPlayers = useMemo(() => sortedPlayers.filter(({ isBanned }) => isBanned), [sortedPlayers]);
+  const client = useWebSocket(PlayersClient);
 
   const fetchPlayerList = async () => {
     try {
       const res = await sendGetRequest<PlayersResponse>("/api/players");
-      const namedPlayers = res.players.filter(({ name }) => name !== undefined);
-      const sortedPlayers = namedPlayers.sort((a, b) => a.name.localeCompare(b.name));
-
-      setPlayers(sortedPlayers);
-      setUnnamedPlayers(res.players.filter(({ name }) => name === undefined) as UnnamedPlayer[]);
       setMaxPlayerCount(res.maxPlayerCount);
       setWhitelistEnabledState(res.whitelist);
     } catch (e: any) {
-      toastError(e, "无法获取玩家列表", [
-        [400, "请求参数错误"],
-        [401, "未登录"],
-        [500, "服务器内部错误"]
+      toastError(e, $("players.error"), [
+        [400, $("common.error.400")],
+        [401, $("common.error.401")]
       ]);
+    }
+  };
+
+  const handleKeydown = (e: KeyboardEvent) => {
+    if(e.ctrlKey && e.key === "ArrowRight") {
+      setCurrentTab("banned-list");
+    } else if(e.ctrlKey && e.key === "ArrowLeft") {
+      setCurrentTab("player-list");
     }
   };
 
@@ -54,22 +61,48 @@ export default function Players() {
   }, []);
 
   useEffect(() => {
-    document.body.addEventListener("keydown", (e) => {
-      if(e.ctrlKey && e.key === "ArrowRight") {
-        setCurrentTab("banned-list");
-      } else if(e.ctrlKey && e.key === "ArrowLeft") {
-        setCurrentTab("player-list");
-      }
+    if(!client) return;
+
+    client.subscribe("init", (players: Player[]) => {
+      const namedPlayers = players.filter(({ name }) => name !== undefined);
+
+      setPlayers(namedPlayers);
+      setUnnamedPlayers(players.filter(({ name }) => name === undefined) as UnnamedPlayer[]);
     });
+
+    client.subscribe("join", (player: Player) => {
+      setPlayers((prev) => {
+        const index = prev.findIndex((p) => p.uuid === player.uuid);
+        if(index > -1) {
+          return prev.map((p, i) => i === index ? player : p);
+        }
+        return [...prev, player];
+      });
+    });
+
+    client.subscribe("leave", (player: Player) => {
+      setPlayers((prev) => prev.map((p) => p.uuid === player.uuid ? player : p));
+    });
+
+    client.subscribe("gamemode-change", (player: Player) => {
+      setPlayers((prev) => prev.map((p) => p.uuid === player.uuid ? player : p));
+    });
+
+    emitter.on("refresh-data", () => client.send("fetch", null));
+  }, [client]);
+
+  useEffect(() => {
+    document.body.addEventListener("keydown", handleKeydown);
+    return () => document.body.removeEventListener("keydown", handleKeydown);
   }, []);
 
   return (
     <SubPage
-      title="玩家"
-      subTitle={currentTab === "player-list" ? "玩家列表" : "封禁列表"}
+      title={$("players.title")}
+      subTitle={currentTab === "player-list" ? $("players.player-list.title") : $("players.banned-list.title")}
       icon={<Users />}
       className="flex flex-col gap-3">
-      <span className="text-sm text-muted-foreground">点击玩家名以进行更多操作。</span>
+      <span className="text-sm text-muted-foreground">{$("players.hint")}</span>
       <Tabs
         value={currentTab}
         onValueChange={(value) => {
@@ -77,30 +110,34 @@ export default function Players() {
           changeSettings("state.players.tab", value as TabValueType);
         }}>
         <div className="flex justify-between items-center max-lg:flex-col-reverse max-lg:items-start max-lg:gap-2">
-          <TabsList className="[&>*]:cursor-pointer">
+          <TabsList className="*:cursor-pointer">
             <TabsTrigger value="player-list">
-              {`玩家列表 (${players.filter(({ isOnline }) => isOnline).length} / ${maxPlayerCount})`}
+              {`${$("players.player-list.title")} (${players.filter(({ isOnline }) => isOnline).length} / ${maxPlayerCount})`}
             </TabsTrigger>
             <TabsTrigger value="banned-list">
-              {`封禁列表 (${players.filter(({ isBanned }) => isBanned).length})`}
+              {`${$("players.banned-list.title")} (${players.filter(({ isBanned }) => isBanned).length})`}
             </TabsTrigger>
           </TabsList>
-          <div className="flex gap-2 max-sm:flex-col max-sm:items-start">
+          <div className="flex gap-2 max-sm:flex-col max-sm:items-start *:cursor-pointer">
+            <Button
+              variant="ghost"
+              title={$("players.action.refresh")}
+              onClick={() => emitter.emit("refresh-data")}>
+              <RotateCw />
+            </Button>
             <InputGroup>
               <InputGroupAddon>
                 <Search />
               </InputGroupAddon>
               <InputGroupInput
                 value={searchString}
-                placeholder="搜索玩家..."
+                placeholder={$("players.search.placeholder")}
                 onChange={(e) => setSearchString(e.target.value)}/>
             </InputGroup>
             <BannedIpsDialog asChild>
-              <Button
-                variant="outline"
-                className="cursor-pointer">
+              <Button variant="outline">
                 <Ban />
-                管理封禁IP
+                {$("players.banned-ips")}
               </Button>
             </BannedIpsDialog>
             {
@@ -109,18 +146,15 @@ export default function Players() {
                 <WhitelistSheet
                   onDisableWhitelist={() => setWhitelistEnabledState(false)}
                   asChild>
-                  <Button
-                    variant="outline"
-                    className="cursor-pointer">
+                  <Button variant="outline">
                     <UserPen />
-                    编辑白名单
+                    {$("players.edit-whitelist")}
                   </Button>
                 </WhitelistSheet>
               )
               : (
                 <Button
                   variant="outline"
-                  className="cursor-pointer"
                   onClick={async () => {
                     await setWhitelistEnabled(true);
                     await fetchPlayerList();
@@ -131,7 +165,7 @@ export default function Players() {
                     setWhitelistEnabledState(true);
                   }}>
                   <Contact />
-                  启用白名单
+                  {$("players.enable-whitelist")}
                 </Button>
               )
             }
@@ -147,14 +181,14 @@ export default function Players() {
               ...unnamedPlayers
             ]}
             pagination
-            fallbackMessage="暂无玩家"/>
+            fallbackMessage={$("players.empty")}/>
         </TabsContent>
         <TabsContent value="banned-list">
           <DataTable
             columns={bannedColumns}
             data={bannedPlayers.filter(({ name }) => name.toLowerCase().includes(searchString.toLowerCase()))}
             pagination
-            fallbackMessage="暂无玩家"/>
+            fallbackMessage={$("players.empty")}/>
         </TabsContent>
       </Tabs>
     </SubPage>

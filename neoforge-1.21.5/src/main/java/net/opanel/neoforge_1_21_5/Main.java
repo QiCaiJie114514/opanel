@@ -31,6 +31,7 @@ public class Main {
     public Main(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(new NeoListener());
 
         initLogListenerAppender();
     }

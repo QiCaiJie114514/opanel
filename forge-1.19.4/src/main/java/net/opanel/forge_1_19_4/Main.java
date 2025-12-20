@@ -32,6 +32,7 @@ public class Main {
     public Main(FMLJavaModLoadingContext ctx) {
         ctx.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new ForgeListener());
 
         initLogListenerAppender();
     }

@@ -1,25 +1,15 @@
+import type { GameMode } from "./types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import locale from "locale-codes";
-import { GameMode } from "./types";
+import { $ } from "./i18n";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function gameModeToString(gameMode: GameMode) {
-  switch(gameMode) {
-    case GameMode.ADVENTURE:
-      return "冒险";
-    case GameMode.SURVIVAL:
-      return "生存";
-    case GameMode.CREATIVE:
-      return "创造";
-    case GameMode.SPECTATOR:
-      return "旁观";
-    default:
-      return "未知";
-  }
+  return $(`common.gamemode.${gameMode}`);
 }
 
 export function getRandom(min: number, max: number): number {
@@ -67,11 +57,11 @@ export function getInputtedArgumentStr(str: string, cursor: number): string {
 /**
  * @example
  * ```ts
- * getCurrentArgumentNumber("do hello world", 5); // 2
- * getCurrentArgumentNumber("do hello world", 13); // 3
+ * getCurrentArgumentIndex("do hello world", 5); // 2
+ * getCurrentArgumentIndex("do hello world", 13); // 3
  * ```
  */
-export function getCurrentArgumentNumber(str: string, cursor: number): number {
+export function getCurrentArgumentIndex(str: string, cursor: number): number {
   if(cursor > str.length) throw new Error("Cursor position is out of the length of the string.");
 
   const trimmed = str.substring(0, cursor);

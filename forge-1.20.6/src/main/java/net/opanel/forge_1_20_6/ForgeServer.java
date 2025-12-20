@@ -8,12 +8,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.status.ServerStatus;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
-import net.minecraft.server.dedicated.DedicatedServerProperties;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.IpBanListEntry;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.storage.LevelResource;
-import net.opanel.ServerType;
+import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
@@ -22,7 +21,6 @@ import net.opanel.utils.Utils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -254,6 +252,28 @@ public class ForgeServer implements OPanelServer {
             commands.add(node.getName());
         }
         return commands;
+    }
+
+    @Override
+    public List<String> getCommandTabList(int argIndex, String command) {
+        if(argIndex == 1) return getCommands();
+
+        List<String> tabList = new ArrayList<>();
+        String[] args = command.split(" ");
+        CommandDispatcher<CommandSourceStack> dispatcher = server.getCommands().getDispatcher();
+        CommandNode<CommandSourceStack> currentNode = dispatcher.getRoot();
+        for(int i = 0; i <= args.length; i++) {
+            if(currentNode == null) break;
+            if(i + 1 == argIndex) {
+                for(CommandNode<CommandSourceStack> subNode : currentNode.getChildren()) {
+                    tabList.add(subNode.getName());
+                }
+                break;
+            }
+            if(i == args.length) break;
+            currentNode = currentNode.getChild(args[i]);
+        }
+        return tabList;
     }
 
     @Override

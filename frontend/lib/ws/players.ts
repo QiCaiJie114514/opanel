@@ -1,0 +1,32 @@
+import { toast } from "sonner";
+import { WebSocketClient } from ".";
+import { $ } from "../i18n";
+
+export type PlayersMessageType = (
+  /* server packet */
+  "init"
+  | "join"
+  | "leave"
+  | "gamemode-change"
+  /* client packet */
+  | "fetch"
+);
+
+export class PlayersClient extends WebSocketClient<PlayersMessageType> {
+  constructor() {
+    super("/socket/players");
+  }
+
+  override onOpen() {
+    console.log("Player list connected.");
+  }
+  
+  override onClose() {
+    console.log("Player list disconnected.");
+  }
+
+  override onError(err: Event) {
+    console.log("Player list connection failed. ", err);
+    toast.error($("players.ws.error"));
+  }
+}

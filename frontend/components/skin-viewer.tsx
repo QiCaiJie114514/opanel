@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import MinecraftSkinViewer from "minecraft-skin-viewer";
-import { capeUrl, skinUrl } from "@/lib/api";
+import { getSettings } from "@/lib/settings";
 
 export function SkinViewer({
   uuid
@@ -14,8 +14,8 @@ export function SkinViewer({
 
     new MinecraftSkinViewer({
       canvas: canvasRef.current,
-      skin: skinUrl + uuid,
-      cape: capeUrl + uuid
+      skin: getSettings("players.skin-provider") + uuid,
+      cape: getSettings("players.cape-provider") + uuid
     });
   }, [uuid]);
 

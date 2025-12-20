@@ -1,6 +1,5 @@
 package net.opanel.common;
 
-import net.opanel.ServerType;
 import net.opanel.utils.Utils;
 
 import java.io.IOException;
@@ -49,6 +48,7 @@ public interface OPanelServer {
     OPanelWhitelist getWhitelist();
     void sendServerCommand(String command);
     List<String> getCommands();
+    List<String> getCommandTabList(int argIndex, String command);
     HashMap<String, Object> getGamerules();
     void setGamerules(HashMap<String, Object> gamerules);
     void reload();
