@@ -33,6 +33,14 @@ export default function PanelLayout({
     }
   };
 
+  const handleKeydown = (e: KeyboardEvent) => {
+    if(e.ctrlKey && (
+      e.key === "a"
+      || e.key === "p"
+      || e.key === "s"
+    )) e.preventDefault();
+  };
+
   useEffect(() => {
     setMounted(true);
 
@@ -45,13 +53,8 @@ export default function PanelLayout({
   }, [push]);
 
   useEffect(() => {
-    document.body.addEventListener("keydown", (e) => {
-      if(e.ctrlKey && (
-        e.key === "a"
-        || e.key === "p"
-        || e.key === "s"
-      )) e.preventDefault();
-    });
+    document.body.addEventListener("keydown", handleKeydown);
+    return () => document.body.removeEventListener("keydown", handleKeydown);
   }, []);
 
   if(!mounted) return <></>;

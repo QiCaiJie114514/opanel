@@ -82,14 +82,17 @@ export default function Login() {
     }
   };
 
+  const handleKeydown = (e: KeyboardEvent) => {
+    if(e.key === "Enter") handleLogin();
+  };
+
   useEffect(() => {
     if(hasCookie("token")) {
       router.push("/panel/dashboard");
     }
 
-    document.body.addEventListener("keydown", (e) => {
-      if(e.key === "Enter") handleLogin();
-    });
+    document.body.addEventListener("keydown", handleKeydown);
+    return () => document.body.removeEventListener("keydown", handleKeydown);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -46,6 +46,14 @@ export default function Players() {
     }
   };
 
+  const handleKeydown = (e: KeyboardEvent) => {
+    if(e.ctrlKey && e.key === "ArrowRight") {
+      setCurrentTab("banned-list");
+    } else if(e.ctrlKey && e.key === "ArrowLeft") {
+      setCurrentTab("player-list");
+    }
+  };
+
   useEffect(() => {
     fetchPlayerList();
 
@@ -84,13 +92,8 @@ export default function Players() {
   }, [client]);
 
   useEffect(() => {
-    document.body.addEventListener("keydown", (e) => {
-      if(e.ctrlKey && e.key === "ArrowRight") {
-        setCurrentTab("banned-list");
-      } else if(e.ctrlKey && e.key === "ArrowLeft") {
-        setCurrentTab("player-list");
-      }
-    });
+    document.body.addEventListener("keydown", handleKeydown);
+    return () => document.body.removeEventListener("keydown", handleKeydown);
   }, []);
 
   return (
