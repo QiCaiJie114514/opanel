@@ -3,11 +3,9 @@ package net.opanel.endpoint;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import net.opanel.OPanel;
-import net.opanel.common.OPanelPlayer;
 import net.opanel.terminal.LogListenerManager;
 import org.eclipse.jetty.websocket.api.Session;
 
-import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TerminalEndpoint extends BaseEndpoint {
@@ -20,6 +18,11 @@ public class TerminalEndpoint extends BaseEndpoint {
         public TerminalPacket(String type, D data) {
             super(type, data);
         }
+    }
+
+    private static class AutocompletePacketData {
+        String command;
+        int argIndex; // starts from 1
     }
 
     private final LogListenerManager logListenerManager;
@@ -45,25 +48,19 @@ public class TerminalEndpoint extends BaseEndpoint {
 
         ctx.send(new TerminalPacket<>(TerminalPacket.INIT, logListenerManager.getRecentLogs()));
 
-        subscribe(session, TerminalPacket.COMMAND, (WsMessageContext msgCtx, String command) -> {
+        subscribe(session, TerminalPacket.COMMAND, String.class, (msgCtx, command) -> {
             if(command.startsWith("/")) {
                 command = command.replace("/", "");
             }
             plugin.getServer().sendServerCommand(command);
         });
 
-        subscribe(session, TerminalPacket.AUTOCOMPLETE, (WsMessageContext msgCtx, Number arg) -> {
-            /** @todo */
-            if(arg.equals(1.0)) {
+        subscribe(session, TerminalPacket.AUTOCOMPLETE, AutocompletePacketData.class, (msgCtx, data) -> {
+            if(data.argIndex == 1) {
                 ctx.send(new TerminalPacket<>(TerminalPacket.AUTOCOMPLETE, plugin.getServer().getCommands()));
                 return;
             }
-            List<OPanelPlayer> players = plugin.getServer().getOnlinePlayers();
-            List<String> nameList = new ArrayList<>();
-            for(OPanelPlayer player : players) {
-                nameList.add(player.getName());
-            }
-            ctx.send(new TerminalPacket<>(TerminalPacket.AUTOCOMPLETE, nameList));
+            ctx.send(new TerminalPacket<>(TerminalPacket.AUTOCOMPLETE, plugin.getServer().getCommandTabList(data.argIndex, data.command)));
         });
     }
 }

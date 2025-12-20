@@ -256,6 +256,28 @@ public class FabricServer implements OPanelServer, CodeOfConductFeature {
     }
 
     @Override
+    public List<String> getCommandTabList(int argIndex, String command) {
+        if(argIndex == 1) return getCommands();
+
+        List<String> tabList = new ArrayList<>();
+        String[] args = command.split(" ");
+        CommandDispatcher<ServerCommandSource> dispatcher = server.getCommandManager().getDispatcher();
+        CommandNode<ServerCommandSource> currentNode = dispatcher.getRoot();
+        for(int i = 0; i <= args.length; i++) {
+            if(currentNode == null) break;
+            if(i + 1 == argIndex) {
+                for(CommandNode<ServerCommandSource> subNode : currentNode.getChildren()) {
+                    tabList.add(subNode.getName());
+                }
+                break;
+            }
+            if(i == args.length) break;
+            currentNode = currentNode.getChild(args[i]);
+        }
+        return tabList;
+    }
+
+    @Override
     public HashMap<String, Object> getGamerules() {
         HashMap<String, Object> gamerules = new HashMap<>();
         final GameRules gameRulesObj = server.getSpawnWorld().getGameRules();

@@ -17,6 +17,10 @@ repositories {
         name = "CodeMC"
         url = uri("https://repo.codemc.io/repository/maven-public/")
     }
+    maven {
+        name = "mojang"
+        url = uri("https://libraries.minecraft.net")
+    }
 }
 
 base.archivesName = "${rootProject.name}-folia"
@@ -25,11 +29,13 @@ dependencies {
     compileOnly "io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT"
     shadowImplementation "de.tr7zw:item-nbt-api:2.15.2"
     compileOnly "org.apache.logging.log4j:log4j-core:2.24.1"
+    compileOnly "com.mojang:brigadier:1.0.18"
 
     shadowImplementation(project(":core")) {
         // To avoid conflict
         exclude group: 'com.github.oshi', module: 'oshi-core'
     }
+    shadowImplementation(project(":bukkit-helper"))
 
     implementation "com.github.oshi:oshi-core:6.8.2"
 }

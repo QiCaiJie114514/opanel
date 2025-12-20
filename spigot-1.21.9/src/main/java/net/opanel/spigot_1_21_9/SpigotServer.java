@@ -1,14 +1,21 @@
 package net.opanel.spigot_1_21_9;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
+import net.opanel.bukkit_helper.BaseBukkitServer;
 import net.opanel.common.ServerType;
 import net.opanel.common.*;
 import net.opanel.common.features.CodeOfConductFeature;
 import net.opanel.utils.Utils;
 import org.bukkit.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.help.HelpTopic;
+import org.bukkit.plugin.SimplePluginManager;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -19,7 +26,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-public class SpigotServer implements OPanelServer, CodeOfConductFeature {
+public class SpigotServer extends BaseBukkitServer implements OPanelServer, CodeOfConductFeature {
     private final Main plugin;
     private final Server server;
 
@@ -216,6 +223,33 @@ public class SpigotServer implements OPanelServer, CodeOfConductFeature {
             commands.add(topic.getName().toLowerCase().replaceFirst("/", ""));
         }
         return commands;
+    }
+
+    @Override
+    public List<String> getCommandTabList(int argIndex, String command) {
+        if(argIndex == 1) return getCommands();
+
+        List<String> tabList = new ArrayList<>();
+        String[] args = command.split(" ");
+
+        try {
+            CommandDispatcher<?> dispatcher = getCommandDispatcher();
+            CommandNode<?> currentNode = dispatcher.getRoot();
+            for(int i = 0; i <= args.length; i++) {
+                if(currentNode == null) break;
+                if(i + 1 == argIndex) {
+                    for(CommandNode<?> subNode : currentNode.getChildren()) {
+                        tabList.add(subNode.getName());
+                    }
+                    break;
+                }
+                if(i == args.length) break;
+                currentNode = currentNode.getChild(args[i]);
+            }
+        } catch (Exception e) {
+            //
+        }
+        return tabList;
     }
 
     @Override

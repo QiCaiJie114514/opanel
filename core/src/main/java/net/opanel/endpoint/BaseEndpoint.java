@@ -1,6 +1,7 @@
 package net.opanel.endpoint;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import net.opanel.OPanel;
@@ -8,6 +9,7 @@ import net.opanel.common.OPanelServer;
 import net.opanel.web.JwtManager;
 import org.eclipse.jetty.websocket.api.Session;
 
+import java.lang.reflect.Type;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -36,7 +38,7 @@ public abstract class BaseEndpoint implements Connectable {
         ws.onConnect(ctx -> {
             Session session = ctx.session;
 
-            subscribe(session, Packet.AUTH, (WsMessageContext msgCtx, String token) -> {
+            subscribe(session, Packet.AUTH, String.class, (msgCtx, token) -> {
                 final String hashedRealKey = plugin.getConfig().accessKey; // hashed 2
                 if(token != null && JwtManager.verifyToken(token, hashedRealKey, plugin.getConfig().salt)) {
                     // Register session
@@ -75,13 +77,12 @@ public abstract class BaseEndpoint implements Connectable {
     }
 
     protected void subscribe(Session session, String type, Consumer<WsMessageContext> cb) {
-        subscribe(session, type, (ctx, data) -> {
+        subscribe(session, type, Object.class, (ctx, data) -> {
             cb.accept(ctx);
         });
     }
 
-    @SuppressWarnings("unchecked")
-    protected <D> void subscribe(Session session, String type, BiConsumer<WsMessageContext, D> cb) {
+    protected <D> void subscribe(Session session, String type, Class<D> dataClass, BiConsumer<WsMessageContext, D> cb) {
         Set<Consumer<WsMessageContext>> listeners = sessionListeners.computeIfAbsent(session, k -> new CopyOnWriteArraySet<>());
         listeners.add(ctx -> {
             if(ctx.session != session) return;
@@ -92,7 +93,9 @@ public abstract class BaseEndpoint implements Connectable {
 
             Packet<?> packet = ctx.messageAsClass(Packet.class);
             if(packet.type.equals(type)) {
-                cb.accept(ctx, (D) packet.data);
+                Type realPacketType = TypeToken.getParameterized(Packet.class, dataClass).getType();
+                Packet<D> resolvedPacket = ctx.messageAsClass(realPacketType);
+                cb.accept(ctx, resolvedPacket.data);
             }
         });
     }

@@ -17,6 +17,10 @@ repositories {
         name = "CodeMC"
         url = uri("https://repo.codemc.io/repository/maven-public/")
     }
+    maven {
+        name = "mojang"
+        url = uri("https://libraries.minecraft.net")
+    }
 }
 
 archivesBaseName = "${rootProject.name}-spigot"
@@ -25,8 +29,10 @@ dependencies {
     compileOnly "org.spigotmc:spigot-api:${minecraft_version}-R0.1-SNAPSHOT"
     shadowImplementation "de.tr7zw:item-nbt-api:2.15.2"
     compileOnly "org.apache.logging.log4j:log4j-core:2.11.1"
+    compileOnly "com.mojang:brigadier:1.0.18"
 
     shadowImplementation(project(":core"))
+    shadowImplementation(project(":bukkit-helper"))
     shadowImplementation "com.github.oshi:oshi-core:6.8.2"
 }
 

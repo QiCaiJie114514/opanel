@@ -31,7 +31,7 @@ import { type ConsoleLogLevel, defaultLogLevel, TerminalClient } from "@/lib/ws/
 export default function Terminal() {
   const client = useWebSocket(TerminalClient);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [argIndex, setArgIndex] = useState(0);
+  const argIndexRef = useRef(0);
   const [autocompleteList, setAutocompleteList] = useState<string[]>([]);
   const [historyList, setHistoryList] = useState<string[]>(getSettings("state.terminal.history"));
   const [logLevel, setLogLevel] = useState(defaultLogLevel);
@@ -52,6 +52,7 @@ export default function Terminal() {
     }
 
     client.send("command", command);
+    argIndexRef.current = 0;
     setHistoryList((current) => [...current, command]);
     handleClear();
   }, [client]);
@@ -70,15 +71,18 @@ export default function Terminal() {
     }
   };
 
-  const handleInput = useCallback(() => {
+  const handleInput = useCallback(async () => {
     if(!inputRef.current || !client) return;
     const elem = inputRef.current;
-    const currentArgIndex = getCurrentArgumentIndex(elem.value, elem.selectionStart ?? 0);
-    if(currentArgIndex !== argIndex) {
-      client.send("autocomplete", getCurrentArgumentIndex(elem.value, elem.selectionStart ?? 0));
-      setArgIndex(currentArgIndex);
+    const realArgIndex = getCurrentArgumentIndex(elem.value, elem.selectionStart ?? 0);
+    if(realArgIndex !== argIndexRef.current) {
+      client.send("autocomplete", {
+        command: elem.value,
+        argIndex: realArgIndex
+      });
+      argIndexRef.current = realArgIndex;
     }
-  }, [client, argIndex]);
+  }, [client]);
 
   useEffect(() => {
     client?.subscribe("autocomplete", (data: string[]) => {

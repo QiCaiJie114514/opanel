@@ -1,5 +1,8 @@
 package net.opanel.spigot_1_20;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.tree.CommandNode;
+import net.opanel.bukkit_helper.BaseBukkitServer;
 import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
@@ -19,7 +22,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-public class SpigotServer implements OPanelServer {
+public class SpigotServer extends BaseBukkitServer implements OPanelServer {
     private final Main plugin;
     private final Server server;
 
@@ -216,6 +219,33 @@ public class SpigotServer implements OPanelServer {
             commands.add(topic.getName().toLowerCase().replaceFirst("/", ""));
         }
         return commands;
+    }
+
+    @Override
+    public List<String> getCommandTabList(int argIndex, String command) {
+        if(argIndex == 1) return getCommands();
+
+        List<String> tabList = new ArrayList<>();
+        String[] args = command.split(" ");
+
+        try {
+            CommandDispatcher<?> dispatcher = getCommandDispatcher();
+            CommandNode<?> currentNode = dispatcher.getRoot();
+            for(int i = 0; i <= args.length; i++) {
+                if(currentNode == null) break;
+                if(i + 1 == argIndex) {
+                    for(CommandNode<?> subNode : currentNode.getChildren()) {
+                        tabList.add(subNode.getName());
+                    }
+                    break;
+                }
+                if(i == args.length) break;
+                currentNode = currentNode.getChild(args[i]);
+            }
+        } catch (Exception e) {
+            //
+        }
+        return tabList;
     }
 
     @Override

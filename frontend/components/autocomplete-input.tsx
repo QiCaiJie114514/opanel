@@ -9,7 +9,7 @@ import {
 } from "react";
 import getCaretCoordinates from "textarea-caret";
 import { InputContext } from "@/contexts/input-context";
-import { cn, getCurrentState, getInputtedArgumentStr } from "@/lib/utils";
+import { cn, getCurrentArgumentIndex, getCurrentState, getInputtedArgumentStr } from "@/lib/utils";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { googleSansCode } from "@/lib/fonts";
@@ -68,9 +68,14 @@ export function AutocompleteInput({
 
     if(cSelected === null) return 0;
     
+    const argIndex = getCurrentArgumentIndex(cValue, inputRef.current.selectionStart ?? 0);
     const toComplete = advised[cSelected].replace(getInputtedArgumentStr(cValue, inputRef.current.selectionStart ?? 0), "");
-    inputRef.current.value = cValue + toComplete;
-    setValue(cValue + toComplete);
+    const cValueSplitted = cValue.split(" ");
+    cValueSplitted[argIndex - 1] += toComplete;
+
+    const finalValue = cValueSplitted.join(" ");
+    inputRef.current.value = finalValue;
+    setValue(finalValue);
     return toComplete.length;
   };
 
