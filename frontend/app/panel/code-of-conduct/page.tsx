@@ -229,7 +229,7 @@ export default function CodeOfConduct() {
               <EmptyContent>
                 <Button
                   className="cursor-pointer"
-                  onClick={() => handleCreateCodeOfConduct("zh_cn")/* zh_cn by default */}>
+                  onClick={() => handleCreateCodeOfConduct(getSettings("system.language").replace("-", "_"))}>
                   <FilePlus2 />
                   {$("coc.empty.create")}
                 </Button>
