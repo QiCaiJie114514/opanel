@@ -9,7 +9,7 @@ interface Packet<M extends string, D> {
   data: D
 }
 
-const heartbeatInterval = 29000; // 29s
+const heartbeatInterval = 20000; // 20s
 
 export abstract class WebSocketClient<M extends string> {
   private socket: WebSocket | null = null;
