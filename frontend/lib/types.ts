@@ -15,6 +15,13 @@ export enum GameMode {
   SPECTATOR = "spectator"
 }
 
+export enum Difficulty {
+  PEACEFUL = "peaceful",
+  EASY = "easy",
+  NORMAL = "normal",
+  HARD = "hard"
+}
+
 export interface Save {
   name: string
   displayName: string // base64
@@ -23,6 +30,10 @@ export interface Save {
   isRunning: boolean
   isCurrent: boolean
   defaultGameMode: GameMode
+  difficulty: Difficulty
+  isDifficultyLocked: boolean
+  isHardcore: boolean
+  datapacks: Record<string, boolean>
 }
 
 export interface Player {

@@ -148,6 +148,7 @@ public class WebServer {
                 post("/", savesController.uploadSave);
                 get("{saveName}", savesController.downloadSave);
                 post("{saveName}", savesController.editSave);
+                patch("{saveName}", savesController.toggleSaveDatapack);
                 delete("{saveName}", savesController.deleteSave);
             });
             post("security", securityController.updateAccessKey);

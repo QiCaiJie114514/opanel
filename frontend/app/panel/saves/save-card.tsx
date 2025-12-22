@@ -1,5 +1,5 @@
 import type { DownloadSaveResponse, Save } from "@/lib/types";
-import { Download, FolderPen, Trash2 } from "lucide-react";
+import { Download, FolderPen, Package, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import { base64ToString, cn, formatDataSize, gameModeToString } from "@/lib/utils";
@@ -13,6 +13,7 @@ import { SaveSheet } from "./save-sheet";
 import { emitter } from "@/lib/emitter";
 import { googleSansCode } from "@/lib/fonts";
 import { $ } from "@/lib/i18n";
+import { DatapacksDialog } from "./datapacks-dialog";
 
 export function SaveCard({
   save,
@@ -136,6 +137,17 @@ export function SaveCard({
               <FolderPen />
             </Button>
           </SaveSheet>
+          <DatapacksDialog
+            saveName={save.name}
+            datapacks={save.datapacks}
+            asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              title={$("saves.list.item.datapacks")}>
+              <Package />
+            </Button>
+          </DatapacksDialog>
           <Alert
             title={$("saves.list.item.delete.alert.title", name)}
             description={$("saves.list.item.delete.alert.description")}

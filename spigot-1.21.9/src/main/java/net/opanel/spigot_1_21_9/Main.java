@@ -2,6 +2,7 @@ package net.opanel.spigot_1_21_9;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import net.opanel.OPanel;
+import net.opanel.bukkit_helper.TaskRunner;
 import net.opanel.spigot_1_21_9.command.OPanelCommand;
 import net.opanel.spigot_1_21_9.config.ConfigManagerImpl;
 import net.opanel.spigot_1_21_9.terminal.LogListenerManagerImpl;
@@ -16,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.logging.Logger;
 
-public class Main extends JavaPlugin implements Listener {
+public class Main extends JavaPlugin implements Listener, TaskRunner {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(Main.class);
     public final Logger LOGGER = getLogger();
     public OPanel instance;
@@ -102,6 +103,7 @@ public class Main extends JavaPlugin implements Listener {
         }
     }
 
+    @Override
     public void runTask(Runnable task) {
         Object lock = new Object();
         synchronized(lock) {

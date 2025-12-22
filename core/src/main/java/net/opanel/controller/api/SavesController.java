@@ -2,6 +2,7 @@ package net.opanel.controller.api;
 
 import io.javalin.http.*;
 import net.opanel.OPanel;
+import net.opanel.common.OPanelDifficulty;
 import net.opanel.common.OPanelGameMode;
 import net.opanel.common.OPanelSave;
 import net.opanel.utils.Utils;
@@ -41,6 +42,10 @@ public class SavesController extends BaseController {
             saveInfo.put("isRunning", save.isRunning());
             saveInfo.put("isCurrent", save.isCurrent());
             saveInfo.put("defaultGameMode", save.getDefaultGameMode().getName());
+            saveInfo.put("difficulty", save.getDifficulty().getName());
+            saveInfo.put("isDifficultyLocked", save.isDifficultyLocked());
+            saveInfo.put("isHardcore", save.isHardcore());
+            saveInfo.put("datapacks", save.getDatapacks());
             saves.add(saveInfo);
         }
         obj.put("saves", saves);
@@ -185,8 +190,50 @@ public class SavesController extends BaseController {
 
         try {
             OPanelSave save = server.getSave(saveName);
+            if(save == null) {
+                sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the specified save.");
+                return;
+            }
+
             save.setDisplayName(Utils.base64ToString(reqBody.displayName));
-            save.setDefaultGameMode(OPanelGameMode.fromString(reqBody.defaultGameMode));
+            save.setHardcoreEnabled(reqBody.isHardcore);
+            if(reqBody.isHardcore) {
+                save.setDefaultGameMode(OPanelGameMode.SURVIVAL);
+                save.setDifficulty(OPanelDifficulty.HARD);
+                save.setDifficultyLocked(true);
+            } else {
+                save.setDefaultGameMode(OPanelGameMode.fromString(reqBody.defaultGameMode));
+                save.setDifficulty(OPanelDifficulty.fromString(reqBody.difficulty));
+                save.setDifficultyLocked(reqBody.isDifficultyLocked);
+            }
+            sendResponse(ctx, HttpStatus.OK);
+        } catch (IOException e) {
+            e.printStackTrace();
+            sendResponse(ctx, HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    };
+
+    public Handler toggleSaveDatapack = ctx -> {
+        final String saveName = ctx.pathParam("saveName");
+        final String datapack = ctx.queryParam("datapack");
+        final String enabled = ctx.queryParam("enabled");
+        if(datapack == null || enabled == null) {
+            sendResponse(ctx, HttpStatus.BAD_REQUEST, "Datapack id or status is missing.");
+            return;
+        }
+        if(datapack.equals("vanilla")) {
+            sendResponse(ctx, HttpStatus.FORBIDDEN, "Cannot toggle vanilla datapack.");
+            return;
+        }
+
+        try {
+            OPanelSave save = server.getSave(saveName);
+            if(save == null) {
+                sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the specified save.");
+                return;
+            }
+
+            save.toggleDatapack(datapack, enabled.equals("1"));
             sendResponse(ctx, HttpStatus.OK);
         } catch (IOException e) {
             e.printStackTrace();
@@ -197,6 +244,10 @@ public class SavesController extends BaseController {
     public Handler deleteSave = ctx -> {
         final String saveName = ctx.pathParam("saveName");
         OPanelSave save = server.getSave(saveName);
+        if(save == null) {
+            sendResponse(ctx, HttpStatus.NOT_FOUND, "Cannot find the specified save.");
+            return;
+        }
         if(save.isRunning() || save.isCurrent()) {
             sendResponse(ctx, HttpStatus.FORBIDDEN, "You cannot delete current save.");
             return;
@@ -214,5 +265,8 @@ public class SavesController extends BaseController {
     private static class SaveEditRequestBodyType {
         String displayName; // base64
         String defaultGameMode;
+        String difficulty;
+        boolean isDifficultyLocked;
+        boolean isHardcore;
     }
 }

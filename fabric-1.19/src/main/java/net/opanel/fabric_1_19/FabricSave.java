@@ -8,6 +8,7 @@ import net.minecraft.world.GameMode;
 import net.opanel.common.OPanelGameMode;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
+import net.opanel.fabric_helper.BaseFabricSave;
 import net.opanel.utils.Utils;
 
 import java.io.FileInputStream;
@@ -15,14 +16,12 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class FabricSave implements OPanelSave {
-    private final MinecraftServer server;
-    private final Path savePath;
+public class FabricSave extends BaseFabricSave implements OPanelSave {
     private NbtCompound nbt;
 
     public FabricSave(MinecraftServer server, Path path) {
-        this.server = server;
-        savePath = path;
+        super(server, path);
+
         try {
             nbt = NbtIo.readCompressed(savePath.resolve("level.dat").toFile())
                     .getCompound("Data");
@@ -34,15 +33,11 @@ public class FabricSave implements OPanelSave {
         }
     }
 
-    private void saveNbt() throws IOException {
+    @Override
+    protected void saveNbt() throws IOException {
         NbtCompound dataNbt = new NbtCompound();
         dataNbt.put("Data", nbt);
         NbtIo.writeCompressed(dataNbt, savePath.resolve("level.dat").toFile());
-    }
-
-    @Override
-    public String getName() {
-        return savePath.getFileName().toString();
     }
 
     @Override
@@ -57,58 +52,14 @@ public class FabricSave implements OPanelSave {
     }
 
     @Override
-    public Path getPath() {
-        return savePath.toAbsolutePath();
-    }
-
-    @Override
-    public long getSize() throws IOException {
-        return Utils.getDirectorySize(savePath);
-    }
-
-    @Override
-    public boolean isRunning() {
-        return server.getSavePath(WorldSavePath.LEVEL_DAT).getParent().getFileName().toString().equals(getName());
-    }
-
-    @Override
-    public boolean isCurrent() throws IOException {
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(OPanelServer.serverPropertiesPath.toFile()));
-        return properties.getProperty("level-name").replaceAll("\u00c2", "").equals(getName());
-    }
-
-    @Override
-    public void setToCurrent() throws IOException {
-        if(isCurrent()) return;
-        OPanelServer.writePropertiesContent(OPanelServer.getPropertiesContent().replaceAll("level-name=.+", "level-name="+ getName()));
-    }
-
-    @Override
     public OPanelGameMode getDefaultGameMode() {
-        GameMode gamemode = GameMode.byId(nbt.getInt("GameType"));
-        switch(gamemode) {
-            case ADVENTURE -> { return OPanelGameMode.ADVENTURE; }
-            case SURVIVAL -> { return OPanelGameMode.SURVIVAL; }
-            case CREATIVE -> { return OPanelGameMode.CREATIVE; }
-            case SPECTATOR -> { return OPanelGameMode.SPECTATOR; }
-        }
-        return null;
+        int gamemode = nbt.getInt("GameType");
+        return OPanelGameMode.fromId(gamemode);
     }
 
     @Override
     public void setDefaultGameMode(OPanelGameMode gamemode) throws IOException {
-        switch(gamemode) {
-            case ADVENTURE -> nbt.putInt("GameType", 2);
-            case SURVIVAL -> nbt.putInt("GameType", 0);
-            case CREATIVE -> nbt.putInt("GameType", 1);
-            case SPECTATOR -> nbt.putInt("GameType", 3);
-        }
+        nbt.putInt("GameType", gamemode.getId());
         saveNbt();
-    }
-
-    @Override
-    public void delete() throws IOException {
-        Utils.deleteDirectoryRecursively(savePath);
     }
 }

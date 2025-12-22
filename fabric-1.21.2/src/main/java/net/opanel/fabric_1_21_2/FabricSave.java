@@ -1,31 +1,37 @@
 package net.opanel.fabric_1_21_2;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtSizeTracker;
+import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.level.LevelInfo;
+import net.minecraft.world.level.LevelProperties;
+import net.opanel.common.OPanelDifficulty;
 import net.opanel.common.OPanelGameMode;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
+import net.opanel.fabric_helper.BaseFabricSave;
+import net.opanel.fabric_helper.FabricUtils;
 import net.opanel.utils.Utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.Properties;
 
-public class FabricSave implements OPanelSave {
-    private final MinecraftServer server;
-    private final Path savePath;
+public class FabricSave extends BaseFabricSave implements OPanelSave {
     private NbtCompound nbt;
 
     public FabricSave(MinecraftServer server, Path path) {
-        this.server = server;
-        savePath = path;
+        super(server, path);
+
         try {
-            nbt = NbtIo.readCompressed(savePath.resolve("level.dat"), NbtSizeTracker.of(2097152L)) // 2 MB
+            nbt = NbtIo.readCompressed(savePath.resolve("level.dat"), NbtSizeTracker.of(NBT_TRACKER_SIZE))
                     .getCompound("Data");
             if(nbt.isEmpty()) {
                 throw new IOException("Cannot find a valid level.dat");
@@ -35,15 +41,11 @@ public class FabricSave implements OPanelSave {
         }
     }
 
-    private void saveNbt() throws IOException {
+    @Override
+    protected void saveNbt() throws IOException {
         NbtCompound dataNbt = new NbtCompound();
         dataNbt.put("Data", nbt);
         NbtIo.writeCompressed(dataNbt, savePath.resolve("level.dat"));
-    }
-
-    @Override
-    public String getName() {
-        return savePath.getFileName().toString();
     }
 
     @Override
@@ -58,58 +60,111 @@ public class FabricSave implements OPanelSave {
     }
 
     @Override
-    public Path getPath() {
-        return savePath.toAbsolutePath();
-    }
-
-    @Override
-    public long getSize() throws IOException {
-        return Utils.getDirectorySize(savePath);
-    }
-
-    @Override
-    public boolean isRunning() {
-        return server.getSavePath(WorldSavePath.LEVEL_DAT).getParent().getFileName().toString().equals(getName());
-    }
-
-    @Override
-    public boolean isCurrent() throws IOException {
-        Properties properties = new Properties();
-        properties.load(new FileInputStream(OPanelServer.serverPropertiesPath.toFile()));
-        return properties.getProperty("level-name").replaceAll("\u00c2", "").equals(getName());
-    }
-
-    @Override
-    public void setToCurrent() throws IOException {
-        if(isCurrent()) return;
-        OPanelServer.writePropertiesContent(OPanelServer.getPropertiesContent().replaceAll("level-name=.+", "level-name="+ getName()));
-    }
-
-    @Override
     public OPanelGameMode getDefaultGameMode() {
-        GameMode gamemode = GameMode.byId(nbt.getInt("GameType"));
-        switch(gamemode) {
-            case ADVENTURE -> { return OPanelGameMode.ADVENTURE; }
-            case SURVIVAL -> { return OPanelGameMode.SURVIVAL; }
-            case CREATIVE -> { return OPanelGameMode.CREATIVE; }
-            case SPECTATOR -> { return OPanelGameMode.SPECTATOR; }
-        }
-        return null;
+        int gamemode = nbt.getInt("GameType");
+        return OPanelGameMode.fromId(gamemode);
     }
 
     @Override
     public void setDefaultGameMode(OPanelGameMode gamemode) throws IOException {
-        switch(gamemode) {
-            case ADVENTURE -> nbt.putInt("GameType", 2);
-            case SURVIVAL -> nbt.putInt("GameType", 0);
-            case CREATIVE -> nbt.putInt("GameType", 1);
-            case SPECTATOR -> nbt.putInt("GameType", 3);
-        }
+        nbt.putInt("GameType", gamemode.getId());
         saveNbt();
     }
 
     @Override
-    public void delete() throws IOException {
-        Utils.deleteDirectoryRecursively(savePath);
+    public OPanelDifficulty getDifficulty() throws IOException {
+        if(isCurrent()) return OPanelDifficulty.fromId(getCurrentWorld().getDifficulty().getId());
+
+        byte difficulty = nbt.getByte("Difficulty");
+        return OPanelDifficulty.fromId(difficulty);
+    }
+
+    @Override
+    public void setDifficulty(OPanelDifficulty difficulty) throws IOException {
+        if(isCurrent()) server.setDifficulty(Difficulty.byName(difficulty.getName()), true);
+
+        nbt.putByte("Difficulty", (byte) difficulty.getId());
+        saveNbt();
+    }
+
+    @Override
+    public boolean isDifficultyLocked() throws IOException {
+        if(isCurrent()) return getCurrentWorld().getLevelProperties().isDifficultyLocked();
+
+        return nbt.getByte("DifficultyLocked") == 1;
+    }
+
+    @Override
+    public void setDifficultyLocked(boolean locked) throws IOException {
+        if(isCurrent()) server.setDifficultyLocked(locked);
+
+        nbt.putByte("DifficultyLocked", (byte) (locked ? 1 : 0));
+        saveNbt();
+    }
+
+    @Override
+    public boolean isHardcore() throws IOException {
+        if(isCurrent()) return server.isHardcore();
+
+        return nbt.getByte("hardcore") == 1;
+    }
+
+    @Override
+    public void setHardcoreEnabled(boolean enabled) throws IOException {
+        if(isCurrent()) {
+            LevelProperties levelProperties = (LevelProperties) getCurrentWorld().getLevelProperties();
+            LevelInfo currentInfo = levelProperties.getLevelInfo();
+            LevelInfo newInfo = new LevelInfo(
+                    currentInfo.getLevelName(),
+                    currentInfo.getGameMode(),
+                    enabled,
+                    currentInfo.getDifficulty(),
+                    currentInfo.areCommandsAllowed(),
+                    currentInfo.getGameRules(),
+                    currentInfo.getDataConfiguration()
+            );
+            try {
+                Field levelInfoField = LevelProperties.class.getDeclaredField("levelInfo");
+                levelInfoField.setAccessible(true);
+                levelInfoField.set(levelProperties, newInfo);
+            } catch (ReflectiveOperationException e) {
+                //
+            }
+            OPanelServer.writePropertiesContent(OPanelServer.getPropertiesContent().replaceAll("hardcore=.+", "hardcore="+ enabled));
+            FabricUtils.forceUpdateProperties((MinecraftDedicatedServer) server);
+        }
+
+        nbt.putByte("hardcore", (byte) (enabled ? 1 : 0));
+        saveNbt();
+    }
+
+    @Override
+    public HashMap<String, Boolean> getDatapacks() {
+        HashMap<String, Boolean> datapacks = new HashMap<>();
+        NbtCompound datapacksNbt = nbt.getCompound("DataPacks");
+        datapacksNbt.getList("Enabled", NbtElement.STRING_TYPE).forEach(elem -> datapacks.put(elem.asString(), true));
+        datapacksNbt.getList("Disabled", NbtElement.STRING_TYPE).forEach(elem -> datapacks.put(elem.asString(), false));
+        return datapacks;
+    }
+
+    @Override
+    public void toggleDatapack(String id, boolean enabled) throws IOException {
+        Boolean currentEnabled = getDatapacks().get(id);
+        if(currentEnabled == null || currentEnabled == enabled) return;
+        if(id.equals("vanilla")) return;
+
+        if(isCurrent()) {
+            server.getCommandManager().executeWithPrefix(server.getCommandSource(), "datapack "+ (enabled ? "enable" : "disable") +" \""+ id +"\"");
+        }
+
+        NbtCompound datapacksNbt = nbt.getCompound("DataPacks");
+        if(enabled) {
+            datapacksNbt.getList("Disabled", NbtElement.STRING_TYPE).remove(NbtString.of(id));
+            datapacksNbt.getList("Enabled", NbtElement.STRING_TYPE).add(NbtString.of(id));
+        } else {
+            datapacksNbt.getList("Enabled", NbtElement.STRING_TYPE).remove(NbtString.of(id));
+            datapacksNbt.getList("Disabled", NbtElement.STRING_TYPE).add(NbtString.of(id));
+        }
+        saveNbt();
     }
 }

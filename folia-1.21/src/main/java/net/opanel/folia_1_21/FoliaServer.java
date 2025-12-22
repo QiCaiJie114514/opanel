@@ -3,6 +3,7 @@ package net.opanel.folia_1_21;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import net.opanel.bukkit_helper.BaseBukkitServer;
+import net.opanel.bukkit_helper.BukkitUtils;
 import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
@@ -88,7 +89,7 @@ public class FoliaServer extends BaseBukkitServer implements OPanelServer, Bukki
                     ))
                     .map(Path::toAbsolutePath)
                     .forEach(path -> {
-                        FoliaSave save = new FoliaSave(server, path);
+                        FoliaSave save = new FoliaSave(plugin, server, path);
                         list.add(save);
                     });
         } catch (IOException e) {
@@ -108,7 +109,7 @@ public class FoliaServer extends BaseBukkitServer implements OPanelServer, Bukki
         ) {
             return null;
         }
-        return new FoliaSave(server, savePath.toAbsolutePath());
+        return new FoliaSave(plugin, server, savePath.toAbsolutePath());
     }
 
     @Override
@@ -225,7 +226,7 @@ public class FoliaServer extends BaseBukkitServer implements OPanelServer, Bukki
         String[] args = command.split(" ");
 
         try {
-            CommandDispatcher<?> dispatcher = getCommandDispatcher();
+            CommandDispatcher<?> dispatcher = BukkitUtils.getCommandDispatcher();
             CommandNode<?> currentNode = dispatcher.getRoot();
             for(int i = 0; i <= args.length; i++) {
                 if(currentNode == null) break;

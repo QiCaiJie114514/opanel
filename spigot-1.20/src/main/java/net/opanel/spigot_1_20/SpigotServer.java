@@ -3,6 +3,7 @@ package net.opanel.spigot_1_20;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import net.opanel.bukkit_helper.BaseBukkitServer;
+import net.opanel.bukkit_helper.BukkitUtils;
 import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
@@ -93,7 +94,7 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer, Bukk
                     ))
                     .map(Path::toAbsolutePath)
                     .forEach(path -> {
-                        SpigotSave save = new SpigotSave(server, path);
+                        SpigotSave save = new SpigotSave(plugin, server, path);
                         list.add(save);
                     });
         } catch (IOException e) {
@@ -113,7 +114,7 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer, Bukk
         ) {
             return null;
         }
-        return new SpigotSave(server, savePath.toAbsolutePath());
+        return new SpigotSave(plugin, server, savePath.toAbsolutePath());
     }
 
     @Override
@@ -230,7 +231,7 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer, Bukk
         String[] args = command.split(" ");
 
         try {
-            CommandDispatcher<?> dispatcher = getCommandDispatcher();
+            CommandDispatcher<?> dispatcher = BukkitUtils.getCommandDispatcher();
             CommandNode<?> currentNode = dispatcher.getRoot();
             for(int i = 0; i <= args.length; i++) {
                 if(currentNode == null) break;
