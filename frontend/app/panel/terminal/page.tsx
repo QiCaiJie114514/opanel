@@ -74,10 +74,13 @@ export default function Terminal() {
   const handleInput = useCallback(async () => {
     if(!inputRef.current || !client) return;
     const elem = inputRef.current;
-    const realArgIndex = getCurrentArgumentIndex(elem.value, elem.selectionStart ?? 0);
+    const hasPrefix = elem.value.startsWith("/");
+    const command = hasPrefix ? elem.value.substring(1) : elem.value;
+
+    const realArgIndex = getCurrentArgumentIndex(command, (elem.selectionStart ?? 0) - (hasPrefix ? 1 : 0));
     if(realArgIndex !== argIndexRef.current) {
       client.send("autocomplete", {
-        command: elem.value,
+        command,
         argIndex: realArgIndex
       });
       argIndexRef.current = realArgIndex;
@@ -121,6 +124,7 @@ export default function Terminal() {
             autoFocus
             itemList={autocompleteList}
             enabled={getSettings("terminal.autocomplete")}
+            prefix="/"
             maxLength={256}
             onKeyDown={(e) => handleKeydown(e)}
             onInput={() => handleInput()}

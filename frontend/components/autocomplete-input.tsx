@@ -23,7 +23,11 @@ function AutocompleteItem({
   selected: boolean
   index: number
 }) {
-  const { value, setSelected, complete } = useContext(InputContext);
+  const { argValue, prefix, setSelected, complete } = useContext(InputContext);
+  const hasPrefix = prefix && argValue.startsWith(prefix);
+
+  // Pure argValue is argValue that has been removed the prefix if it has prefix
+  const pureArgValue = hasPrefix ? argValue.substring(prefix.length) : argValue;
 
   return (
     <Button
@@ -33,8 +37,8 @@ function AutocompleteItem({
       data-selected={selected}
       onClick={() => setSelected(index)}
       onDoubleClick={() => complete()}>
-      <span className="font-bold">{value}</span>
-      <span>{name.replace(value, "")}</span>
+      <span className="font-bold">{pureArgValue}</span>
+      <span>{name.replace(pureArgValue, "")}</span>
     </Button>
   );
 }
@@ -42,6 +46,7 @@ function AutocompleteItem({
 export function AutocompleteInput({
   itemList,
   enabled = true,
+  prefix,
   onKeyDown,
   onInput,
   ref: inputRef,
@@ -49,9 +54,11 @@ export function AutocompleteInput({
 }: ComponentProps<"input"> & {
   itemList: string[]
   enabled?: boolean
+  prefix?: string
   ref: RefObject<HTMLInputElement | null>
 }) {
   const [value, setValue] = useState("");
+  const hasPrefix = prefix && value.startsWith(prefix);
   const [top, setTop] = useState(0);
   const [left, setLeft] = useState(0);
   const [advisedList, setAdvisedList] = useState(itemList);
@@ -59,23 +66,25 @@ export function AutocompleteInput({
   const listContainerRef = useRef<HTMLDivElement>(null);
   const isInvisible = value.length === 0 || advisedList.length === 0;
 
+  // Do tab complete
   const complete = async () => {
     if(!inputRef.current) return 0;
 
     const advised = await getCurrentState(setAdvisedList);
     const cSelected = await getCurrentState(setSelected);
     const cValue = await getCurrentState(setValue);
+    const pureValue = hasPrefix ? cValue.substring(prefix.length) : cValue;
 
     if(cSelected === null) return 0;
     
-    const argIndex = getCurrentArgumentIndex(cValue, inputRef.current.selectionStart ?? 0);
-    const toComplete = advised[cSelected].replace(getInputtedArgumentStr(cValue, inputRef.current.selectionStart ?? 0), "");
-    const cValueSplitted = cValue.split(" ");
-    cValueSplitted[argIndex - 1] += toComplete;
+    const argIndex = getCurrentArgumentIndex(pureValue, (inputRef.current.selectionStart ?? 0) - (hasPrefix ? 1 : 0));
+    const toComplete = advised[cSelected].replace(getInputtedArgumentStr(pureValue, (inputRef.current.selectionStart ?? 0) - (hasPrefix ? 1 : 0)), "");
+    const pureValueSplitted = pureValue.split(" ");
+    pureValueSplitted[argIndex - 1] += toComplete;
 
-    const finalValue = cValueSplitted.join(" ");
-    inputRef.current.value = finalValue;
-    setValue(finalValue);
+    const finalValue = pureValueSplitted.join(" ");
+    inputRef.current.value = (hasPrefix ? prefix : "") + finalValue;
+    setValue((hasPrefix ? prefix : "") + finalValue);
     return toComplete.length;
   };
 
@@ -137,12 +146,13 @@ export function AutocompleteInput({
   useEffect(() => {
     if(!inputRef.current) return;
     const input = inputRef.current;
+    const inputtedCommand = hasPrefix ? value.substring(prefix.length) : value;
 
     // Update advised item list
     const advised = [];
     const cursorPos = input.selectionStart;
     for(const item of itemList) {
-      if(item.startsWith(getInputtedArgumentStr(value, cursorPos ?? 0))) {
+      if(item.startsWith(getInputtedArgumentStr(inputtedCommand, (cursorPos ?? 0) - (hasPrefix ? 1 : 0)))) {
         advised.push(item);
       }
     }
@@ -150,7 +160,7 @@ export function AutocompleteInput({
     
     // Select the first item by default
     setSelected(advised.length > 0 ? 0 : null);
-  }, [value, itemList, inputRef]);
+  }, [value, hasPrefix, itemList, prefix, inputRef]);
 
   // Set the position of autocomplete container when `advisedList` being updated
   useEffect(() => {
@@ -167,7 +177,8 @@ export function AutocompleteInput({
 
   return (
     <InputContext.Provider value={{
-      value: getInputtedArgumentStr(value, inputRef.current?.selectionStart ?? 0),
+      argValue: getInputtedArgumentStr(value, inputRef.current?.selectionStart ?? 0),
+      prefix,
       setSelected,
       complete
     }}>
