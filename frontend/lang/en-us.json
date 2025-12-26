@@ -116,6 +116,8 @@
   "dashboard.time.ingame-time.tooltip": "Please refer to the actual in-game time; this is for reference only.",
   "dashboard.tps.title": "TPS Monitor",
   "dashboard.system.title": "System",
+  "dashboard.system.dialog.title": "System Info",
+  "dashboard.system.dialog.description": "View detailed information about the server system here.",
   "dashboard.system.item.arch": "Arch",
   "dashboard.system.item.core": "Core(s)",
   "dashboard.system.item.memory": "Memory",

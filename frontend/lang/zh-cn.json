@@ -116,6 +116,8 @@
   "dashboard.time.ingame-time.tooltip": "请以游戏内实际时间为准，此处仅供参考",
   "dashboard.tps.title": "TPS监控",
   "dashboard.system.title": "系统信息",
+  "dashboard.system.dialog.title": "系统信息",
+  "dashboard.system.dialog.description": "在此查看服务器系统的详细信息。",
   "dashboard.system.item.arch": "架构",
   "dashboard.system.item.core": "核心数",
   "dashboard.system.item.memory": "内存",

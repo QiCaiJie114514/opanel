@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import type { ExoticComponent, PropsWithChildren } from "react";
 import Link from "next/link";
 import { type LucideIcon, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ export function FunctionalCard({
 }: Readonly<PropsWithChildren<{
   icon: LucideIcon
   title: string
+  moreDialog?: ExoticComponent<PropsWithChildren & { asChild?: boolean }>
   moreLink?: string
   className?: string
   innerClassName?: string
@@ -27,16 +28,29 @@ export function FunctionalCard({
           <props.icon size={20}/>
           <h2 className="text-lg font-semibold">{title}</h2>
         </div>
-        {moreLink && <Button
-          variant="ghost"
-          size="sm"
-          className="text-muted-foreground cursor-pointer"
-          asChild>
-          <Link href={moreLink}>
-            {$("functional-card.more")}
-            <ChevronRight />
-          </Link>
-        </Button>}
+        {(props.moreDialog && !moreLink) && (
+          <props.moreDialog asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground cursor-pointer">
+              {$("functional-card.more")}
+              <ChevronRight />
+            </Button>
+          </props.moreDialog>
+        )}
+        {(!props.moreDialog && moreLink) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground cursor-pointer"
+            asChild>
+            <Link href={moreLink}>
+              {$("functional-card.more")}
+              <ChevronRight />
+            </Link>
+          </Button>
+        )}
       </div>
       <div className={cn(innerClassName, "overflow-auto")}>
         {children}
