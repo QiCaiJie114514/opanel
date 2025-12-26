@@ -1,4 +1,4 @@
-package net.opanel.neoforge_1_21_5.terminal;
+package net.opanel.neoforge_1_21_1.terminal;
 
 import net.opanel.terminal.ConsoleLog;
 import net.opanel.terminal.LogListenerManager;

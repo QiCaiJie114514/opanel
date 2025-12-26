@@ -1,4 +1,4 @@
-package net.opanel.neoforge_1_21_5;
+package net.opanel.neoforge_1_21_1;
 
 import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
@@ -7,7 +7,6 @@ import net.minecraft.server.dedicated.DedicatedServerProperties;
 import net.minecraft.server.dedicated.DedicatedServerSettings;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.LevelSettings;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
@@ -34,12 +33,11 @@ public class NeoSave implements OPanelSave {
         this.server = server;
         savePath = path;
         try {
-            Optional<CompoundTag> optionalNbt = NbtIo.readCompressed(savePath.resolve("level.dat"), NbtAccounter.create(2097152L)) // 2 MB
-                    .get("Data").asCompound();
-            if(optionalNbt.isEmpty()) {
+            nbt = NbtIo.readCompressed(savePath.resolve("level.dat"), NbtAccounter.create(2097152L)) // 2 MB
+                    .getCompound("Data");
+            if(nbt.isEmpty()) {
                 throw new IOException("Cannot find a valid level.dat");
             }
-            nbt = optionalNbt.get();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,7 +60,7 @@ public class NeoSave implements OPanelSave {
 
     @Override
     public String getDisplayName() {
-        return nbt.getStringOr("LevelName", "world").replaceAll("\u00C2", "");
+        return nbt.getString("LevelName").replaceAll("\u00C2", "");
     }
 
     @Override
@@ -101,7 +99,7 @@ public class NeoSave implements OPanelSave {
 
     @Override
     public OPanelGameMode getDefaultGameMode() {
-        int gamemode = nbt.getIntOr("GameType", 0);
+        int gamemode = nbt.getInt("GameType");
         return OPanelGameMode.fromId(gamemode);
     }
 
@@ -115,7 +113,7 @@ public class NeoSave implements OPanelSave {
     public OPanelDifficulty getDifficulty() throws IOException {
         if(isCurrent()) return OPanelDifficulty.fromId(getCurrentWorld().getDifficulty().getId());
 
-        byte difficulty = nbt.getByteOr("Difficulty", (byte) 0);
+        byte difficulty = nbt.getByte("Difficulty");
         return OPanelDifficulty.fromId(difficulty);
     }
 
@@ -131,7 +129,7 @@ public class NeoSave implements OPanelSave {
     public boolean isDifficultyLocked() throws IOException {
         if(isCurrent()) return getCurrentWorld().getLevelData().isDifficultyLocked();
 
-        return nbt.getByteOr("DifficultyLocked", (byte) 0) == 1;
+        return nbt.getByte("DifficultyLocked") == 1;
     }
 
     @Override
@@ -146,7 +144,7 @@ public class NeoSave implements OPanelSave {
     public boolean isHardcore() throws IOException {
         if(isCurrent()) return server.isHardcore();
 
-        return nbt.getByteOr("hardcore", (byte) 0) == 1;
+        return nbt.getByte("hardcore") == 1;
     }
 
     @Override
@@ -188,16 +186,9 @@ public class NeoSave implements OPanelSave {
     @Override
     public HashMap<String, Boolean> getDatapacks() {
         HashMap<String, Boolean> datapacks = new HashMap<>();
-
-        Optional<CompoundTag> optionalDatapacksNbt = nbt.getCompound("DataPacks");
-        if(optionalDatapacksNbt.isEmpty()) return datapacks;
-        CompoundTag datapacksNbt = optionalDatapacksNbt.get();
-
-        Optional<ListTag> optionalEnabledListNbt = datapacksNbt.getList("Enabled");
-        Optional<ListTag> optionalDisabledListNbt = datapacksNbt.getList("Disabled");
-
-        optionalEnabledListNbt.ifPresent(tags -> tags.forEach(tag -> datapacks.put(tag.asString().get(), true)));
-        optionalDisabledListNbt.ifPresent(tags -> tags.forEach(tag -> datapacks.put(tag.asString().get(), false)));
+        CompoundTag datapacksNbt = nbt.getCompound("DataPacks");
+        datapacksNbt.getList("Enabled", Tag.TAG_STRING).forEach(tag -> datapacks.put(tag.getAsString(), true));
+        datapacksNbt.getList("Disabled", Tag.TAG_STRING).forEach(tag -> datapacks.put(tag.getAsString(), false));
         return datapacks;
     }
 
@@ -211,19 +202,13 @@ public class NeoSave implements OPanelSave {
             server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "datapack "+ (enabled ? "enable" : "disable") +" \""+ id +"\"");
         }
 
-        Optional<CompoundTag> optionalDatapacksNbt = nbt.getCompound("DataPacks");
-        if(optionalDatapacksNbt.isEmpty()) return;
-        CompoundTag datapacksNbt = optionalDatapacksNbt.get();
-
-        Optional<ListTag> optionalEnabledListNbt = datapacksNbt.getList("Enabled");
-        Optional<ListTag> optionalDisabledListNbt = datapacksNbt.getList("Disabled");
-
+        CompoundTag datapacksNbt = nbt.getCompound("DataPacks");
         if(enabled) {
-            optionalDisabledListNbt.ifPresent(tags -> tags.remove(StringTag.valueOf(id)));
-            optionalEnabledListNbt.ifPresent(tags -> tags.add(StringTag.valueOf(id)));
+            datapacksNbt.getList("Disabled", Tag.TAG_STRING).remove(StringTag.valueOf(id));
+            datapacksNbt.getList("Enabled", Tag.TAG_STRING).add(StringTag.valueOf(id));
         } else {
-            optionalEnabledListNbt.ifPresent(tags -> tags.remove(StringTag.valueOf(id)));
-            optionalDisabledListNbt.ifPresent(tags -> tags.add(StringTag.valueOf(id)));
+            datapacksNbt.getList("Enabled", Tag.TAG_STRING).remove(StringTag.valueOf(id));
+            datapacksNbt.getList("Disabled", Tag.TAG_STRING).add(StringTag.valueOf(id));
         }
         saveNbt();
     }

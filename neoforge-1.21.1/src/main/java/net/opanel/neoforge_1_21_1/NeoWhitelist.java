@@ -1,4 +1,4 @@
-package net.opanel.neoforge_1_21_5;
+package net.opanel.neoforge_1_21_1;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;

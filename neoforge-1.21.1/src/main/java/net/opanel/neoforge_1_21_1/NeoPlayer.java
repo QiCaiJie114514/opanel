@@ -1,4 +1,4 @@
-package net.opanel.neoforge_1_21_5;
+package net.opanel.neoforge_1_21_1;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.chat.Component;
@@ -56,26 +56,14 @@ public class NeoPlayer implements OPanelPlayer {
     public OPanelGameMode getGameMode() {
         if(player == null) return null;
 
-        GameType gamemode = player.gameMode();
-        switch(gamemode) {
-            case ADVENTURE -> { return OPanelGameMode.ADVENTURE; }
-            case SURVIVAL -> { return OPanelGameMode.SURVIVAL; }
-            case CREATIVE -> { return OPanelGameMode.CREATIVE; }
-            case SPECTATOR -> { return OPanelGameMode.SPECTATOR; }
-        }
-        return null;
+        GameType gamemode = player.gameMode.getGameModeForPlayer();
+        return OPanelGameMode.fromId(gamemode.getId());
     }
 
     @Override
     public void setGameMode(OPanelGameMode gamemode) {
         if(player == null) return;
-
-        switch(gamemode) {
-            case ADVENTURE -> player.setGameMode(GameType.ADVENTURE);
-            case SURVIVAL -> player.setGameMode(GameType.SURVIVAL);
-            case CREATIVE -> player.setGameMode(GameType.CREATIVE);
-            case SPECTATOR -> player.setGameMode(GameType.SPECTATOR);
-        }
+        player.setGameMode(GameType.byId(gamemode.getId()));
     }
 
     @Override

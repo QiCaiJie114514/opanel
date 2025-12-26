@@ -1,4 +1,4 @@
-package net.opanel.neoforge_1_21_5.config;
+package net.opanel.neoforge_1_21_1.config;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.opanel.config.OPanelConfiguration;

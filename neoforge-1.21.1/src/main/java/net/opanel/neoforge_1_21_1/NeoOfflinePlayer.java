@@ -1,4 +1,4 @@
-package net.opanel.neoforge_1_21_5;
+package net.opanel.neoforge_1_21_1;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.nbt.CompoundTag;
@@ -85,14 +85,8 @@ public class NeoOfflinePlayer implements OPanelPlayer {
     public OPanelGameMode getGameMode() {
         try {
             CompoundTag nbt = NbtIo.readCompressed(playerDataPath, NbtAccounter.create(2097152L)); // 2 MB
-            int gamemodeId = nbt.getIntOr("playerGameType", 0);
-            GameType gamemode = GameType.byId(gamemodeId);
-            switch(gamemode) {
-                case ADVENTURE -> { return OPanelGameMode.ADVENTURE; }
-                case SURVIVAL -> { return OPanelGameMode.SURVIVAL; }
-                case CREATIVE -> { return OPanelGameMode.CREATIVE; }
-                case SPECTATOR -> { return OPanelGameMode.SPECTATOR; }
-            }
+            int gamemodeId = nbt.getInt("playerGameType");
+            return OPanelGameMode.fromId(gamemodeId);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,12 +97,7 @@ public class NeoOfflinePlayer implements OPanelPlayer {
     public void setGameMode(OPanelGameMode gamemode) {
         try {
             CompoundTag nbt = NbtIo.readCompressed(playerDataPath, NbtAccounter.create(2097152L)); // 2 MB
-            switch(gamemode) {
-                case ADVENTURE -> nbt.putInt("playerGameType", 2);
-                case SURVIVAL -> nbt.putInt("playerGameType", 0);
-                case CREATIVE -> nbt.putInt("playerGameType", 1);
-                case SPECTATOR -> nbt.putInt("playerGameType", 3);
-            }
+            nbt.putInt("playerGameType", gamemode.getId());
             NbtIo.writeCompressed(nbt, playerDataPath);
         } catch (IOException e) {
             e.printStackTrace();

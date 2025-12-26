@@ -1,4 +1,4 @@
-package net.opanel.neoforge_1_21_5;
+package net.opanel.neoforge_1_21_1;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
@@ -280,8 +280,8 @@ public class NeoServer implements OPanelServer {
     public HashMap<String, Object> getGamerules() {
         final CompoundTag gamerulesNbt = server.getGameRules().createTag();
         HashMap<String, Object> gamerules = new HashMap<>();
-        for(String key : gamerulesNbt.keySet()) {
-            final String valueStr = gamerulesNbt.getStringOr(key, "");
+        for(String key : gamerulesNbt.getAllKeys()) {
+            final String valueStr = gamerulesNbt.getString(key);
             if(valueStr.equals("true") || valueStr.equals("false")) {
                 gamerules.put(key, Boolean.valueOf(valueStr));
             } else if(Utils.isNumeric(valueStr)) {
@@ -297,7 +297,7 @@ public class NeoServer implements OPanelServer {
     public void setGamerules(HashMap<String, Object> gamerules) {
         HashMap<String, Object> currentGamerules = getGamerules();
         final GameRules gameRulesObj = server.getGameRules();
-        gameRulesObj.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
+        GameRules.visitGameRuleTypes(new GameRules.GameRuleTypeVisitor() {
             @Override
             @SuppressWarnings("unchecked")
             public <T extends GameRules.Value<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {

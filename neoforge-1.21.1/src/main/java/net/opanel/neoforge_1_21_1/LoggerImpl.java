@@ -1,14 +1,7 @@
-package net.opanel.neoforge_1_21_5;
+package net.opanel.neoforge_1_21_1;
 
 import net.opanel.logger.Loggable;
-import net.opanel.utils.Utils;
 import org.slf4j.Logger;
-
-import java.io.IOException;
-import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
 public class LoggerImpl extends Loggable {
     private final Logger logger;
