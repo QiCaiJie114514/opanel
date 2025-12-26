@@ -109,6 +109,7 @@ export interface InfoResponse {
     cpuCore: number
     memory: number
     gpus: string[]
+    java: string
   }
 }
 

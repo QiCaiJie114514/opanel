@@ -44,6 +44,7 @@ public class InfoController extends BaseController {
         sysObj.put("cpuCore", si.getHardware().getProcessor().getPhysicalProcessorCount());
         sysObj.put("memory", si.getHardware().getMemory().getTotal());
         sysObj.put("gpus", si.getHardware().getGraphicsCards().stream().map(gpu -> gpu.getName().trim()).toArray());
+        sysObj.put("java", System.getProperty("java.version"));
         obj.put("system", sysObj);
 
         sendResponse(ctx, obj);
