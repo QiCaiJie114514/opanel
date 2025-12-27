@@ -74,6 +74,9 @@ export default function Saves() {
     fetchServerWorlds();
 
     emitter.on("refresh-data", () => fetchServerWorlds());
+    return () => {
+      emitter.removeAllListeners("refresh-data");
+    };
   }, []);
 
   return (

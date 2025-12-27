@@ -66,6 +66,19 @@ export async function sendPostRequest<R, T = any>(route: string, body?: T, withC
   })).data as APIResponse<R>;
 }
 
+export async function sendPatchRequest<R, T = any>(route: string, body?: T, withCredentials = true): Promise<APIResponse<R>> {
+  const data = body ? JSON.stringify(body) : "";
+  
+  return (await axios.request({
+    method: "patch",
+    maxBodyLength: Infinity,
+    url: apiUrl + route,
+    withCredentials,
+    headers: { "Content-Type": "text/plain" },
+    data
+  })).data as APIResponse<R>;
+}
+
 export async function sendDeleteRequest<T = any>(route: string, body?: T, withCredentials = true): Promise<APIResponse<never>> {
   const data = body ? JSON.stringify(body) : "";
   

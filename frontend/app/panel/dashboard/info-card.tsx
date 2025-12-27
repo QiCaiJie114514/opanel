@@ -152,6 +152,10 @@ export function InfoCard({
               <span className="font-semibold text-nowrap">{$("dashboard.info.port")}</span>
               <span className={cn("text-emerald-500", googleSansCode.className)}>{ctx ? ctx.port : ""}</span>
             </div>
+            <div>
+              <span className="font-semibold text-nowrap">Java:</span>
+              <span>{ctx?.system.java}</span>
+            </div>
           </div>
           <div className="h-fit text-sm">
             {ctx && <MinecraftText maxLines={2} maxCharPerLine={45}>{"§7"+ base64ToString(ctx.motd)}</MinecraftText>}

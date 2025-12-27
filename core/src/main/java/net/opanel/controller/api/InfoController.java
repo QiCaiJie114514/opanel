@@ -6,6 +6,8 @@ import net.opanel.OPanel;
 import net.opanel.time.TPS;
 import net.opanel.utils.Utils;
 import net.opanel.controller.BaseController;
+import oshi.SystemInfo;
+import oshi.hardware.GraphicsCard;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InfoController extends BaseController {
+    private final SystemInfo si = new SystemInfo();
+
     public InfoController(OPanel plugin) {
         super(plugin);
     }
@@ -32,6 +36,16 @@ public class InfoController extends BaseController {
         ingameTimeObj.put("paused", TPS.isPaused());
         ingameTimeObj.put("mspt", TPS.getRecentMSPT());
         obj.put("ingameTime", ingameTimeObj);
+
+        HashMap<String, Object> sysObj = new HashMap<>();
+        sysObj.put("os", si.getOperatingSystem().toString());
+        sysObj.put("arch", System.getProperty("os.arch"));
+        sysObj.put("cpuName", si.getHardware().getProcessor().getProcessorIdentifier().getName().trim());
+        sysObj.put("cpuCore", si.getHardware().getProcessor().getPhysicalProcessorCount());
+        sysObj.put("memory", si.getHardware().getMemory().getTotal());
+        sysObj.put("gpus", si.getHardware().getGraphicsCards().stream().map(gpu -> gpu.getName().trim()).toArray());
+        sysObj.put("java", System.getProperty("java.version"));
+        obj.put("system", sysObj);
 
         sendResponse(ctx, obj);
     };

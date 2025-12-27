@@ -15,27 +15,27 @@ public class MonitorController extends BaseController {
     }
 
     public Handler getMonitor = ctx -> {
+        SystemInfo si = new SystemInfo();
+
         HashMap<String, Object> obj = new HashMap<>();
-        obj.put("cpu", getCpuRate());
-        obj.put("mem", getMemRate());
+        obj.put("cpu", getCpuRate(si));
+        obj.put("memory", getMemoryRate(si));
         obj.put("tps", TPS.getRecentTPS());
 
         sendResponse(ctx, obj);
     };
 
-    private double getCpuRate() {
-        SystemInfo si = new SystemInfo();
-        double load = si.getHardware().getProcessor().getSystemCpuLoad(500) * 100;
-        return Math.round(load);
+    private double getCpuRate(SystemInfo si) {
+        double loadPercentage = si.getHardware().getProcessor().getSystemCpuLoad(500) * 100;
+        return Math.round(loadPercentage);
     }
 
-    private double getMemRate() {
-        SystemInfo si = new SystemInfo();
+    private double getMemoryRate(SystemInfo si) {
         GlobalMemory gm = si.getHardware().getMemory();
 
         long total = gm.getTotal();
-        long avail = gm.getAvailable();
-        long used = total - avail;
+        long available = gm.getAvailable();
+        long used = total - available;
 
         double rate = ((double) used / total) * 100;
 

@@ -3,15 +3,16 @@ package net.opanel.spigot_1_21;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import net.opanel.bukkit_helper.BaseBukkitServer;
+import net.opanel.bukkit_helper.BukkitUtils;
 import net.opanel.common.ServerType;
 import net.opanel.common.OPanelPlayer;
 import net.opanel.common.OPanelSave;
 import net.opanel.common.OPanelServer;
 import net.opanel.common.OPanelWhitelist;
+import net.opanel.common.features.BukkitConfigFeature;
 import net.opanel.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.help.HelpTopic;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -24,13 +25,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
-public class SpigotServer extends BaseBukkitServer implements OPanelServer {
-    private final Main plugin;
-    private final Server server;
-
+public class SpigotServer extends BaseBukkitServer implements OPanelServer, BukkitConfigFeature {
     public SpigotServer(Main plugin, Server server) {
-        this.plugin = plugin;
-        this.server = server;
+        super(plugin, server);
     }
 
     @Override
@@ -46,20 +43,15 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
 
     @Override
     public void setFavicon(byte[] iconBytes) throws IOException {
-        OPanelServer.super.setFavicon(iconBytes);
+        super.setFavicon(iconBytes);
         // reload server favicon
         try {
             Method loadIconMethod = server.getClass().getDeclaredMethod("loadIcon");
             loadIconMethod.setAccessible(true);
             loadIconMethod.invoke(server);
         } catch (Exception e) {
-            plugin.LOGGER.warning("Cannot reload server favicon.");
+            ((Main) plugin).LOGGER.warning("Cannot reload server favicon.");
         }
-    }
-
-    @Override
-    public String getMotd() {
-        return server.getMotd();
     }
 
     @Override
@@ -69,17 +61,6 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
         // Directly modify motd in server.properties
         String formatted = motd.replaceAll("\n", Matcher.quoteReplacement("\\n"));
         OPanelServer.writePropertiesContent(OPanelServer.getPropertiesContent().replaceAll("motd=.+", Matcher.quoteReplacement("motd="+ formatted)));
-    }
-
-    @Override
-    public String getVersion() {
-        // getBukkitVersion() -> "<MinecraftVersion>-R0.x-SNAPSHOT"
-        return server.getBukkitVersion().split("-")[0];
-    }
-
-    @Override
-    public int getPort() {
-        return server.getPort();
     }
 
     @Override
@@ -94,7 +75,7 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
                     ))
                     .map(Path::toAbsolutePath)
                     .forEach(path -> {
-                        SpigotSave save = new SpigotSave(server, path);
+                        SpigotSave save = new SpigotSave((Main) plugin, server, path);
                         list.add(save);
                     });
         } catch (IOException e) {
@@ -114,17 +95,7 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
         ) {
             return null;
         }
-        return new SpigotSave(server, savePath.toAbsolutePath());
-    }
-
-    @Override
-    public void saveAll() {
-        plugin.runTask(() -> {
-            for(World world : server.getWorlds()) {
-                world.save();
-            }
-            server.savePlayers();
-        });
+        return new SpigotSave((Main) plugin, server, savePath.toAbsolutePath());
     }
 
     @Override
@@ -133,7 +104,7 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
         List<OPanelPlayer> list = new ArrayList<>();
         Collection<Player> players = (Collection<Player>) server.getOnlinePlayers();
         for(Player serverPlayer : players) {
-            SpigotPlayer player = new SpigotPlayer(plugin, serverPlayer);
+            SpigotPlayer player = new SpigotPlayer((Main) plugin, serverPlayer);
             list.add(player);
         }
         return list;
@@ -147,39 +118,12 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
             if(offlinePlayer.isOnline()) {
                 Player serverPlayer = offlinePlayer.getPlayer();
                 if(serverPlayer == null) continue;
-                list.add(new SpigotPlayer(plugin, serverPlayer));
+                list.add(new SpigotPlayer((Main) plugin, serverPlayer));
             } else {
-                list.add(new SpigotOfflinePlayer(plugin, server, offlinePlayer));
+                list.add(new SpigotOfflinePlayer((Main) plugin, server, offlinePlayer));
             }
         }
         return list;
-    }
-
-    @Override
-    public int getMaxPlayerCount() {
-        return server.getMaxPlayers();
-    }
-
-    @Override
-    public OPanelPlayer getPlayer(String uuid) {
-        for(OPanelPlayer player : getPlayers()) {
-            if(player.getUUID().equals(uuid)) {
-                return player;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void removePlayerData(String uuid) throws IOException {
-        final Path playerDataFolder = server.getWorlds().getFirst().getWorldFolder().toPath().resolve("playerdata");
-        Files.deleteIfExists(playerDataFolder.resolve(uuid +".dat"));
-        Files.deleteIfExists(playerDataFolder.resolve(uuid +".dat_old"));
-    }
-
-    @Override
-    public List<String> getBannedIps() {
-        return new ArrayList<>(server.getIPBans());
     }
 
     @Override
@@ -195,32 +139,8 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
     }
 
     @Override
-    public boolean isWhitelistEnabled() {
-        return server.hasWhitelist();
-    }
-
-    @Override
-    public void setWhitelistEnabled(boolean enabled) {
-        plugin.runTask(() -> server.setWhitelist(enabled));
-    }
-
-    @Override
     public OPanelWhitelist getWhitelist() {
-        return new SpigotWhitelist(plugin, server, server.getWhitelistedPlayers());
-    }
-
-    @Override
-    public void sendServerCommand(String command) {
-        plugin.runTask(() -> Bukkit.dispatchCommand(server.getConsoleSender(), command));
-    }
-
-    @Override
-    public List<String> getCommands() {
-        List<String> commands = new ArrayList<>();
-        for(HelpTopic topic : server.getHelpMap().getHelpTopics()) {
-            commands.add(topic.getName().toLowerCase().replaceFirst("/", ""));
-        }
-        return commands;
+        return new SpigotWhitelist((Main) plugin, server, server.getWhitelistedPlayers());
     }
 
     @Override
@@ -231,7 +151,7 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
         String[] args = command.split(" ");
 
         try {
-            CommandDispatcher<?> dispatcher = getCommandDispatcher();
+            CommandDispatcher<?> dispatcher = BukkitUtils.getCommandDispatcher(false);
             CommandNode<?> currentNode = dispatcher.getRoot();
             for(int i = 0; i <= args.length; i++) {
                 if(currentNode == null) break;
@@ -266,7 +186,7 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
     @SuppressWarnings("unchecked")
     public void setGamerules(HashMap<String, Object> gamerules) {
         HashMap<String, Object> currentGamerules = getGamerules();
-        plugin.runTask(() -> {
+        runner.runTask(() -> {
             final World world = server.getWorlds().getFirst();
             gamerules.forEach((key, value) -> {
                 if(value == null) return;
@@ -285,20 +205,5 @@ public class SpigotServer extends BaseBukkitServer implements OPanelServer {
                 }
             });
         });
-    }
-
-    @Override
-    public void reload() {
-        plugin.runTask(server::reload);
-    }
-
-    @Override
-    public void stop() {
-        server.shutdown();
-    }
-
-    @Override
-    public long getIngameTime() {
-        return server.getWorlds().getFirst().getTime();
     }
 }

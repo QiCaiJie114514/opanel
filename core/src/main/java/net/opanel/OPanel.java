@@ -25,42 +25,16 @@ public class OPanel {
     public static final Path TMP_DIR_PATH = OPANEL_DIR_PATH.resolve(".tmp");
     public static final Path INITIAL_ACCESS_KEY_PATH = OPANEL_DIR_PATH.resolve("INITIAL_ACCESS_KEY.txt");
 
-    // Read opanel.properties
     static {
-        String version = "unknown";
-        try(InputStream is = OPanel.class.getClassLoader().getResourceAsStream("opanel.properties")) {
-            if(is != null) {
-                Properties props = new Properties();
-                props.load(is);
-                version = props.getProperty("version", "unknown");
-            }
-        } catch (IOException e) {
-            System.err.println("Failed to load version information: "+ e.getMessage());
-        }
-
-        VERSION = version;
-    }
-
-    static {
-        String version = "unknown";
-        try(InputStream is = OPanel.class.getClassLoader().getResourceAsStream("META-INF/maven/io.javalin/javalin/pom.properties")) {
-            if(is != null) {
-                Properties props = new Properties();
-                props.load(is);
-                version = props.getProperty("version", "unknown");
-            }
-        } catch (IOException e) {
-            System.err.println("Failed to load javalin version information: "+ e.getMessage());
-        }
-
-        JAVALIN_VERSION = version;
+        VERSION = Utils.readPropertyValueFromResources("opanel.properties", "version");
+        JAVALIN_VERSION = Utils.readPropertyValueFromResources("META-INF/maven/io.javalin/javalin/pom.properties", "version");
     }
 
     private final ConfigManager configManager;
     public final Loggable logger;
 
-    private Uptimer uptimer;
-    private WebServer webServer;
+    private final Uptimer uptimer;
+    private final WebServer webServer;
     private OPanelServer server;
     private LogListenerManager logListenerManager;
 

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useContext } from "react";
 import { deleteCookie } from "cookies-next/client";
 import { compare } from "semver";
-import { Blocks, BookText, Earth, Gauge, HeartHandshake, Info, LogOut, PencilRuler, ScrollText, Settings, SquareArrowOutUpRight, SquareTerminal, Users } from "lucide-react";
+import { Blocks, BookText, Earth, Gauge, HeartHandshake, Info, LogOut, PaintBucket, PencilRuler, ScrollText, Settings, SquareArrowOutUpRight, SquareTerminal, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -21,7 +21,7 @@ import {
 } from "./ui/sidebar";
 import { Button } from "./ui/button";
 import { ThemeToggle } from "./theme-toggle";
-import { cn } from "@/lib/utils";
+import { cn, isBukkit } from "@/lib/utils";
 import { minecraftAE } from "@/lib/fonts";
 import { Logo } from "./logo";
 import { VersionContext } from "@/contexts/api-context";
@@ -71,6 +71,14 @@ const managementGroupItems = [
     url: "/panel/code-of-conduct",
     icon: HeartHandshake,
     minVersion: "1.21.9"
+  }
+];
+
+const configurationGroupItems = [
+  {
+    name: $("sidebar.config.bukkit-config"),
+    url: "/panel/bukkit-config",
+    icon: PaintBucket
   }
 ];
 
@@ -151,6 +159,28 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {isBukkit(versionCtx.serverType) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{$("sidebar.config")}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {configurationGroupItems.map((item, i) => (
+                  <SidebarMenuItem key={i}>
+                    <SidebarMenuButton
+                      isActive={pathname.startsWith(item.url)}
+                      asChild>
+                      <Link href={item.url} className="pl-3">
+                        {pathname.startsWith(item.url) && <SidebarIndicator className="left-2"/>}
+                        <item.icon />
+                        <span className="whitespace-nowrap">{item.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
         <SidebarGroup>
           <SidebarGroupLabel>{$("sidebar.help")}</SidebarGroupLabel>
           <SidebarGroupContent>

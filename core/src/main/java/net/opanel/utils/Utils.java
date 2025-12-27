@@ -1,5 +1,7 @@
 package net.opanel.utils;
 
+import net.opanel.OPanel;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -11,6 +13,7 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
@@ -263,5 +266,19 @@ public class Utils {
 
             return new int[] { image.getWidth(), image.getHeight() };
         }
+    }
+
+    public static String readPropertyValueFromResources(String propertiesPath, String key) {
+        String value = "";
+        try(InputStream is = OPanel.class.getClassLoader().getResourceAsStream(propertiesPath)) {
+            if(is != null) {
+                Properties props = new Properties();
+                props.load(is);
+                value = props.getProperty(key, "");
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to read property value from "+ propertiesPath +": "+ e.getMessage());
+        }
+        return value;
     }
 }

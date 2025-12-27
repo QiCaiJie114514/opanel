@@ -1,4 +1,4 @@
-import type { GameMode } from "./types";
+import type { GameMode, ServerType } from "./types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import locale from "locale-codes";
@@ -144,4 +144,13 @@ export async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+}
+
+export function isBukkit(serverType: ServerType): boolean {
+  return (
+    serverType === "Bukkit"
+    || serverType === "Spigot"
+    || serverType === "Paper"
+    || serverType === "Folia"
+  );
 }

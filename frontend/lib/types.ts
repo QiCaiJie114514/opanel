@@ -15,6 +15,13 @@ export enum GameMode {
   SPECTATOR = "spectator"
 }
 
+export enum Difficulty {
+  PEACEFUL = "peaceful",
+  EASY = "easy",
+  NORMAL = "normal",
+  HARD = "hard"
+}
+
 export interface Save {
   name: string
   displayName: string // base64
@@ -23,6 +30,10 @@ export interface Save {
   isRunning: boolean
   isCurrent: boolean
   defaultGameMode: GameMode
+  difficulty: Difficulty
+  isDifficultyLocked: boolean
+  isHardcore: boolean
+  datapacks: Record<string, boolean>
 }
 
 export interface Player {
@@ -91,12 +102,21 @@ export interface InfoResponse {
     paused: boolean
     mspt: number
   }
+  system: {
+    os: string
+    arch: number
+    cpuName: string
+    cpuCore: number
+    memory: number
+    gpus: string[]
+    java: string
+  }
 }
 
 /** `/api/monitor` */
 export interface MonitorResponse {
-  mem: number
   cpu: number
+  memory: number
   tps: number
 }
 
@@ -108,6 +128,13 @@ export interface ServerPropertiesResponse {
 /** `/api/control/code-of-conduct` */
 export interface CodeOfConductResponse {
   codeOfConducts: Record<string, string> // base64
+}
+
+/** `/api/control/bukkit-config` */
+export interface BukkitServerConfigResponse {
+  bukkit: string // base64
+  spigot?: string // base64
+  paper?: string // base64
 }
 
 /** `/api/gamerules` */

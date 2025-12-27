@@ -2,7 +2,7 @@ import type { PropsWithChildren } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GameMode, type Save } from "@/lib/types";
+import { Difficulty, GameMode, type Save } from "@/lib/types";
 import {
   Sheet,
   SheetClose,
@@ -35,10 +35,15 @@ import { sendPostRequest, toastError } from "@/lib/api";
 import { emitter } from "@/lib/emitter";
 import { base64ToString, stringToBase64 } from "@/lib/utils";
 import { $ } from "@/lib/i18n";
+import { Switch } from "@/components/ui/switch";
+import { useTrigger } from "@/hooks/use-trigger";
 
 const formSchema = z.object({
   displayName: z.string().nonempty($("saves.edit.form.name.empty")),
-  defaultGameMode: z.enum(Object.values(GameMode) as [string, ...string[]])
+  defaultGameMode: z.enum(Object.values(GameMode) as [string, ...string[]]),
+  difficulty: z.enum(Object.values(Difficulty) as [string, ...string[]]),
+  isDifficultyLocked: z.boolean(),
+  isHardcore: z.boolean()
 });
 
 export function SaveSheet({
@@ -53,9 +58,13 @@ export function SaveSheet({
     resolver: zodResolver(formSchema),
     values: {
       displayName: base64ToString(save.displayName),
-      defaultGameMode: save.defaultGameMode
+      defaultGameMode: save.defaultGameMode,
+      difficulty: save.difficulty,
+      isDifficultyLocked: save.isDifficultyLocked,
+      isHardcore: save.isHardcore
     }
   });
+  const { trigger } = useTrigger();
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
@@ -119,7 +128,10 @@ export function SaveSheet({
                   <FormItem>
                     <FormLabel>{$("saves.edit.form.gamemode.label")}</FormLabel>
                     <FormControl>
-                      <Select {...field} onValueChange={field.onChange}>
+                      <Select
+                        {...field}
+                        disabled={form.getValues("isHardcore")}
+                        onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
                           <SelectValue />
                         </SelectTrigger>
@@ -130,6 +142,75 @@ export function SaveSheet({
                           <SelectItem value={GameMode.SPECTATOR}>{$("common.gamemode.spectator")}</SelectItem>
                         </SelectContent>
                       </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}/>
+              <FormField
+                control={form.control}
+                name="difficulty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{$("saves.edit.form.difficulty.label")}</FormLabel>
+                    <FormControl>
+                      <Select
+                        {...field}
+                        disabled={form.getValues("isHardcore") || form.getValues("isDifficultyLocked")}
+                        onValueChange={field.onChange}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={Difficulty.PEACEFUL}>{$("common.difficulty.peaceful")}</SelectItem>
+                          <SelectItem value={Difficulty.EASY}>{$("common.difficulty.easy")}</SelectItem>
+                          <SelectItem value={Difficulty.NORMAL}>{$("common.difficulty.normal")}</SelectItem>
+                          <SelectItem value={Difficulty.HARD}>{$("common.difficulty.hard")}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}/>
+              <FormField
+                control={form.control}
+                name="isDifficultyLocked"
+                render={({ field }) => (
+                  <FormItem className="flex justify-between">
+                    <FormLabel>{$("saves.edit.form.difficulty-locked.label")}</FormLabel>
+                    <FormControl>
+                      <Switch
+                        {...field}
+                        value=""
+                        checked={field.value}
+                        disabled={form.getValues("isHardcore")}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          trigger();
+                        }}/>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}/>
+              <FormField
+                control={form.control}
+                name="isHardcore"
+                render={({ field }) => (
+                  <FormItem className="flex justify-between">
+                    <FormLabel>{$("saves.edit.form.hardcore.label")}</FormLabel>
+                    <FormControl>
+                      <Switch
+                        {...field}
+                        value=""
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          if(checked) {
+                            form.setValue("defaultGameMode", GameMode.SURVIVAL);
+                            form.setValue("difficulty", Difficulty.HARD);
+                            form.setValue("isDifficultyLocked", true);
+                          }
+                          trigger();
+                        }}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

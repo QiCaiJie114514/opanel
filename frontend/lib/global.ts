@@ -1,8 +1,8 @@
 /**
  * Version of OPanel
  */
-export const version = "1.2.0-pre2";
+export const version = "1.2.0-pre3";
 /**
  * Copyright Info of OPanel Project
  */
-export const copyrightInfo = "Copyright © OPanel Project 2025";
+export const copyrightInfo = "Copyright © OPanel Project 2026";

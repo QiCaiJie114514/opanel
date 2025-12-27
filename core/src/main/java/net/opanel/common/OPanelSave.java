@@ -2,6 +2,8 @@ package net.opanel.common;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
 
 public interface OPanelSave {
     String getName();
@@ -14,5 +16,13 @@ public interface OPanelSave {
     void setToCurrent() throws IOException;
     OPanelGameMode getDefaultGameMode();
     void setDefaultGameMode(OPanelGameMode gamemode) throws IOException;
+    OPanelDifficulty getDifficulty() throws IOException;
+    void setDifficulty(OPanelDifficulty difficulty) throws IOException;
+    boolean isDifficultyLocked() throws IOException;
+    void setDifficultyLocked(boolean locked) throws IOException;
+    boolean isHardcore() throws IOException;
+    void setHardcoreEnabled(boolean enabled) throws IOException;
+    HashMap<String, Boolean> getDatapacks();
+    void toggleDatapack(String id, boolean enabled) throws IOException;
     void delete() throws IOException;
 }

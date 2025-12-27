@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sidebar";
 import { VersionContext } from "@/contexts/api-context";
 import { sendGetRequest } from "@/lib/api";
+import { useKeydown } from "@/hooks/use-keydown";
 
 export default function PanelLayout({
   children,
@@ -33,14 +34,6 @@ export default function PanelLayout({
     }
   };
 
-  const handleKeydown = (e: KeyboardEvent) => {
-    if(e.ctrlKey && (
-      e.key === "a"
-      || e.key === "p"
-      || e.key === "s"
-    )) e.preventDefault();
-  };
-
   useEffect(() => {
     setMounted(true);
 
@@ -52,10 +45,9 @@ export default function PanelLayout({
     fetchVersionInfo();
   }, [push]);
 
-  useEffect(() => {
-    document.body.addEventListener("keydown", handleKeydown);
-    return () => document.body.removeEventListener("keydown", handleKeydown);
-  }, []);
+  useKeydown("a", { ctrl: true }, (e) => e.preventDefault());
+  useKeydown("p", { ctrl: true }, (e) => e.preventDefault());
+  useKeydown("s", { ctrl: true }, (e) => e.preventDefault());
 
   if(!mounted) return <></>;
 

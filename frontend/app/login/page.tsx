@@ -34,6 +34,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { copyrightInfo } from "@/lib/global";
 import { $ } from "@/lib/i18n";
 import { Text } from "@/components/i18n-text";
+import { useKeydown } from "@/hooks/use-keydown";
 
 const formSchema = z.object({
   accessKey: z.string().nonempty($("login.form.input.empty")),
@@ -82,19 +83,14 @@ export default function Login() {
     }
   };
 
-  const handleKeydown = (e: KeyboardEvent) => {
-    if(e.key === "Enter") handleLogin();
-  };
-
   useEffect(() => {
     if(hasCookie("token")) {
       router.push("/panel/dashboard");
     }
-
-    document.body.addEventListener("keydown", handleKeydown);
-    return () => document.body.removeEventListener("keydown", handleKeydown);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useKeydown("Enter", {}, () => handleLogin());
 
   return (
     <div className="flex flex-col">

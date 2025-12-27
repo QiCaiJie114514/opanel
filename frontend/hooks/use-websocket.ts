@@ -6,9 +6,14 @@ export function useWebSocket<M extends string, C extends WebSocketClient<M>>(cli
 
   useEffect(() => {
     const ws = new clientClass();
-    setClient(ws);
+    setClient((current) => {
+      return current ?? ws;
+    });
     
-    return () => ws.close();
+    return () => {
+      ws.close();
+      setClient(null);
+    };
   }, [clientClass]);
 
   return client;

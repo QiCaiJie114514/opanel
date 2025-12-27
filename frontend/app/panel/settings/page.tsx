@@ -195,7 +195,10 @@ export default function Settings() {
             control={
               <Select
                 defaultValue={getSettings("system.language")}
-                onValueChange={(value) => changeSettings("system.language", value as LanguageCode)}>
+                onValueChange={(value) => {
+                  changeSettings("system.language", value as LanguageCode);
+                  window.location.reload();
+                }}>
                 <SelectTrigger className={controlWidth}>
                   <SelectValue />
                 </SelectTrigger>

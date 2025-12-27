@@ -16,12 +16,15 @@ import { SubPage } from "../sub-page";
 import { emitter } from "@/lib/emitter";
 import { getSettings } from "@/lib/settings";
 import { $ } from "@/lib/i18n";
+import { SystemCard } from "./system-card";
 
 const requestMonitorInterval = getSettings("dashboard.monitor-interval");
 
 export default function Dashboard() {
   const [info, setInfo] = useState<APIResponse<InfoResponse>>();
-  const [monitorData, setMonitorData] = useState(new Array(50).fill({ memory: 0, cpu: 0, tps: 20 }));
+  const [monitorData, setMonitorData] = useState(
+    new Array<MonitorResponse>(50).fill({ cpu: 0, memory: 0, tps: 20 })
+  );
 
   const fetchServerInfo = async () => {
     try {
@@ -36,11 +39,11 @@ export default function Dashboard() {
   };
 
   const requestMonitor = async () => {
-    const { mem, cpu, tps } = await sendGetRequest<MonitorResponse>("/api/monitor");
+    const res = await sendGetRequest<MonitorResponse>("/api/monitor");
     const currentData = await getCurrentState(setMonitorData);
     const newData = [...currentData];
     newData.shift();
-    newData.push({ memory: mem, cpu, tps });
+    newData.push(res);
     setMonitorData(newData);
   };
 
@@ -72,7 +75,8 @@ export default function Dashboard() {
           <PlayersCard className="row-span-3 row-start-2"/>
           <MonitorCard className="row-span-3 row-start-2"/>
           <TPSCard className="row-start-5"/>
-          <TerminalCard className="row-span-5 max-xl:col-span-2"></TerminalCard>
+          <SystemCard className="row-span-2 max-xl:row-start-9 max-xl:col-span-2"/>
+          <TerminalCard className="row-start-3 row-span-3 max-xl:row-start-6 max-xl:col-span-2"/>
         </MonitorContext.Provider>
       </InfoContext.Provider>
     </SubPage>

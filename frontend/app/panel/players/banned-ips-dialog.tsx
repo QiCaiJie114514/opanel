@@ -84,9 +84,10 @@ export function BannedIpsDialog({
   };
 
   useEffect(() => {
-    emitter.on("refresh-data", () => {
-      fetchBannedIps();
-    });
+    emitter.on("refresh-data", () => fetchBannedIps());
+    return () => {
+      emitter.removeAllListeners("refresh-data");
+    };
   }, []);
 
   useEffect(() => {

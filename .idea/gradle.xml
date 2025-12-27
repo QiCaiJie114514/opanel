@@ -35,10 +35,12 @@
             <option value="$PROJECT_DIR$/forge-1.21.5" />
             <option value="$PROJECT_DIR$/forge-1.21.8" />
             <option value="$PROJECT_DIR$/forge-1.21.9" />
-            <option value="$PROJECT_DIR$/neoforge-1.21.5" />
+            <option value="$PROJECT_DIR$/forge-helper" />
+            <option value="$PROJECT_DIR$/neoforge-1.21.1" />
             <option value="$PROJECT_DIR$/spigot-1.16.1" />
             <option value="$PROJECT_DIR$/spigot-1.19.4" />
             <option value="$PROJECT_DIR$/spigot-1.20" />
+            <option value="$PROJECT_DIR$/spigot-1.20.6" />
             <option value="$PROJECT_DIR$/spigot-1.21" />
             <option value="$PROJECT_DIR$/spigot-1.21.9" />
           </set>

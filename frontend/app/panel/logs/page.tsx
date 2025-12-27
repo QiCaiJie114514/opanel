@@ -46,6 +46,9 @@ export default function Logs() {
     fetchServerLogs();
 
     emitter.on("refresh-data", () => fetchServerLogs());
+    return () => {
+      emitter.removeAllListeners("refresh-data");
+    };
   }, []);
 
   return (
